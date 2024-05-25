@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:keuangan/components/end_drawer.dart';
 import 'package:keuangan/components/panel/panel_dashboard.dart';
@@ -33,27 +34,28 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     AppBar appBar = AppBar(
+      systemOverlayStyle: SystemUiOverlayStyle.dark,
       backgroundColor: const Color(0x00000000),
       elevation: 0,
       centerTitle: true,
       title: const Text(
-        'KEUANGAN',
+        'BukuKas',
         style: TextStyle(
           color: Colors.black,
           fontWeight: FontWeight.bold,
         ),
       ),
-      actions: <Widget>[
-        IconButton(
-          onPressed: () {
-            _scaffoldKey.currentState!.openEndDrawer();
-          },
-          icon: const Icon(
-            Icons.person_outline,
-            color: Colors.black,
-          ),
-        ),
-      ],
+      // actions: const [
+      //   // IconButton(
+      //   //   onPressed: () {
+      //   //     _scaffoldKey.currentState!.openEndDrawer();
+      //   //   },
+      //   //   icon: const Icon(
+      //   //     Icons.person_outline,
+      //   //     color: Colors.black,
+      //   //   ),
+      //   // ),
+      // ],
     );
 
     double marginTopScreen = appBar.preferredSize.height +
@@ -74,7 +76,7 @@ class _DashboardPageState extends State<DashboardPage> {
               key: _scaffoldKey,
               extendBodyBehindAppBar: true,
               appBar: appBar,
-              endDrawer: const EndDrawer(),
+              // endDrawer: const EndDrawer(),
               body: Container(
                 constraints: const BoxConstraints.expand(),
                 color: Colors.grey.shade100,
@@ -86,7 +88,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
                 child: SingleChildScrollView(
                   child: Column(
-                    children: <Widget>[
+                    children: [
                       const PanelDashboard(),
                       // const SizedBox(height: 10),
                       // const PanelInfo(),

@@ -41,10 +41,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Keuangan',
+      title: 'BukuKas',
       theme: ThemeData(
         primarySwatch: Colors.amber,
         fontFamily: GoogleFonts.rubik().fontFamily,
+        useMaterial3: true,
       ),
       supportedLocales: const [
         Locale('id'),

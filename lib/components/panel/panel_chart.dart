@@ -59,18 +59,18 @@ class _PanelChartState extends State<PanelChart> {
           const SizedBox(height: 4),
           Expanded(
             child: !dashboardController.loading
-                ? (dashboardController.dataDashboard["totalByMenus"] ?? 0)
+                ? (dashboardController.dataDashboard["totalByMenus"] ?? "")
                             .length >
                         0
                     ? SimpleBarChart(
                         data:
                             dashboardController.dataDashboard["totalByMenus"] ??
-                                0,
+                                "",
                       )
                     : const Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const <Widget>[
+                          children: <Widget>[
                             Icon(
                               Icons.bar_chart,
                               color: Colors.grey,

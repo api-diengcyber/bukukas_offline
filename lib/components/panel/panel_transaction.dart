@@ -75,13 +75,16 @@ class _PanelTransactionState extends State<PanelTransaction> {
               right: 12,
             ),
             child: !dashboardController.loading
-                ? dashboardController.dataDashboard["dataTransaction"].length >
+                ? (dashboardController.dataDashboard["dataTransaction"] ?? "")
+                            .length >
                         0
                     ? ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: dashboardController
-                            .dataDashboard["dataTransaction"].length,
+                        itemCount: (dashboardController
+                                    .dataDashboard["dataTransaction"] ??
+                                "")
+                            .length,
                         padding: const EdgeInsets.all(0),
                         itemBuilder: (context, index) {
                           dynamic data = dashboardController

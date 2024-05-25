@@ -44,15 +44,15 @@ class _PanelDashboardState extends State<PanelDashboard> {
       child: Obx(
         () => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(
+          children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(
                 vertical: 8,
                 horizontal: 16,
               ),
               child: Row(
                 children: <Widget>[
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       "Dashboard",
                       style: TextStyle(
@@ -63,30 +63,30 @@ class _PanelDashboardState extends State<PanelDashboard> {
                       ),
                     ),
                   ),
-                  InkWell(
-                    onTap: !dashboardController.loading
-                        ? () async {
-                            dashboardController.getDashboard();
-                          }
-                        : () {},
-                    child: !dashboardController.loading
-                        ? const Icon(
-                            Icons.refresh,
-                            color: Colors.white,
-                            size: 20,
-                          )
-                        : const Icon(
-                            Icons.r_mobiledata,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                  ),
+                  // InkWell(
+                  //   onTap: !dashboardController.loading
+                  //       ? () async {
+                  //           dashboardController.getDashboard();
+                  //         }
+                  //       : () {},
+                  //   child: !dashboardController.loading
+                  //       ? const Icon(
+                  //           Icons.refresh,
+                  //           color: Colors.white,
+                  //           size: 20,
+                  //         )
+                  //       : const Icon(
+                  //           Icons.r_mobiledata,
+                  //           color: Colors.white,
+                  //           size: 20,
+                  //         ),
+                  // ),
                 ],
               ),
             ),
             Container(
               width: double.infinity,
-              height: MediaQuery.of(context).size.height * 0.09,
+              height: 80,
               padding: const EdgeInsets.symmetric(
                 horizontal: 10,
                 vertical: 10,

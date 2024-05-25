@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:form_builder_phone_field/form_builder_phone_field.dart';
@@ -18,6 +19,7 @@ class _ProfilPageState extends State<ProfilPage> {
   @override
   Widget build(BuildContext context) {
     AppBar appBar = AppBar(
+      systemOverlayStyle: SystemUiOverlayStyle.dark,
       backgroundColor: const Color(0x00000000),
       elevation: 0,
       leading: InkWell(

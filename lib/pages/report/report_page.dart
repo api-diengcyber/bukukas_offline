@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:keuangan/components/circle_custom.dart';
 import 'package:keuangan/components/panel/panel_report_swiper.dart';
 import 'package:keuangan/helpers/set_menus.dart';
@@ -35,6 +36,7 @@ class _ReportPageState extends State<ReportPage> {
     final _reportBloc = context.watch<ReportBloc>();
 
     AppBar appBar = AppBar(
+      systemOverlayStyle: SystemUiOverlayStyle.dark,
       backgroundColor: const Color(0x00000000),
       elevation: 0,
       centerTitle: true,

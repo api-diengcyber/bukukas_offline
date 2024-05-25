@@ -59,6 +59,7 @@ dependencies:
   flutter_speed_dial: ^7.0.0
   restart_app: ^1.2.1
   form_builder_phone_field: ^2.0.1
+  sqflite: ^2.3.3+1
 
 dev_dependencies:
   flutter_test:

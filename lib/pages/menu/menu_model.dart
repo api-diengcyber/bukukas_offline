@@ -12,8 +12,8 @@ class MenuModel {
   }
 
   Future<bool> delete(BuildContext context, int id) async {
-    final _resp = await MenuService().delete(context, id);
-    if (_resp) {
+    final resp = await MenuService().delete(context, id);
+    if (resp) {
       g.Get.snackbar(
         "Terhapus!",
         "Menu berhasil dihapus",
@@ -24,7 +24,7 @@ class MenuModel {
         duration: const Duration(seconds: 1),
       );
     }
-    return _resp;
+    return resp;
   }
 
   String _activeTab2Str(activeTab) {
@@ -45,18 +45,18 @@ class MenuModel {
   }
 
   Future<void> getMenu(BuildContext context) async {
-    final _menuBloc = Provider.of<MenuBloc>(context, listen: false);
-    _menuBloc.loading = true;
-    final _resp = await MenuService().getByType(
-        context, _activeTab2Str(_menuBloc.activeTab), _menuBloc.page);
-    if (_menuBloc.page > _resp['totalPage']) {
-      _menuBloc.page = _resp['totalPage'];
+    final menuBloc = Provider.of<MenuBloc>(context, listen: false);
+    menuBloc.loading = true;
+    final resp = await MenuService()
+        .getByType(context, _activeTab2Str(menuBloc.activeTab), menuBloc.page);
+    if (menuBloc.page > resp['totalPage']) {
+      menuBloc.page = resp['totalPage'];
       await getMenu(context);
     } else {
       Future.delayed(const Duration(milliseconds: 800), () async {
-        _menuBloc.data = _resp['data'];
-        _menuBloc.totalPages = _resp['totalPage'];
-        _menuBloc.loading = false;
+        menuBloc.data = resp['data'];
+        menuBloc.totalPages = resp['totalPage'];
+        menuBloc.loading = false;
       });
     }
   }

@@ -119,6 +119,7 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
       iconTheme: const IconThemeData(
         color: Colors.black, //change your color here
       ),
+      systemOverlayStyle: SystemUiOverlayStyle.dark,
       backgroundColor: const Color(0x00000000),
       elevation: 0,
       centerTitle: true,

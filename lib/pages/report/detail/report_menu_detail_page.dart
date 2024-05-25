@@ -1,4 +1,5 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:flutter/services.dart';
 import 'package:keuangan/pages/report/detail/report_menu_detail_model.dart';
 import 'package:keuangan/pages/report/report_model.dart';
 import 'package:keuangan/providers/report_menu_detail_bloc.dart';
@@ -104,6 +105,7 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                     : Colors.grey;
 
     AppBar appBar = AppBar(
+      systemOverlayStyle: SystemUiOverlayStyle.dark,
       backgroundColor: const Color(0x00000000),
       elevation: 0,
       centerTitle: true,

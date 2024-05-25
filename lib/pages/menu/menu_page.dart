@@ -1,4 +1,5 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:flutter/services.dart';
 import 'package:keuangan/components/circle_custom.dart';
 import 'package:keuangan/components/item_menu.dart';
 import 'package:keuangan/components/modal/modal_create_menu.dart';
@@ -98,11 +99,11 @@ class _MenuPageState extends State<MenuPage> {
 
   @override
   Widget build(BuildContext context) {
-    final _menuBloc = context.watch<MenuBloc>();
-    final _globalBloc = context.watch<GlobalBloc>();
+    final menuBloc = context.watch<MenuBloc>();
+    final globalBloc = context.watch<GlobalBloc>();
 
     openDialogMenu(int actTab) {
-      _globalBloc.loading = false;
+      globalBloc.loading = false;
       showDialog(
         context: context,
         barrierColor: const Color.fromARGB(26, 0, 0, 0),
@@ -133,7 +134,7 @@ class _MenuPageState extends State<MenuPage> {
     }
 
     openEditDialogMenu(data) {
-      _globalBloc.loading = false;
+      globalBloc.loading = false;
       showDialog(
         context: context,
         barrierColor: const Color.fromARGB(26, 0, 0, 0),
@@ -177,8 +178,8 @@ class _MenuPageState extends State<MenuPage> {
         btnOkText: "Hapus akun",
         btnCancelOnPress: () {},
         btnOkOnPress: () async {
-          var _resp = await MenuModel().delete(context, data['keu_menu_id']);
-          if (_resp) {
+          var resp = await MenuModel().delete(context, data['keu_menu_id']);
+          if (resp) {
             await MenuModel().getMenu(context);
           }
         },
@@ -186,6 +187,7 @@ class _MenuPageState extends State<MenuPage> {
     }
 
     AppBar appBar = AppBar(
+      systemOverlayStyle: SystemUiOverlayStyle.dark,
       backgroundColor: const Color(0x00000000),
       elevation: 0,
       centerTitle: true,
@@ -247,14 +249,14 @@ class _MenuPageState extends State<MenuPage> {
                                 activeIconColor: item['activeIconColor'],
                                 activeGradient: item['activeGradient'],
                                 active:
-                                    _menuBloc.activeTab == items.indexOf(item),
-                                onTap: !_menuBloc.loading
+                                    menuBloc.activeTab == items.indexOf(item),
+                                onTap: !menuBloc.loading
                                     ? () async {
-                                        if (_menuBloc.activeTab !=
+                                        if (menuBloc.activeTab !=
                                             items.indexOf(item)) {
-                                          _menuBloc.activeTab =
+                                          menuBloc.activeTab =
                                               items.indexOf(item);
-                                          _menuBloc.page = 1;
+                                          menuBloc.page = 1;
                                           await MenuModel().getMenu(context);
                                         }
                                       }
@@ -268,11 +270,11 @@ class _MenuPageState extends State<MenuPage> {
                       margin: const EdgeInsets.symmetric(horizontal: 5),
                       child: SearchInput(
                         onChanged: (value) async {
-                          _menuBloc.page = 1;
+                          menuBloc.page = 1;
                           await MenuModel().getMenu(context);
                         },
                         onReset: () async {
-                          _menuBloc.page = 1;
+                          menuBloc.page = 1;
                           await MenuModel().getMenu(context);
                         },
                       ),
@@ -289,14 +291,14 @@ class _MenuPageState extends State<MenuPage> {
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: !_menuBloc.loading
-                            ? _menuBloc.data.isNotEmpty
+                        child: !menuBloc.loading
+                            ? menuBloc.data.isNotEmpty
                                 ? ListView.builder(
-                                    itemCount: _menuBloc.data.length,
+                                    itemCount: menuBloc.data.length,
                                     shrinkWrap: true,
                                     padding: const EdgeInsets.all(0),
                                     itemBuilder: (context, index) {
-                                      var data = _menuBloc.data[index];
+                                      var data = menuBloc.data[index];
                                       return Container(
                                         margin:
                                             const EdgeInsets.only(bottom: 8),
@@ -599,7 +601,7 @@ class _MenuPageState extends State<MenuPage> {
                                   )
                             : Center(
                                 child: SpinKitDoubleBounce(
-                                  color: items[_menuBloc.activeTab]
+                                  color: items[menuBloc.activeTab]
                                       ['splashColor'],
                                 ),
                               ),
@@ -615,14 +617,14 @@ class _MenuPageState extends State<MenuPage> {
                       width: double.infinity,
                       child: Row(
                         children: <Widget>[
-                          _menuBloc.totalPages > 1
+                          menuBloc.totalPages > 1
                               ? Expanded(
-                                  child: !_menuBloc.loading
+                                  child: !menuBloc.loading
                                       ? Pagination(
-                                          totalPage: _menuBloc.totalPages,
-                                          page: _menuBloc.page,
+                                          totalPage: menuBloc.totalPages,
+                                          page: menuBloc.page,
                                           onTap: (page) async {
-                                            _menuBloc.page = page;
+                                            menuBloc.page = page;
                                             await MenuModel().getMenu(context);
                                           },
                                         )
@@ -630,7 +632,7 @@ class _MenuPageState extends State<MenuPage> {
                                           borderRadius:
                                               BorderRadius.circular(20.0),
                                           shimmerColor:
-                                              items[_menuBloc.activeTab]
+                                              items[menuBloc.activeTab]
                                                   ['splashColor'],
                                           child: Container(
                                             height: 30,
@@ -646,15 +648,15 @@ class _MenuPageState extends State<MenuPage> {
                               : const Expanded(
                                   child: SizedBox(),
                                 ),
-                          _menuBloc.activeTab != 0
+                          menuBloc.activeTab != 0
                               ? InkWell(
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      gradient: _menuBloc.activeTab == 1
+                                      gradient: menuBloc.activeTab == 1
                                           ? gradientMenu[0]
-                                          : (_menuBloc.activeTab == 2
+                                          : (menuBloc.activeTab == 2
                                               ? gradientMenu[1]
-                                              : (_menuBloc.activeTab == 3)
+                                              : (menuBloc.activeTab == 3)
                                                   ? gradientMenu[2]
                                                   : gradientMenu[3]),
                                       shape: BoxShape.circle,
@@ -680,7 +682,7 @@ class _MenuPageState extends State<MenuPage> {
                                     ),
                                   ),
                                   onTap: () {
-                                    openDialogMenu(_menuBloc.activeTab);
+                                    openDialogMenu(menuBloc.activeTab);
                                   },
                                 )
                               : SpeedDial(
@@ -750,7 +752,7 @@ class _MenuPageState extends State<MenuPage> {
                                     ),
                                   ],
                                 ),
-                          _menuBloc.totalPages > 1
+                          menuBloc.totalPages > 1
                               ? const SizedBox()
                               : const Expanded(
                                   child: SizedBox(),
