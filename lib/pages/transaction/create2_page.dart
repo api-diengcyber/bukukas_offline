@@ -11,7 +11,7 @@ import 'package:keuangan/providers/transaction_bloc.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
+// import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -100,14 +100,14 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
 
     openDialogDetailTransaction() {
       _globalBloc.loading = false;
-      showAnimatedDialog(
+      showDialog(
         context: context,
         barrierDismissible: true,
         barrierColor: Colors.transparent,
         builder: (BuildContext context) => const DetailTransactionModal(),
-        animationType: DialogTransitionType.slideFromTopFade,
-        curve: Curves.fastOutSlowIn,
-        duration: const Duration(milliseconds: 200),
+        // animationType: DialogTransitionType.slideFromTopFade,
+        // curve: Curves.fastOutSlowIn,
+        // duration: const Duration(milliseconds: 200),
       );
     }
 
@@ -137,8 +137,8 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
         if (_globalBloc.cart.isNotEmpty) {
           AwesomeDialog(
             context: context,
-            dialogType: DialogType.WARNING,
-            animType: AnimType.TOPSLIDE,
+            dialogType: DialogType.warning,
+            animType: AnimType.topSlide,
             headerAnimationLoop: true,
             title: 'Tidak bisa kembali',
             desc: 'Masih ada data yang harus diselesaikan...',
@@ -385,7 +385,7 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                       ],
                                       // image: DecorationImage(
                                       //   image:
-                                      //       AssetImage("keuangan/assets/images/lead.png"),
+                                      //       AssetImage("assets/images/lead.png"),
                                       //   fit: BoxFit.cover,
                                       // ),
                                     ),

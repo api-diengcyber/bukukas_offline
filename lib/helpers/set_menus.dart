@@ -14,11 +14,11 @@ Color activeTabColor(String value, dynamic data) {
 }
 
 List<String> miniGradImages = [
-  "keuangan/assets/images/minigrad0.png",
-  "keuangan/assets/images/minigrad1.png",
-  "keuangan/assets/images/minigrad2.png",
-  "keuangan/assets/images/minigrad3.png",
-  "keuangan/assets/images/minigrad4.png",
+  "assets/images/minigrad0.png",
+  "assets/images/minigrad1.png",
+  "assets/images/minigrad2.png",
+  "assets/images/minigrad3.png",
+  "assets/images/minigrad4.png",
 ];
 
 List<Color> labelsColor = [

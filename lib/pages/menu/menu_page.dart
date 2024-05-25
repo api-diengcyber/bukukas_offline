@@ -165,9 +165,9 @@ class _MenuPageState extends State<MenuPage> {
       }
       AwesomeDialog(
         context: context,
-        dialogType: DialogType.WARNING,
+        dialogType: DialogType.warning,
         headerAnimationLoop: false,
-        animType: AnimType.BOTTOMSLIDE,
+        animType: AnimType.bottomSlide,
         title: 'Konfirmasi hapus akun',
         desc: desc,
         buttonsTextStyle: const TextStyle(color: Colors.white),

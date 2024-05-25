@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'package:get/get.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:keuangan/services/auth_service.dart';
 import 'package:keuangan/services/report_service.dart';
 
 class DashboardController extends GetxController {
@@ -19,37 +17,37 @@ class DashboardController extends GetxController {
 
   @override
   void onInit() async {
-    await checkUser();
+    // await checkUser();
     super.onInit();
   }
 
-  Future<void> checkUser() async {
-    loading = true;
-    await AuthService().verifyToken(Get.context!);
-    const storage = FlutterSecureStorage();
-    String? value = await storage.read(key: 'id');
-    if (value != null) {
-      if (value.isNotEmpty) {
-        isLogin = true;
-        await getDashboard();
-      } else {
-        loading = false;
-        isLogin = false;
-      }
-    } else {
-      loading = false;
-      isLogin = false;
-    }
-  }
+  // Future<void> checkUser() async {
+  //   loading = true;
+  //   await AuthService().verifyToken(Get.context!);
+  //   const storage = FlutterSecureStorage();
+  //   String? value = await storage.read(key: 'id');
+  //   if (value != null) {
+  //     if (value.isNotEmpty) {
+  //       isLogin = true;
+  //       await getDashboard();
+  //     } else {
+  //       loading = false;
+  //       isLogin = false;
+  //     }
+  //   } else {
+  //     loading = false;
+  //     isLogin = false;
+  //   }
+  // }
 
   Future<void> getDashboard() async {
     if (!loading) {
       loading = true;
     }
-    final _resp = await ReportService().getDashboard(Get.context!);
+    final resp = await ReportService().getDashboard(Get.context!);
     Future.delayed(const Duration(milliseconds: 200), () {
       loading = false;
-      dataDashboard = _resp;
+      dataDashboard = resp;
     });
   }
 }

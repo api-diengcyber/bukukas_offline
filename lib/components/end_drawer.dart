@@ -19,7 +19,7 @@ class _EndDrawerState extends State<EndDrawer> {
         constraints: const BoxConstraints.expand(),
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("keuangan/assets/images/vlead.png"),
+            image: AssetImage("assets/images/vlead.png"),
             fit: BoxFit.cover,
           ),
         ),

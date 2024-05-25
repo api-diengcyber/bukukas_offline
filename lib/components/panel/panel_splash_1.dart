@@ -35,8 +35,7 @@ class _PanelSplash1State extends State<PanelSplash1> {
                           height: 60,
                           decoration: const BoxDecoration(
                             image: DecorationImage(
-                              image:
-                                  AssetImage("keuangan/assets/images/logo.png"),
+                              image: AssetImage("assets/images/logo.png"),
                               fit: BoxFit.cover,
                             ),
                             shape: BoxShape.circle,
@@ -57,40 +56,11 @@ class _PanelSplash1State extends State<PanelSplash1> {
                   const VerticalDivider(
                     color: Colors.grey,
                   ),
-                  Expanded(
+                  const Expanded(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        // const Text(
-                        //   "Didukung oleh",
-                        //   style: TextStyle(
-                        //     fontSize: 11,
-                        //     fontWeight: FontWeight.bold,
-                        //     color: Colors.grey,
-                        //   ),
-                        // ),
-                        // const SizedBox(height: 10),
-                        Container(
-                          width: 50,
-                          height: 50,
-                          decoration: const BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(
-                                  "keuangan/assets/images/kadin-tr.png"),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          "KADIN WONOSOBO",
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
+                        SizedBox(height: 5),
                       ],
                     ),
                   ),

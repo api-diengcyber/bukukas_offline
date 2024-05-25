@@ -32,7 +32,7 @@ class NetworkErrorItem extends StatelessWidget {
               color: Colors.grey,
             ),
             const SizedBox(height: 10),
-            Image.asset("keuangan/assets/images/person1.png"),
+            Image.asset("assets/images/person1.png"),
           ],
         ),
       ),

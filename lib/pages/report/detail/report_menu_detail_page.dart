@@ -65,9 +65,9 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
 
       AwesomeDialog(
         context: context,
-        dialogType: DialogType.WARNING,
+        dialogType: DialogType.warning,
         headerAnimationLoop: false,
-        animType: AnimType.BOTTOMSLIDE,
+        animType: AnimType.bottomSlide,
         title: 'Hapus transaksi ini',
         desc: desc,
         buttonsTextStyle: const TextStyle(color: Colors.white),

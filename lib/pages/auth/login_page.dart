@@ -53,8 +53,8 @@ class _LoginPageState extends State<LoginPage> {
                         height: MediaQuery.of(context).size.height * 0.5,
                         decoration: const BoxDecoration(
                           image: DecorationImage(
-                            image: AssetImage(
-                                "keuangan/assets/images/revenue_small.png"),
+                            image:
+                                AssetImage("assets/images/revenue_small.png"),
                             fit: BoxFit.fitWidth,
                             alignment: Alignment.bottomLeft,
                           ),
@@ -106,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                                       decoration: const BoxDecoration(
                                         image: DecorationImage(
                                           image: AssetImage(
-                                              "keuangan/assets/images/logo.png"),
+                                              "assets/images/logo.png"),
                                           fit: BoxFit.cover,
                                         ),
                                         shape: BoxShape.circle,

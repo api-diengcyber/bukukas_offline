@@ -24,7 +24,7 @@ class _PanelSplash2State extends State<PanelSplash2> {
                 height: 120,
                 decoration: const BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage("keuangan/assets/images/logo.png"),
+                    image: AssetImage("assets/images/logo.png"),
                     fit: BoxFit.cover,
                   ),
                 ),

@@ -30,7 +30,7 @@ class _LoginPage2State extends State<LoginPage2> {
         constraints: const BoxConstraints.expand(),
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("keuangan/assets/images/vlead.png"),
+            image: AssetImage("assets/images/vlead.png"),
             fit: BoxFit.cover,
           ),
         ),

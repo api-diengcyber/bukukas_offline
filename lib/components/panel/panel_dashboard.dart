@@ -29,7 +29,7 @@ class _PanelDashboardState extends State<PanelDashboard> {
           Radius.circular(10),
         ),
         image: const DecorationImage(
-          image: AssetImage("keuangan/assets/images/lead.png"),
+          image: AssetImage("assets/images/lead.png"),
           fit: BoxFit.cover,
         ),
         boxShadow: [
@@ -118,7 +118,8 @@ class _PanelDashboardState extends State<PanelDashboard> {
                               Expanded(
                                 child: Text(
                                   formatCurrency.format(dashboardController
-                                      .dataDashboard['total']),
+                                          .dataDashboard['total'] ??
+                                      0),
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -161,7 +162,8 @@ class _PanelDashboardState extends State<PanelDashboard> {
                               Expanded(
                                 child: Text(
                                   formatCurrency.format(dashboardController
-                                      .dataDashboard['totalToday']),
+                                          .dataDashboard['totalToday'] ??
+                                      0),
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,

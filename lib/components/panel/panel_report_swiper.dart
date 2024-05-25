@@ -17,11 +17,11 @@ class PanelReportSwiper extends StatefulWidget {
 }
 
 List<String> _listImages = [
-  "keuangan/assets/images/grad0.png",
-  "keuangan/assets/images/grad1.png",
-  "keuangan/assets/images/grad2.png",
-  "keuangan/assets/images/grad3.png",
-  "keuangan/assets/images/grad4.png",
+  "assets/images/grad0.png",
+  "assets/images/grad1.png",
+  "assets/images/grad2.png",
+  "assets/images/grad3.png",
+  "assets/images/grad4.png",
 ];
 
 List<String> _listMenuName = [

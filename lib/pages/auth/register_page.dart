@@ -30,7 +30,7 @@ class _RegisterPageState extends State<RegisterPage> {
         constraints: const BoxConstraints.expand(),
         // decoration: const BoxDecoration(
         //   image: DecorationImage(
-        //     image: AssetImage("keuangan/assets/images/vlead.png"),
+        //     image: AssetImage("assets/images/vlead.png"),
         //     fit: BoxFit.cover,
         //   ),
         // ),
@@ -66,7 +66,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                       decoration: const BoxDecoration(
                                         image: DecorationImage(
                                           image: AssetImage(
-                                              "keuangan/assets/images/logo.png"),
+                                              "assets/images/logo.png"),
                                           fit: BoxFit.cover,
                                         ),
                                       ),

@@ -80,9 +80,9 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
 
       AwesomeDialog(
         context: context,
-        dialogType: DialogType.WARNING,
+        dialogType: DialogType.warning,
         headerAnimationLoop: false,
-        animType: AnimType.BOTTOMSLIDE,
+        animType: AnimType.bottomSlide,
         title: 'Hapus transaksi ini',
         desc: desc,
         buttonsTextStyle: const TextStyle(color: Colors.white),

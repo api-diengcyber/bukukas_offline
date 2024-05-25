@@ -9,12 +9,12 @@ class NetworkStatusService extends GetxService {
     Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) async {
-      isDeviceConnected = false;
-      if (result != ConnectivityResult.none) {
-        isDeviceConnected = await InternetConnectionChecker().hasConnection;
-      }
-      _getNetworkStatus(isDeviceConnected);
-    });
+          isDeviceConnected = false;
+          if (result != ConnectivityResult.none) {
+            isDeviceConnected = await InternetConnectionChecker().hasConnection;
+          }
+          _getNetworkStatus(isDeviceConnected);
+        } as void Function(List<ConnectivityResult> event)?);
   }
 
   void _getNetworkStatus(bool status) {
