@@ -6,6 +6,7 @@ import 'package:keuangan/components/panel/panel_menu_button.dart';
 import 'package:keuangan/components/panel/panel_chart.dart';
 import 'package:keuangan/components/panel/panel_transaction.dart';
 import 'package:flutter/material.dart';
+import 'package:keuangan/db/db.dart';
 import 'package:keuangan/pages/dashboard/dashboard_controller.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
@@ -28,6 +29,9 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      DB().installed(context);
+    });
     dashboardController = Get.put(DashboardController());
   }
 

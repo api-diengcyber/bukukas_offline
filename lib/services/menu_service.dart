@@ -59,8 +59,6 @@ class MenuService {
         ),
     );
 
-    print(data);
-
     try {
       final Response response = await dio.patch(
         urlAPI('menu/update/$menuId'),
