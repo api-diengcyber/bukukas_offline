@@ -1,4 +1,4 @@
-package com.example.keuangan
+package com.breakreasi.bukukas
 
 import io.flutter.embedding.android.FlutterActivity
 

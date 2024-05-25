@@ -1,6 +1,4 @@
-import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:keuangan/components/panel/panel_splash_2.dart';
 import 'package:flutter/material.dart';
 import 'package:keuangan/pages/splash_out/splash_out_model.dart';
 
