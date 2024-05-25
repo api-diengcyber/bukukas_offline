@@ -16,7 +16,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:skeleton_text/skeleton_text.dart';
-
 import '../../components/modal/modal_edit_menu.dart';
 
 class MenuPage extends StatefulWidget {
@@ -139,14 +138,14 @@ class _MenuPageState extends State<MenuPage> {
         context: context,
         barrierColor: const Color.fromARGB(26, 0, 0, 0),
         builder: (BuildContext context) => EditMenuModal(
-          type: data['keu_menu_type'],
-          gradient: data['keu_menu_type'] == "Pemasukan"
+          type: data.type,
+          gradient: data.type == "Pemasukan"
               ? modalGradientMenu[0]
-              : (data['keu_menu_type'] == "Pengeluaran")
+              : (data.type == "Pengeluaran")
                   ? modalGradientMenu[1]
-                  : (data['keu_menu_type'] == "Hutang")
+                  : (data.type == "Hutang")
                       ? modalGradientMenu[2]
-                      : (data['keu_menu_type'] == "Piutang")
+                      : (data.type == "Piutang")
                           ? modalGradientMenu[3]
                           : modalGradientMenu[0],
           data: data,
@@ -159,10 +158,10 @@ class _MenuPageState extends State<MenuPage> {
 
     onDeleteMenu(data) async {
       String desc = 'Anda yakin untuk menghapus akun?';
-      desc += '\n\n ${data['keu_menu_name']} (${data['keu_menu_type']}) ';
-      if (int.parse(data['totalTransaction']) > 0) {
+      desc += '\n\n ${data.name} (${data.type}) ';
+      if ((data.totalTransaction ?? 0) > 0) {
         desc +=
-            '\n\n Masih ada data transaksi yang terkait dengan akun ini [${data['totalTransaction']}].';
+            '\n\n Masih ada data transaksi yang terkait dengan akun ini [${data.totalTransaction}].';
       }
       AwesomeDialog(
         context: context,
@@ -178,7 +177,7 @@ class _MenuPageState extends State<MenuPage> {
         btnOkText: "Hapus akun",
         btnCancelOnPress: () {},
         btnOkOnPress: () async {
-          var resp = await MenuModel().delete(context, data['keu_menu_id']);
+          var resp = await MenuModel().delete(context, data.id);
           if (resp) {
             await MenuModel().getMenu(context);
           }
@@ -220,7 +219,7 @@ class _MenuPageState extends State<MenuPage> {
           height: double.infinity,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
+            children: [
               SizedBox(
                 width: double.infinity,
                 height: marginTopScreen,
@@ -228,7 +227,7 @@ class _MenuPageState extends State<MenuPage> {
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
+                  children: [
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.only(
@@ -238,7 +237,7 @@ class _MenuPageState extends State<MenuPage> {
                         right: 12,
                       ),
                       child: Row(
-                        children: <Widget>[
+                        children: [
                           for (var item in items)
                             Expanded(
                               child: ItemMenu(
@@ -322,28 +321,26 @@ class _MenuPageState extends State<MenuPage> {
                                                   BorderRadius.circular(20),
                                             ),
                                             child: Row(
-                                              children: <Widget>[
+                                              children: [
                                                 CircleCustom(
                                                   height: 35,
-                                                  icon: data['keu_menu_type'] ==
-                                                          "Pemasukan"
+                                                  icon: data.type == "Pemasukan"
                                                       ? iconMenus[0]
-                                                      : (data['keu_menu_type'] ==
+                                                      : (data.type ==
                                                               "Pengeluaran"
                                                           ? iconMenus[1]
-                                                          : (data['keu_menu_type'] ==
+                                                          : (data.type ==
                                                                   "Hutang")
                                                               ? iconMenus[2]
                                                               : iconMenus[3]),
                                                   iconSize: 23,
-                                                  gradient: data[
-                                                              'keu_menu_type'] ==
+                                                  gradient: data.type ==
                                                           "Pemasukan"
                                                       ? gradientMenu[0]
-                                                      : (data['keu_menu_type'] ==
+                                                      : (data.type ==
                                                               "Pengeluaran"
                                                           ? gradientMenu[1]
-                                                          : (data['keu_menu_type'] ==
+                                                          : (data.type ==
                                                                   "Hutang")
                                                               ? gradientMenu[2]
                                                               : gradientMenu[
@@ -358,19 +355,16 @@ class _MenuPageState extends State<MenuPage> {
                                                     crossAxisAlignment:
                                                         CrossAxisAlignment
                                                             .start,
-                                                    children: <Widget>[
+                                                    children: [
                                                       Text(
-                                                        data['keu_menu_name'],
+                                                        data.name ?? "",
                                                         style: const TextStyle(
                                                             fontSize: 15),
                                                       ),
-                                                      data['keu_menu_notes'] !=
-                                                                  "" &&
-                                                              data['keu_menu_notes'] !=
-                                                                  null
+                                                      data.notes != "" &&
+                                                              data.notes != null
                                                           ? Text(
-                                                              data[
-                                                                  'keu_menu_notes'],
+                                                              data.notes ?? "",
                                                               style:
                                                                   const TextStyle(
                                                                 color: Colors
@@ -379,11 +373,12 @@ class _MenuPageState extends State<MenuPage> {
                                                               ),
                                                             )
                                                           : const SizedBox(),
-                                                      data['keu_menu_default_value'] !=
-                                                                  "" &&
-                                                              data['keu_menu_default_value'] !=
+                                                      data.defaultValue != "" &&
+                                                              data.defaultValue !=
                                                                   null &&
-                                                              data['keu_menu_default_value'] >
+                                                              int.parse(
+                                                                      data.defaultValue ??
+                                                                          "0") >
                                                                   0
                                                           ? Container(
                                                               padding:
@@ -404,25 +399,25 @@ class _MenuPageState extends State<MenuPage> {
                                                                     BorderRadius
                                                                         .circular(
                                                                             20),
-                                                                color: data['keu_menu_type'] ==
+                                                                color: data.type ==
                                                                         "Pemasukan"
                                                                     ? Colors
                                                                         .green
                                                                         .shade100
-                                                                    : (data['keu_menu_type'] ==
+                                                                    : (data.type ==
                                                                             "Pengeluaran"
                                                                         ? Colors
                                                                             .pink
                                                                             .shade100
-                                                                        : (data['keu_menu_type'] ==
+                                                                        : (data.type ==
                                                                                 "Hutang")
                                                                             ? Colors.amber.shade100
                                                                             : Colors.blue.shade100),
                                                               ),
                                                               child: Text(
-                                                                _formatter.formatString(
-                                                                    data['keu_menu_default_value']
-                                                                        .toString()),
+                                                                _formatter.formatString(data
+                                                                    .defaultValue
+                                                                    .toString()),
                                                                 style:
                                                                     const TextStyle(
                                                                   color: Colors
@@ -432,13 +427,12 @@ class _MenuPageState extends State<MenuPage> {
                                                               ),
                                                             )
                                                           : const SizedBox(),
-                                                      (data["keu_menu_deadline"] !=
-                                                                  null &&
-                                                              data["keu_menu_deadline"] !=
+                                                      (data.deadline != null &&
+                                                              data.deadline !=
                                                                   "" &&
-                                                              (data["keu_menu_type"] ==
+                                                              (data.type ==
                                                                       "Hutang" ||
-                                                                  data["keu_menu_type"] ==
+                                                                  data.type ==
                                                                       "Piutang"))
                                                           ? Container(
                                                               decoration:
@@ -480,11 +474,12 @@ class _MenuPageState extends State<MenuPage> {
                                                                         "yyyy-MM-dd")
                                                                     .format(DateFormat(
                                                                             "yyyy-MM-dd'T'HH:mm:ss.SSS")
-                                                                        .parse(data[
-                                                                            "keu_menu_deadline"])),
+                                                                        .parse(data.deadline ??
+                                                                            "")),
                                                                 style:
                                                                     TextStyle(
-                                                                  color: data["keu_menu_status_paid_off"] ==
+                                                                  color: int.parse(data.statusPaidOff ??
+                                                                              "0") ==
                                                                           1
                                                                       ? Colors
                                                                           .grey
@@ -579,11 +574,11 @@ class _MenuPageState extends State<MenuPage> {
                                       );
                                     },
                                   )
-                                : Center(
+                                : const Center(
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
-                                      children: const <Widget>[
+                                      children: [
                                         Icon(
                                           Icons.emoji_symbols,
                                           color: Colors.grey,
@@ -616,7 +611,7 @@ class _MenuPageState extends State<MenuPage> {
                       ),
                       width: double.infinity,
                       child: Row(
-                        children: <Widget>[
+                        children: [
                           menuBloc.totalPages > 1
                               ? Expanded(
                                   child: !menuBloc.loading

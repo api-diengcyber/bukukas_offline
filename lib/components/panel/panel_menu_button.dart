@@ -14,9 +14,9 @@ import 'package:provider/provider.dart';
 // ignore: must_be_immutable
 class PanelMenuButton extends StatefulWidget {
   PanelMenuButton({
-    Key? key,
+    super.key,
     this.buttonAddKey,
-  }) : super(key: key);
+  });
 
   Key? buttonAddKey;
 
@@ -30,14 +30,14 @@ class _PanelMenuButtonState extends State<PanelMenuButton> {
     Get.lazyPut(() => DashboardController());
     final dashboardController = Get.find<DashboardController>();
 
-    final _globalBloc = context.watch<GlobalBloc>();
-    final _reportBloc = context.watch<ReportBloc>();
-    final _menuBloc = context.watch<MenuBloc>();
+    final globalBloc = context.watch<GlobalBloc>();
+    final reportBloc = context.watch<ReportBloc>();
+    final menuBloc = context.watch<MenuBloc>();
 
     return SizedBox(
       height: 70,
       child: Row(
-        children: <Widget>[
+        children: [
           Expanded(
             child: Container(
               decoration: BoxDecoration(
@@ -65,8 +65,8 @@ class _PanelMenuButtonState extends State<PanelMenuButton> {
                     Radius.circular(10),
                   ),
                   onTap: () {
-                    _menuBloc.page = 1;
-                    _menuBloc.search = '';
+                    menuBloc.page = 1;
+                    menuBloc.search = '';
                     Navigator.push(
                       context,
                       PageTransition(
@@ -77,9 +77,9 @@ class _PanelMenuButtonState extends State<PanelMenuButton> {
                   },
                   child: Container(
                     width: double.infinity,
-                    child: Column(
+                    child: const Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: const <Widget>[
+                      children: [
                         Icon(
                           Icons.app_registration,
                           color: Colors.black87,
@@ -108,20 +108,20 @@ class _PanelMenuButtonState extends State<PanelMenuButton> {
                 height: double.infinity,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  gradient: _globalBloc.tabMenuTransaction == "Pemasukan"
+                  gradient: globalBloc.tabMenuTransaction == "Pemasukan"
                       ? gradientActiveDMenu[0]
-                      : (_globalBloc.tabMenuTransaction == "Pengeluaran"
+                      : (globalBloc.tabMenuTransaction == "Pengeluaran"
                           ? gradientActiveDMenu[1]
-                          : (_globalBloc.tabMenuTransaction == "Hutang")
+                          : (globalBloc.tabMenuTransaction == "Hutang")
                               ? gradientActiveDMenu[2]
                               : gradientActiveDMenu[3]),
                   borderRadius: const BorderRadius.all(
                     Radius.circular(10),
                   ),
                 ),
-                child: Column(
+                child: const Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: const <Widget>[
+                  children: [
                     Icon(
                       Icons.add_circle_outline,
                       color: Colors.white,
@@ -196,15 +196,15 @@ class _PanelMenuButtonState extends State<PanelMenuButton> {
                         Radius.circular(10),
                       ),
                       image: DecorationImage(
-                        image: AssetImage(_reportBloc.activeMenuTab == "Semua"
+                        image: AssetImage(reportBloc.activeMenuTab == "Semua"
                             ? miniGradImages[0]
-                            : _reportBloc.activeMenuTab == "Pemasukan"
+                            : reportBloc.activeMenuTab == "Pemasukan"
                                 ? miniGradImages[1]
-                                : _reportBloc.activeMenuTab == "Pengeluaran"
+                                : reportBloc.activeMenuTab == "Pengeluaran"
                                     ? miniGradImages[2]
-                                    : _reportBloc.activeMenuTab == "Hutang"
+                                    : reportBloc.activeMenuTab == "Hutang"
                                         ? miniGradImages[3]
-                                        : _reportBloc.activeMenuTab == "Piutang"
+                                        : reportBloc.activeMenuTab == "Piutang"
                                             ? miniGradImages[4]
                                             : miniGradImages[0]),
                         fit: BoxFit.cover,
@@ -213,10 +213,10 @@ class _PanelMenuButtonState extends State<PanelMenuButton> {
                     width: double.infinity,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
+                      children: [
                         Icon(
                           Icons.graphic_eq_outlined,
-                          color: _reportBloc.activeMenuTab == "Semua"
+                          color: reportBloc.activeMenuTab == "Semua"
                               ? Colors.black87
                               : Colors.white,
                           size: 30,
@@ -226,7 +226,7 @@ class _PanelMenuButtonState extends State<PanelMenuButton> {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
-                            color: _reportBloc.activeMenuTab == "Semua"
+                            color: reportBloc.activeMenuTab == "Semua"
                                 ? Colors.black87
                                 : Colors.white,
                           ),

@@ -1,6 +1,7 @@
 import 'dart:async';
+import 'package:keuangan/db/model/tb_menu_model.dart';
+import 'package:keuangan/db/tb_menu.dart';
 import 'package:keuangan/providers/menu_bloc.dart';
-import 'package:keuangan/services/menu_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/snackbar/snackbar.dart';
 import 'package:provider/provider.dart';
@@ -12,19 +13,17 @@ class MenuModel {
   }
 
   Future<bool> delete(BuildContext context, int id) async {
-    final resp = await MenuService().delete(context, id);
-    if (resp) {
-      g.Get.snackbar(
-        "Terhapus!",
-        "Menu berhasil dihapus",
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.white,
-        margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        icon: const Icon(Icons.delete, color: Colors.red),
-        duration: const Duration(seconds: 1),
-      );
-    }
-    return resp;
+    await TbMenu().delete(id);
+    g.Get.snackbar(
+      "Terhapus!",
+      "Menu berhasil dihapus",
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: Colors.white,
+      margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      icon: const Icon(Icons.delete, color: Colors.red),
+      duration: const Duration(seconds: 1),
+    );
+    return true;
   }
 
   String _activeTab2Str(activeTab) {
@@ -47,17 +46,12 @@ class MenuModel {
   Future<void> getMenu(BuildContext context) async {
     final menuBloc = Provider.of<MenuBloc>(context, listen: false);
     menuBloc.loading = true;
-    final resp = await MenuService()
-        .getByType(context, _activeTab2Str(menuBloc.activeTab), menuBloc.page);
-    if (menuBloc.page > resp['totalPage']) {
-      menuBloc.page = resp['totalPage'];
-      await getMenu(context);
-    } else {
-      Future.delayed(const Duration(milliseconds: 800), () async {
-        menuBloc.data = resp['data'];
-        menuBloc.totalPages = resp['totalPage'];
-        menuBloc.loading = false;
-      });
-    }
+    List<TbMenuModel> data =
+        await TbMenu().getData(_activeTab2Str(menuBloc.activeTab));
+    Future.delayed(const Duration(milliseconds: 200), () async {
+      menuBloc.data = data;
+      menuBloc.totalPages = 1;
+      menuBloc.loading = false;
+    });
   }
 }

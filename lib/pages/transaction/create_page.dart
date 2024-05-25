@@ -21,7 +21,7 @@ import '../report/detail/report_menu_detail_page.dart';
 import '../report/report_model.dart';
 
 class CreateTransactionPage extends StatefulWidget {
-  const CreateTransactionPage({Key? key}) : super(key: key);
+  const CreateTransactionPage({super.key});
 
   @override
   State<CreateTransactionPage> createState() => _CreateTransactionPageState();
@@ -60,9 +60,9 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
 
   @override
   Widget build(BuildContext context) {
-    final _globalBloc = context.watch<GlobalBloc>();
-    final _createBloc = context.watch<CreateBloc>();
-    final _transactionBloc = context.watch<TransactionBloc>();
+    final globalBloc = context.watch<GlobalBloc>();
+    final createBloc = context.watch<CreateBloc>();
+    final transactionBloc = context.watch<TransactionBloc>();
 
     onDeleteMenu(data) async {
       DateTime tempDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
@@ -92,9 +92,9 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
         btnOkText: "Hapus transaksi",
         btnCancelOnPress: () {},
         btnOkOnPress: () async {
-          var _resp = await ReportModel()
+          var resp = await ReportModel()
               .deleteTransaction(context, data["keu_transaction_id"]);
-          if (_resp) {
+          if (resp) {
             await CreateModel().getData(context);
           }
         },
@@ -155,14 +155,14 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                   name: 'Masuk',
                                   nameSize: 15,
                                   gradient: gradientMenu[0],
-                                  active: _globalBloc.tabMenuTransaction ==
+                                  active: globalBloc.tabMenuTransaction ==
                                       "Pemasukan",
-                                  onTap: _globalBloc.tabMenuTransaction !=
+                                  onTap: globalBloc.tabMenuTransaction !=
                                           "Pemasukan"
                                       ? () async {
-                                          _transactionBloc.page = 1;
-                                          _createBloc.page = 1;
-                                          _globalBloc.tabMenuTransaction =
+                                          transactionBloc.page = 1;
+                                          createBloc.page = 1;
+                                          globalBloc.tabMenuTransaction =
                                               'Pemasukan';
                                           await CreateModel().getData(context);
                                         }
@@ -176,14 +176,14 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                   name: 'Keluar',
                                   nameSize: 15,
                                   gradient: gradientMenu[1],
-                                  active: _globalBloc.tabMenuTransaction ==
+                                  active: globalBloc.tabMenuTransaction ==
                                       "Pengeluaran",
-                                  onTap: _globalBloc.tabMenuTransaction !=
+                                  onTap: globalBloc.tabMenuTransaction !=
                                           "Pengeluaran"
                                       ? () async {
-                                          _transactionBloc.page = 1;
-                                          _createBloc.page = 1;
-                                          _globalBloc.tabMenuTransaction =
+                                          transactionBloc.page = 1;
+                                          createBloc.page = 1;
+                                          globalBloc.tabMenuTransaction =
                                               'Pengeluaran';
                                           await CreateModel().getData(context);
                                         }
@@ -197,14 +197,14 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                   name: 'Hutang',
                                   nameSize: 15,
                                   gradient: gradientMenu[2],
-                                  active: _globalBloc.tabMenuTransaction ==
-                                      "Hutang",
-                                  onTap: _globalBloc.tabMenuTransaction !=
+                                  active:
+                                      globalBloc.tabMenuTransaction == "Hutang",
+                                  onTap: globalBloc.tabMenuTransaction !=
                                           "Hutang"
                                       ? () async {
-                                          _transactionBloc.page = 1;
-                                          _createBloc.page = 1;
-                                          _globalBloc.tabMenuTransaction =
+                                          transactionBloc.page = 1;
+                                          createBloc.page = 1;
+                                          globalBloc.tabMenuTransaction =
                                               'Hutang';
                                           await CreateModel().getData(context);
                                         }
@@ -218,14 +218,14 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                   name: 'Piutang',
                                   nameSize: 15,
                                   gradient: gradientMenu[3],
-                                  active: _globalBloc.tabMenuTransaction ==
+                                  active: globalBloc.tabMenuTransaction ==
                                       "Piutang",
-                                  onTap: _globalBloc.tabMenuTransaction !=
+                                  onTap: globalBloc.tabMenuTransaction !=
                                           "Piutang"
                                       ? () async {
-                                          _transactionBloc.page = 1;
-                                          _createBloc.page = 1;
-                                          _globalBloc.tabMenuTransaction =
+                                          transactionBloc.page = 1;
+                                          createBloc.page = 1;
+                                          globalBloc.tabMenuTransaction =
                                               'Piutang';
                                           await CreateModel().getData(context);
                                         }
@@ -252,12 +252,12 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                       ),
                       child: CustomPaint(
                         painter: BubbleTriangle(
-                          comparePathWidth: _globalBloc.tabMenuTransaction ==
+                          comparePathWidth: globalBloc.tabMenuTransaction ==
                                   "Pemasukan"
                               ? 8.2
-                              : (_globalBloc.tabMenuTransaction == "Pengeluaran"
+                              : (globalBloc.tabMenuTransaction == "Pengeluaran"
                                   ? 2.65
-                                  : (_globalBloc.tabMenuTransaction == "Hutang")
+                                  : (globalBloc.tabMenuTransaction == "Hutang")
                                       ? 1.6
                                       : 1.14),
                         ),
@@ -276,13 +276,13 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                   top: 12,
                                 ),
                                 child: InkWell(
-                                  splashColor: _globalBloc.tabMenuTransaction ==
+                                  splashColor: globalBloc.tabMenuTransaction ==
                                           "Pemasukan"
                                       ? Colors.greenAccent.shade400
-                                      : (_globalBloc.tabMenuTransaction ==
+                                      : (globalBloc.tabMenuTransaction ==
                                               "Pengeluaran"
                                           ? Colors.pink
-                                          : (_globalBloc.tabMenuTransaction ==
+                                          : (globalBloc.tabMenuTransaction ==
                                                   "Hutang")
                                               ? Colors.amber
                                               : Colors.blue),
@@ -296,8 +296,8 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                     ).then((value) async {
                                       if (value != null) {
                                         if (value == 'load') {
-                                          _createBloc.page = 1;
-                                          _transactionBloc.page = 1;
+                                          createBloc.page = 1;
+                                          transactionBloc.page = 1;
                                           await CreateModel().getData(context);
                                         }
                                       }
@@ -320,15 +320,15 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                           height: 40,
                                           icon: Icons.add,
                                           iconSize: 23,
-                                          gradient: _globalBloc
+                                          gradient: globalBloc
                                                       .tabMenuTransaction ==
                                                   "Pemasukan"
                                               ? gradientMenu[0]
-                                              : (_globalBloc
+                                              : (globalBloc
                                                           .tabMenuTransaction ==
                                                       "Pengeluaran"
                                                   ? gradientMenu[1]
-                                                  : (_globalBloc
+                                                  : (globalBloc
                                                               .tabMenuTransaction ==
                                                           "Hutang")
                                                       ? gradientMenu[2]
@@ -339,7 +339,7 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                           width: 12,
                                         ),
                                         Text(
-                                          "Tambahkan ${_globalBloc.tabMenuTransaction}",
+                                          "Tambahkan ${globalBloc.tabMenuTransaction}",
                                           style: const TextStyle(
                                             fontSize: 17,
                                             fontWeight: FontWeight.bold,
@@ -352,21 +352,21 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                 ),
                               ),
                               Expanded(
-                                child: !_createBloc.loading
+                                child: !createBloc.loading
                                     ? Container(
                                         child: Column(
                                           children: [
-                                            _createBloc.data.length > 0
+                                            createBloc.data.length > 0
                                                 ? const SizedBox(
                                                     height: 6,
                                                   )
                                                 : const SizedBox(),
-                                            _createBloc.data.length > 0
+                                            createBloc.data.length > 0
                                                 ? const Divider(
                                                     height: 0,
                                                   )
                                                 : const SizedBox(),
-                                            _createBloc.data.length > 0
+                                            createBloc.data.length > 0
                                                 ? Container(
                                                     width: double.infinity,
                                                     padding: const EdgeInsets
@@ -374,7 +374,7 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                                     color: Colors.grey.shade50,
                                                     child: Center(
                                                       child: Text(
-                                                        "Riwayat ${_globalBloc.tabMenuTransaction.toLowerCase()}",
+                                                        "Riwayat ${globalBloc.tabMenuTransaction.toLowerCase()}",
                                                         style: const TextStyle(
                                                           fontSize: 16,
                                                           fontWeight:
@@ -394,10 +394,10 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                                 padding:
                                                     const EdgeInsets.all(0),
                                                 itemCount:
-                                                    _createBloc.data.length,
+                                                    createBloc.data.length,
                                                 itemBuilder: (context, index) {
                                                   var data =
-                                                      _createBloc.data[index];
+                                                      createBloc.data[index];
                                                   DateTime tempDate = DateFormat(
                                                           "yyyy-MM-dd'T'HH:mm:ss.SSS")
                                                       .parse(data[
@@ -646,7 +646,7 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                                                           null) {
                                                                         if (value ==
                                                                             'load') {
-                                                                          _createBloc.page =
+                                                                          createBloc.page =
                                                                               1;
                                                                           await CreateModel()
                                                                               .getData(context);
@@ -705,15 +705,15 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                                 },
                                               ),
                                             ),
-                                            _createBloc.totalPage > 1
+                                            createBloc.totalPage > 1
                                                 ? Container(
                                                     child: Pagination(
                                                       totalPage:
-                                                          _createBloc.totalPage,
-                                                      page: _createBloc.page,
+                                                          createBloc.totalPage,
+                                                      page: createBloc.page,
                                                       height: 10,
                                                       onTap: (page) async {
-                                                        _createBloc.page = page;
+                                                        createBloc.page = page;
                                                         await CreateModel()
                                                             .getData(context);
                                                       },

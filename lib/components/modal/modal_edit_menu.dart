@@ -1,3 +1,5 @@
+import 'package:keuangan/db/model/tb_menu_model.dart';
+import 'package:keuangan/db/tb_menu.dart';
 import 'package:keuangan/providers/global_bloc.dart';
 import 'package:keuangan/services/menu_service.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
@@ -19,7 +21,7 @@ class EditMenuModal extends StatefulWidget {
 
   final String type;
   LinearGradient gradient;
-  dynamic data;
+  TbMenuModel? data;
   dynamic onSuccess;
 
   @override
@@ -27,7 +29,7 @@ class EditMenuModal extends StatefulWidget {
 }
 
 class _EditMenuModalState extends State<EditMenuModal> {
-  final _formKey = GlobalKey<FormBuilderState>();
+  final formKey = GlobalKey<FormBuilderState>();
   final CurrencyTextInputFormatter _formatter = CurrencyTextInputFormatter(
     NumberFormat.compactCurrency(
       decimalDigits: 0,
@@ -38,7 +40,7 @@ class _EditMenuModalState extends State<EditMenuModal> {
 
   @override
   Widget build(BuildContext context) {
-    final _globalBloc = context.watch<GlobalBloc>();
+    final globalBloc = context.watch<GlobalBloc>();
 
     return AlertDialog(
       backgroundColor: Colors.white54,
@@ -95,12 +97,12 @@ class _EditMenuModalState extends State<EditMenuModal> {
                       vertical: 16,
                     ),
                     child: FormBuilder(
-                      key: _formKey,
+                      key: formKey,
                       child: Column(
                         children: <Widget>[
                           FormBuilderTextField(
                             name: 'name',
-                            initialValue: widget.data['keu_menu_name'],
+                            initialValue: widget.data!.name,
                             decoration: InputDecoration(
                               labelText: widget.type == "Hutang" ||
                                       widget.type == "Piutang"
@@ -128,7 +130,7 @@ class _EditMenuModalState extends State<EditMenuModal> {
                           ),
                           FormBuilderTextField(
                             name: 'notes',
-                            initialValue: widget.data['keu_menu_notes'],
+                            initialValue: widget.data!.notes,
                             decoration: InputDecoration(
                               labelText: 'Keterangan',
                               labelStyle: const TextStyle(
@@ -158,14 +160,18 @@ class _EditMenuModalState extends State<EditMenuModal> {
                               : Container(
                                   margin: const EdgeInsets.only(bottom: 12),
                                   child: FormBuilderTextField(
-                                    name: 'default_value',
-                                    initialValue:
-                                        widget.data['keu_menu_default_value'] >
-                                                0
-                                            ? _formatter.formatString(widget
-                                                .data['keu_menu_default_value']
-                                                .toString())
-                                            : null,
+                                    name: 'defaultValue',
+                                    initialValue: int.parse(
+                                                (widget.data!.defaultValue == ''
+                                                        ? '0'
+                                                        : widget.data!
+                                                            .defaultValue) ??
+                                                    "0") >
+                                            0
+                                        ? _formatter.formatString(widget
+                                            .data!.defaultValue
+                                            .toString())
+                                        : null,
                                     decoration: InputDecoration(
                                       labelText: 'Nilai default (opsional)',
                                       labelStyle: const TextStyle(
@@ -186,8 +192,8 @@ class _EditMenuModalState extends State<EditMenuModal> {
                                 ),
                           ((widget.type == "Hutang" ||
                                       widget.type == "Piutang") &&
-                                  (widget.data['keu_menu_name'] != null &&
-                                      widget.data['keu_menu_name'] != ""))
+                                  (widget.data!.name != null &&
+                                      widget.data!.name != ""))
                               ? Container(
                                   margin: const EdgeInsets.only(
                                     top: 0,
@@ -196,14 +202,12 @@ class _EditMenuModalState extends State<EditMenuModal> {
                                   child: FormBuilderDateTimePicker(
                                     name: 'deadline',
                                     inputType: InputType.date,
-                                    initialDate: DateFormat(
-                                            "yyyy-MM-dd'T'HH:mm:ss.SSS")
-                                        .parse(
-                                            widget.data['keu_menu_deadline']),
-                                    initialValue: DateFormat(
-                                            "yyyy-MM-dd'T'HH:mm:ss.SSS")
-                                        .parse(
-                                            widget.data['keu_menu_deadline']),
+                                    initialDate:
+                                        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
+                                            .parse(widget.data!.deadline ?? ""),
+                                    initialValue:
+                                        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
+                                            .parse(widget.data!.deadline ?? ""),
                                     format: DateFormat('dd-MM-yyyy'),
                                     decoration: InputDecoration(
                                       labelText: 'Jatuh tempo',
@@ -242,32 +246,35 @@ class _EditMenuModalState extends State<EditMenuModal> {
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
-                              onPressed: !_globalBloc.loading
+                              onPressed: !globalBloc.loading
                                   ? () async {
-                                      if (_formKey.currentState!.validate()) {
-                                        _formKey.currentState!.save();
-                                        _globalBloc.loading = true;
-                                        final _resp = await MenuService()
-                                            .update(
-                                                context,
-                                                widget.data['keu_menu_id'],
-                                                widget.data['keu_menu_type'],
-                                                _formKey.currentState!.value);
-                                        if (_resp) {
-                                          if (widget.onSuccess != null) {
-                                            await widget.onSuccess();
-                                          }
-                                          _globalBloc.loading = false;
-                                          Navigator.pop(context);
-                                        } else {
-                                          _globalBloc.loading = false;
+                                      if (formKey.currentState!.validate()) {
+                                        formKey.currentState!.save();
+                                        globalBloc.loading = true;
+                                        await TbMenu().update(
+                                          widget.data!.id ?? 0,
+                                          widget.data!.type ?? "",
+                                          formKey.currentState!.value,
+                                        );
+                                        if (widget.onSuccess != null) {
+                                          await widget.onSuccess();
                                         }
+                                        globalBloc.loading = false;
+                                        Navigator.pop(context);
                                       } else {
-                                        _globalBloc.loading = false;
+                                        globalBloc.loading = false;
                                       }
                                     }
                                   : null,
-                              child: !_globalBloc.loading
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(32.0),
+                                  ),
+                                ),
+                              ),
+                              child: !globalBloc.loading
                                   ? const Text(
                                       "UPDATE",
                                       style: TextStyle(
@@ -285,14 +292,6 @@ class _EditMenuModalState extends State<EditMenuModal> {
                                         color: Colors.grey,
                                       ),
                                     ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(32.0),
-                                  ),
-                                ),
-                              ),
                             ),
                           ),
                         ],

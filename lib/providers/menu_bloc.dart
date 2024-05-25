@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:keuangan/db/model/tb_menu_model.dart';
 
 class MenuBloc extends ChangeNotifier {
   String _search = "";
@@ -22,9 +23,9 @@ class MenuBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<dynamic> _data = [];
-  List<dynamic> get data => _data;
-  set data(List<dynamic> val) {
+  List<TbMenuModel> _data = [];
+  List<TbMenuModel> get data => _data;
+  set data(List<TbMenuModel> val) {
     _data = val;
     notifyListeners();
   }

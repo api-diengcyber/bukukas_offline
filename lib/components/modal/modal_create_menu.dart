@@ -1,3 +1,5 @@
+import 'package:keuangan/db/model/tb_menu_model.dart';
+import 'package:keuangan/db/tb_menu.dart';
 import 'package:keuangan/providers/global_bloc.dart';
 import 'package:keuangan/services/menu_service.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
@@ -25,11 +27,11 @@ class CreateMenuModal extends StatefulWidget {
 }
 
 class _CreateMenuModalState extends State<CreateMenuModal> {
-  final _formKey = GlobalKey<FormBuilderState>();
+  final formKey = GlobalKey<FormBuilderState>();
 
   @override
   Widget build(BuildContext context) {
-    final _globalBloc = context.watch<GlobalBloc>();
+    final globalBloc = context.watch<GlobalBloc>();
 
     return AlertDialog(
       backgroundColor: Colors.white54,
@@ -87,7 +89,7 @@ class _CreateMenuModalState extends State<CreateMenuModal> {
                       vertical: 16,
                     ),
                     child: FormBuilder(
-                      key: _formKey,
+                      key: formKey,
                       child: Column(
                         children: <Widget>[
                           widget.type != "Hutang" && widget.type != "Piutang"
@@ -177,7 +179,7 @@ class _CreateMenuModalState extends State<CreateMenuModal> {
                               : Container(
                                   margin: const EdgeInsets.only(bottom: 12),
                                   child: FormBuilderTextField(
-                                    name: 'default_value',
+                                    name: 'defaultValue',
                                     decoration: InputDecoration(
                                       labelText: 'Nilai default (opsional)',
                                       labelStyle: const TextStyle(
@@ -309,29 +311,34 @@ class _CreateMenuModalState extends State<CreateMenuModal> {
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
-                              onPressed: !_globalBloc.loading
+                              onPressed: !globalBloc.loading
                                   ? () async {
-                                      if (_formKey.currentState!.validate()) {
-                                        _formKey.currentState!.save();
-                                        _globalBloc.loading = true;
-                                        final _resp = await MenuService()
-                                            .create(context, widget.type,
-                                                _formKey.currentState!.value);
-                                        if (_resp) {
-                                          if (widget.onSuccess != null) {
-                                            await widget.onSuccess();
-                                          }
-                                          _globalBloc.loading = false;
-                                          Navigator.pop(context);
-                                        } else {
-                                          _globalBloc.loading = false;
-                                        }
+                                      if (formKey.currentState!.validate()) {
+                                        formKey.currentState!.save();
+                                        globalBloc.loading = true;
+                                        await TbMenu().create([
+                                          TbMenuModel.fromJson({
+                                            ...formKey.currentState!.value,
+                                            "type": widget.type,
+                                          })
+                                        ]);
+                                        await widget.onSuccess();
+                                        globalBloc.loading = false;
+                                        Navigator.pop(context);
                                       } else {
-                                        _globalBloc.loading = false;
+                                        globalBloc.loading = false;
                                       }
                                     }
                                   : null,
-                              child: !_globalBloc.loading
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(32.0),
+                                  ),
+                                ),
+                              ),
+                              child: !globalBloc.loading
                                   ? const Text(
                                       "SIMPAN",
                                       style: TextStyle(
@@ -349,14 +356,6 @@ class _CreateMenuModalState extends State<CreateMenuModal> {
                                         color: Colors.grey,
                                       ),
                                     ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(32.0),
-                                  ),
-                                ),
-                              ),
                             ),
                           ),
                         ],
