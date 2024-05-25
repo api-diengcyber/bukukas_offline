@@ -5,6 +5,7 @@ import 'package:sqflite/sqflite.dart';
 
 class DB {
   String name = 'bukukas.db';
+  late Database db;
 
   Future<String> getPath() async {
     var databasesPath = await getDatabasesPath();
@@ -12,7 +13,8 @@ class DB {
   }
 
   Future<Database> getDB() async {
-    return await openDatabase(await getPath(), version: 1);
+    db = await openDatabase(await getPath(), version: 1);
+    return db;
   }
 
   Future<void> initTables() async {

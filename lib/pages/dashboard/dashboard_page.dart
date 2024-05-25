@@ -1,13 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:keuangan/components/end_drawer.dart';
 import 'package:keuangan/components/panel/panel_dashboard.dart';
 import 'package:keuangan/components/panel/panel_menu_button.dart';
 import 'package:keuangan/components/panel/panel_chart.dart';
 import 'package:keuangan/components/panel/panel_transaction.dart';
 import 'package:flutter/material.dart';
-import 'package:keuangan/db/db.dart';
-import 'package:keuangan/db/tb_installed.dart';
 import 'package:keuangan/pages/dashboard/dashboard_controller.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
@@ -47,17 +44,6 @@ class _DashboardPageState extends State<DashboardPage> {
           fontWeight: FontWeight.bold,
         ),
       ),
-      // actions: const [
-      //   // IconButton(
-      //   //   onPressed: () {
-      //   //     _scaffoldKey.currentState!.openEndDrawer();
-      //   //   },
-      //   //   icon: const Icon(
-      //   //     Icons.person_outline,
-      //   //     color: Colors.black,
-      //   //   ),
-      //   // ),
-      // ],
     );
 
     double marginTopScreen = appBar.preferredSize.height +
@@ -65,52 +51,45 @@ class _DashboardPageState extends State<DashboardPage> {
         8;
 
     return Obx(
-      () => dashboardController.loading
-          ? const Scaffold(
-              backgroundColor: Colors.white,
-              body: SafeArea(
-                child: Center(
-                  child: CircularProgressIndicator(),
+      () => Scaffold(
+        key: _scaffoldKey,
+        extendBodyBehindAppBar: true,
+        appBar: appBar,
+        body: Container(
+          constraints: const BoxConstraints.expand(),
+          color: Colors.grey.shade100,
+          padding: EdgeInsets.only(
+            top: marginTopScreen,
+            left: 10,
+            right: 10,
+            bottom: 12,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: dashboardController.loading ? 10 : 0,
                 ),
-              ),
-            )
-          : Scaffold(
-              key: _scaffoldKey,
-              extendBodyBehindAppBar: true,
-              appBar: appBar,
-              // endDrawer: const EndDrawer(),
-              body: Container(
-                constraints: const BoxConstraints.expand(),
-                color: Colors.grey.shade100,
-                padding: EdgeInsets.only(
-                  top: marginTopScreen,
-                  left: 10,
-                  right: 10,
-                  bottom: 12,
+                const PanelDashboard(),
+                // const SizedBox(height: 10),
+                // const PanelInfo(),
+                const SizedBox(height: 10),
+                const SizedBox(
+                  height: 180,
+                  child: PanelChart(),
                 ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      const PanelDashboard(),
-                      // const SizedBox(height: 10),
-                      // const PanelInfo(),
-                      const SizedBox(height: 10),
-                      const SizedBox(
-                        height: 180,
-                        child: PanelChart(),
-                      ),
-                      const SizedBox(height: 10),
-                      PanelMenuButton(
-                        buttonAddKey: keyAddButton,
-                      ),
-                      const SizedBox(height: 10),
-                      const PanelTransaction(),
-                      const SizedBox(height: 2),
-                    ],
-                  ),
+                const SizedBox(height: 10),
+                PanelMenuButton(
+                  buttonAddKey: keyAddButton,
                 ),
-              ),
+                const SizedBox(height: 10),
+                const PanelTransaction(),
+                const SizedBox(height: 2),
+              ],
             ),
+          ),
+        ),
+      ),
     );
   }
 }
