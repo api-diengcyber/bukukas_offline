@@ -31,6 +31,7 @@ void main() async {
       child: const MyApp(),
     ),
   );
+  DB().initTables();
 }
 
 class MyApp extends StatelessWidget {
@@ -39,7 +40,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    DB().init(context);
     return GetMaterialApp(
       title: 'BukuKas',
       theme: ThemeData(
