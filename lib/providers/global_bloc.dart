@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:keuangan/db/model/tb_menu_model.dart';
 
 class GlobalBloc extends ChangeNotifier {
   bool _loading = false;
@@ -29,9 +30,9 @@ class GlobalBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<dynamic> _menus = [];
-  List<dynamic> get menus => _menus;
-  set menus(List<dynamic> val) {
+  List<TbMenuModel> _menus = [];
+  List<TbMenuModel> get menus => _menus;
+  set menus(List<TbMenuModel> val) {
     _menus = val;
     notifyListeners();
     notifyListeners();

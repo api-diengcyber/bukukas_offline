@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:keuangan/db/model/tb_transaksi_model.dart';
+import 'package:keuangan/db/tb_transaksi.dart';
 import 'package:keuangan/providers/create_bloc.dart';
 import 'package:keuangan/providers/global_bloc.dart';
-import 'package:keuangan/services/report_service.dart';
 import 'package:provider/provider.dart';
 
 class CreateModel {
@@ -10,20 +11,12 @@ class CreateModel {
   }
 
   Future<void> getData(BuildContext context) async {
-    final _globalBloc = Provider.of<GlobalBloc>(context, listen: false);
-    final _createBloc = Provider.of<CreateBloc>(context, listen: false);
-    var data = {
-      'type': _globalBloc.tabMenuTransaction,
-      'reportType': "Semua",
-      'startDate': "",
-      'endDate': "",
-      'limit': 10,
-      'page': _createBloc.page,
-    };
-    _createBloc.loading = true;
-    final _resp = await ReportService().getData(context, data);
-    _createBloc.data = _resp['data'] ?? {};
-    _createBloc.loading = false;
-    _createBloc.totalPage = _resp['totalPage'] ?? 1;
+    final globalBloc = Provider.of<GlobalBloc>(context, listen: false);
+    final createBloc = Provider.of<CreateBloc>(context, listen: false);
+    List<TbTransaksiModel> listData =
+        await TbTransaksi().getData(globalBloc.tabMenuTransaction);
+    createBloc.data = listData;
+    createBloc.loading = false;
+    createBloc.totalPage = 1;
   }
 }

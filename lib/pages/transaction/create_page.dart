@@ -5,6 +5,7 @@ import 'package:keuangan/components/bubble_triangle.dart';
 import 'package:keuangan/components/circle_custom.dart';
 import 'package:keuangan/components/circle_menu.dart';
 import 'package:keuangan/components/pagination.dart';
+import 'package:keuangan/db/model/tb_transaksi_model.dart';
 import 'package:keuangan/helpers/set_menus.dart';
 import 'package:keuangan/pages/transaction/create_model.dart';
 import 'package:keuangan/pages/transaction/create2_page.dart';
@@ -64,17 +65,16 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
     final createBloc = context.watch<CreateBloc>();
     final transactionBloc = context.watch<TransactionBloc>();
 
-    onDeleteMenu(data) async {
+    onDeleteMenu(TbTransaksiModel data) async {
       DateTime tempDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
-          .parse(data["keu_transaction_transaction_date"]);
-      int jml = (data['keu_transaction_value_in']) -
-          (data['keu_transaction_value_out']);
+          .parse(data.transactionDate ?? "");
+      int jml =
+          int.parse(data.valueIn ?? "0") - int.parse(data.valueOut ?? "0");
 
-      String desc = "${data['menus_name']} (${data['menus_type']})";
+      String desc = "${data.menuName} (${data.menuType})";
       desc += "\n ${DateFormat("yyyy-MM-dd HH:mm:ss").format(tempDate)}";
-      if (data['keu_transaction_notes'] != null &&
-          data['keu_transaction_notes'] != "") {
-        desc += "\n ${data['keu_transaction_notes']}";
+      if (data.notes != null && data.notes != "") {
+        desc += "\n ${data.notes}";
       }
       desc += "\n ${_formatter.formatString(jml.toString())}";
 
@@ -92,8 +92,8 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
         btnOkText: "Hapus transaksi",
         btnCancelOnPress: () {},
         btnOkOnPress: () async {
-          var resp = await ReportModel()
-              .deleteTransaction(context, data["keu_transaction_id"]);
+          var resp =
+              await ReportModel().deleteTransaction(context, data.id ?? 0);
           if (resp) {
             await CreateModel().getData(context);
           }
@@ -137,17 +137,17 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                 horizontal: 0,
               ),
               child: Column(
-                children: <Widget>[
+                children: [
                   Container(
                     padding: const EdgeInsets.symmetric(
                       vertical: 2,
                       horizontal: 12,
                     ),
                     child: Column(
-                      children: <Widget>[
+                      children: [
                         Container(
                           child: Row(
-                            children: <Widget>[
+                            children: [
                               Expanded(
                                 child: CircleMenu(
                                   icon: iconMenus[0],
@@ -267,7 +267,7 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Column(
-                            children: <Widget>[
+                            children: [
                               Container(
                                 padding: const EdgeInsets.only(
                                   left: 5,
@@ -315,7 +315,7 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     child: Row(
-                                      children: <Widget>[
+                                      children: [
                                         CircleCustom(
                                           height: 40,
                                           icon: Icons.add,
@@ -400,8 +400,9 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                                       createBloc.data[index];
                                                   DateTime tempDate = DateFormat(
                                                           "yyyy-MM-dd'T'HH:mm:ss.SSS")
-                                                      .parse(data[
-                                                          "keu_transaction_transaction_date"]);
+                                                      .parse(
+                                                          data.transactionDate ??
+                                                              "");
                                                   return Container(
                                                     padding: const EdgeInsets
                                                         .symmetric(
@@ -415,7 +416,7 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                                             right: 12),
                                                     decoration: BoxDecoration(
                                                       color: activeTabColor(
-                                                          data["menus_type"],
+                                                          data.menuType ?? "",
                                                           labelsColor),
                                                       borderRadius:
                                                           BorderRadius.circular(
@@ -423,8 +424,8 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                                       boxShadow: [
                                                         BoxShadow(
                                                           color: activeTabColor(
-                                                              data[
-                                                                  "menus_type"],
+                                                              data.menuType ??
+                                                                  "",
                                                               chipsColor),
                                                           spreadRadius: 0,
                                                           blurRadius: 0.2,
@@ -438,26 +439,26 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
                                                               .start,
-                                                      children: <Widget>[
+                                                      children: [
                                                         Text(
-                                                          data["menus_name"],
+                                                          data.menuName ?? "",
                                                           style: TextStyle(
                                                             color: activeTabColor(
-                                                                data[
-                                                                    "menus_type"],
+                                                                data.menuType ??
+                                                                    "",
                                                                 reportActiveTabColor),
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                             fontSize: 15,
                                                           ),
                                                         ),
-                                                        data["menus_notes"] !=
+                                                        data.menuNotes !=
                                                                     null &&
-                                                                data["menus_notes"] !=
+                                                                data.menuNotes !=
                                                                     ""
                                                             ? Text(
-                                                                data[
-                                                                    "menus_notes"],
+                                                                data.menuNotes ??
+                                                                    "",
                                                                 style:
                                                                     const TextStyle(
                                                                   fontWeight:
@@ -478,13 +479,11 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                                             fontSize: 14,
                                                           ),
                                                         ),
-                                                        data["keu_transaction_notes"] !=
-                                                                    null &&
-                                                                data["keu_transaction_notes"] !=
-                                                                    ""
+                                                        data.notes != null &&
+                                                                data.notes != ""
                                                             ? Text(
-                                                                data[
-                                                                    "keu_transaction_notes"],
+                                                                data.notes ??
+                                                                    "",
                                                                 style:
                                                                     const TextStyle(
                                                                   fontWeight:
@@ -495,7 +494,7 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                                               )
                                                             : const SizedBox(),
                                                         Row(
-                                                          children: <Widget>[
+                                                          children: [
                                                             Container(
                                                               decoration:
                                                                   BoxDecoration(
@@ -528,11 +527,12 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                                                 vertical: 4,
                                                               ),
                                                               child: Text(
-                                                                formatCurrency
-                                                                    .format(data[
-                                                                            "keu_transaction_value_in"] -
-                                                                        data[
-                                                                            "keu_transaction_value_out"]),
+                                                                formatCurrency.format(int.parse(
+                                                                        data.valueIn ??
+                                                                            "0") -
+                                                                    int.parse(
+                                                                        data.valueOut ??
+                                                                            "0")),
                                                                 style:
                                                                     const TextStyle(
                                                                   color: Colors
@@ -547,7 +547,7 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                                             const Expanded(
                                                               child: SizedBox(),
                                                             ),
-                                                            data["keu_transaction_debtType"] !=
+                                                            data.debtType !=
                                                                     "NON"
                                                                 ? Container(
                                                                     margin: const EdgeInsets
@@ -571,11 +571,7 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                                                           4,
                                                                     ),
                                                                     child: Text(
-                                                                      data["keu_transaction_debtType"] +
-                                                                          " " +
-                                                                          data["menus_type"]
-                                                                              .toString()
-                                                                              .toLowerCase(),
+                                                                      "${data.debtType} ${data.menuType.toString().toLowerCase()}",
                                                                       style:
                                                                           const TextStyle(
                                                                         color: Colors
@@ -592,17 +588,18 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                                         ),
                                                         const Divider(),
                                                         Row(
-                                                          children: <Widget>[
+                                                          children: [
                                                             Expanded(
                                                               child: Container(
                                                                 width: double
                                                                     .infinity,
                                                                 child: InkWell(
-                                                                  child: Row(
+                                                                  child:
+                                                                      const Row(
                                                                     mainAxisAlignment:
                                                                         MainAxisAlignment
                                                                             .center,
-                                                                    children: const <Widget>[
+                                                                    children: [
                                                                       Icon(
                                                                         Icons
                                                                             .content_paste_search,
@@ -635,9 +632,9 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                                                         child:
                                                                             ReportMenuDetailPage(
                                                                           menuId:
-                                                                              data["menus_id"],
-                                                                          type:
-                                                                              data["menus_type"],
+                                                                              data.menuId ?? 0,
+                                                                          type: data.menuType ??
+                                                                              "",
                                                                         ),
                                                                       ),
                                                                     ).then(
@@ -657,8 +654,8 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                                                 ),
                                                               ),
                                                             ),
-                                                            data["keu_transaction_allow_delete"] ==
-                                                                    1
+                                                            data.allowDelete ==
+                                                                    "1"
                                                                 ? Expanded(
                                                                     child:
                                                                         Container(
@@ -667,10 +664,10 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                                                       child:
                                                                           InkWell(
                                                                         child:
-                                                                            Row(
+                                                                            const Row(
                                                                           mainAxisAlignment:
                                                                               MainAxisAlignment.center,
-                                                                          children: const <Widget>[
+                                                                          children: [
                                                                             Icon(
                                                                               Icons.delete,
                                                                               color: Colors.red,

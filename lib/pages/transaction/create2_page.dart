@@ -4,6 +4,7 @@ import 'package:keuangan/components/modal/modal_detail_transaction.dart';
 import 'package:keuangan/components/modal/modal_create_menu.dart';
 import 'package:keuangan/components/modal/modal_create_transaction.dart';
 import 'package:keuangan/components/pagination.dart';
+import 'package:keuangan/db/model/tb_menu_model.dart';
 import 'package:keuangan/helpers/set_menus.dart';
 import 'package:keuangan/pages/transaction/create2_model.dart';
 import 'package:keuangan/providers/global_bloc.dart';
@@ -17,7 +18,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 class CreateTransaction2Page extends StatefulWidget {
-  const CreateTransaction2Page({Key? key}) : super(key: key);
+  const CreateTransaction2Page({super.key});
 
   @override
   State<CreateTransaction2Page> createState() => _CreateTransaction2PageState();
@@ -56,21 +57,21 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
 
   @override
   Widget build(BuildContext context) {
-    final _globalBloc = context.watch<GlobalBloc>();
-    final _transactionBloc = context.watch<TransactionBloc>();
+    final globalBloc = context.watch<GlobalBloc>();
+    final transactionBloc = context.watch<TransactionBloc>();
 
     openDialogMenu() {
-      _globalBloc.loading = false;
+      globalBloc.loading = false;
       showDialog(
         context: context,
         barrierColor: const Color.fromARGB(26, 0, 0, 0),
         builder: (BuildContext context) => CreateMenuModal(
-          type: _globalBloc.tabMenuTransaction,
-          gradient: _globalBloc.tabMenuTransaction == "Pemasukan"
+          type: globalBloc.tabMenuTransaction,
+          gradient: globalBloc.tabMenuTransaction == "Pemasukan"
               ? modalGradientMenu[0]
-              : (_globalBloc.tabMenuTransaction == "Pengeluaran"
+              : (globalBloc.tabMenuTransaction == "Pengeluaran"
                   ? modalGradientMenu[1]
-                  : (_globalBloc.tabMenuTransaction == "Hutang")
+                  : (globalBloc.tabMenuTransaction == "Hutang")
                       ? modalGradientMenu[2]
                       : modalGradientMenu[3]),
           onSuccess: () async {
@@ -80,9 +81,9 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
       );
     }
 
-    openDialogTransaction(dynamic data) {
-      _globalBloc.loading = false;
-      _globalBloc.debtType = "Bayar";
+    openDialogTransaction(TbMenuModel data) {
+      globalBloc.loading = false;
+      globalBloc.debtType = "Bayar";
       showDialog(
         context: context,
         barrierColor: const Color.fromARGB(224, 210, 210, 210),
@@ -99,7 +100,7 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
     }
 
     openDialogDetailTransaction() {
-      _globalBloc.loading = false;
+      globalBloc.loading = false;
       showDialog(
         context: context,
         barrierDismissible: true,
@@ -124,7 +125,7 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
       elevation: 0,
       centerTitle: true,
       title: Text(
-        'Tambah ${_globalBloc.tabMenuTransaction.toLowerCase()}',
+        'Tambah ${globalBloc.tabMenuTransaction.toLowerCase()}',
         style: const TextStyle(
           color: Colors.black,
           fontSize: 17,
@@ -135,7 +136,7 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
 
     return WillPopScope(
       onWillPop: () async {
-        if (_globalBloc.cart.isNotEmpty) {
+        if (globalBloc.cart.isNotEmpty) {
           AwesomeDialog(
             context: context,
             dialogType: DialogType.warning,
@@ -156,7 +157,7 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
           constraints: const BoxConstraints.expand(),
           color: Colors.grey.shade200,
           child: SafeArea(
-            child: !_transactionBloc.loading
+            child: !transactionBloc.loading
                 ? Padding(
                     padding: const EdgeInsets.symmetric(
                       vertical: 0,
@@ -219,7 +220,7 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                             ),
                                           ),
                                         ),
-                                        _globalBloc.cart.isNotEmpty
+                                        globalBloc.cart.isNotEmpty
                                             ? Container(
                                                 margin: const EdgeInsets.only(
                                                     right: 8),
@@ -320,7 +321,7 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                                 ),
                                               )
                                             : const SizedBox(),
-                                        _globalBloc.cart.isNotEmpty
+                                        globalBloc.cart.isNotEmpty
                                             ? Container(
                                                 child: InkWell(
                                                   child: Container(
@@ -417,7 +418,7 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(20),
                               ),
-                              child: _globalBloc.menus.isNotEmpty
+                              child: globalBloc.menus.isNotEmpty
                                   ? Container(
                                       decoration: BoxDecoration(
                                         // color: Colors.grey.shade200,
@@ -433,12 +434,12 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                                 bottom: 2,
                                                 top: 20,
                                               ),
-                                              child: _globalBloc.loadingMenus
+                                              child: globalBloc.loadingMenus
                                                   ? const Center(
                                                       child: Text("Memuat...."),
                                                     )
                                                   : ListView.builder(
-                                                      itemCount: _globalBloc
+                                                      itemCount: globalBloc
                                                           .menus.length,
                                                       itemBuilder:
                                                           (context, index) {
@@ -458,18 +459,18 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                                                           20),
                                                             ),
                                                             child: InkWell(
-                                                              splashColor: _globalBloc
+                                                              splashColor: globalBloc
                                                                           .tabMenuTransaction ==
                                                                       "Pemasukan"
                                                                   ? Colors
                                                                       .greenAccent
                                                                       .shade400
-                                                                  : (_globalBloc
+                                                                  : (globalBloc
                                                                               .tabMenuTransaction ==
                                                                           "Pengeluaran"
                                                                       ? Colors
                                                                           .pink
-                                                                      : (_globalBloc.tabMenuTransaction ==
+                                                                      : (globalBloc.tabMenuTransaction ==
                                                                               "Hutang")
                                                                           ? Colors
                                                                               .amber
@@ -477,7 +478,7 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                                                               .blue),
                                                               onTap: () {
                                                                 openDialogTransaction(
-                                                                    _globalBloc
+                                                                    globalBloc
                                                                             .menus[
                                                                         index]);
                                                               },
@@ -511,24 +512,24 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                                                     CircleCustom(
                                                                       height:
                                                                           40,
-                                                                      icon: _globalBloc.tabMenuTransaction ==
+                                                                      icon: globalBloc.tabMenuTransaction ==
                                                                               "Pemasukan"
                                                                           ? iconMenus[
                                                                               0]
-                                                                          : (_globalBloc.tabMenuTransaction == "Pengeluaran"
+                                                                          : (globalBloc.tabMenuTransaction == "Pengeluaran"
                                                                               ? iconMenus[1]
-                                                                              : (_globalBloc.tabMenuTransaction == "Hutang")
+                                                                              : (globalBloc.tabMenuTransaction == "Hutang")
                                                                                   ? iconMenus[2]
                                                                                   : iconMenus[3]),
                                                                       iconSize:
                                                                           23,
-                                                                      gradient: _globalBloc.tabMenuTransaction ==
+                                                                      gradient: globalBloc.tabMenuTransaction ==
                                                                               "Pemasukan"
                                                                           ? gradientMenu[
                                                                               0]
-                                                                          : (_globalBloc.tabMenuTransaction == "Pengeluaran"
+                                                                          : (globalBloc.tabMenuTransaction == "Pengeluaran"
                                                                               ? gradientMenu[1]
-                                                                              : (_globalBloc.tabMenuTransaction == "Hutang")
+                                                                              : (globalBloc.tabMenuTransaction == "Hutang")
                                                                                   ? gradientMenu[2]
                                                                                   : gradientMenu[3]),
                                                                       active:
@@ -543,25 +544,24 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                                                               .start,
                                                                       children: <Widget>[
                                                                         Text(
-                                                                          _globalBloc.menus[index]
-                                                                              [
-                                                                              'keu_menu_name'],
+                                                                          globalBloc.menus[index].name ??
+                                                                              "",
                                                                           style:
                                                                               const TextStyle(fontSize: 17),
                                                                         ),
-                                                                        _globalBloc.menus[index]['keu_menu_notes'] !=
+                                                                        globalBloc.menus[index].notes !=
                                                                                 ""
                                                                             ? Text(
-                                                                                _globalBloc.menus[index]['keu_menu_notes'],
+                                                                                globalBloc.menus[index].notes ?? "",
                                                                                 style: const TextStyle(
                                                                                   color: Colors.black54,
                                                                                   fontSize: 14,
                                                                                 ),
                                                                               )
                                                                             : const SizedBox(),
-                                                                        _globalBloc.menus[index]['keu_menu_default_value'] != "" &&
-                                                                                _globalBloc.menus[index]['keu_menu_default_value'] != null &&
-                                                                                _globalBloc.menus[index]['keu_menu_default_value'] > 0
+                                                                        globalBloc.menus[index].defaultValue != "" &&
+                                                                                globalBloc.menus[index].defaultValue != null &&
+                                                                                int.parse(globalBloc.menus[index].defaultValue ?? "0") > 0
                                                                             ? Container(
                                                                                 padding: const EdgeInsets.only(
                                                                                   top: 2,
@@ -572,16 +572,16 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                                                                 margin: const EdgeInsets.only(top: 3),
                                                                                 decoration: BoxDecoration(
                                                                                   borderRadius: BorderRadius.circular(20),
-                                                                                  color: _globalBloc.menus[index]['keu_menu_type'] == "Pemasukan"
+                                                                                  color: globalBloc.menus[index].type == "Pemasukan"
                                                                                       ? Colors.green.shade100
-                                                                                      : (_globalBloc.menus[index]['keu_menu_type'] == "Pengeluaran"
+                                                                                      : (globalBloc.menus[index].type == "Pengeluaran"
                                                                                           ? Colors.pink.shade100
-                                                                                          : (_globalBloc.menus[index]['keu_menu_type'] == "Hutang")
+                                                                                          : (globalBloc.menus[index].type == "Hutang")
                                                                                               ? Colors.amber.shade100
                                                                                               : Colors.blue.shade100),
                                                                                 ),
                                                                                 child: Text(
-                                                                                  _formatter.formatString(_globalBloc.menus[index]['keu_menu_default_value'].toString()),
+                                                                                  _formatter.formatString(globalBloc.menus[index].defaultValue.toString()),
                                                                                   style: const TextStyle(
                                                                                     color: Colors.black87,
                                                                                     fontSize: 14,
@@ -589,8 +589,8 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                                                                 ),
                                                                               )
                                                                             : const SizedBox(),
-                                                                        (_globalBloc.tabMenuTransaction == "Hutang" || _globalBloc.tabMenuTransaction == "Piutang") &&
-                                                                                _globalBloc.menus[index]['total'] > 0
+                                                                        (globalBloc.tabMenuTransaction == "Hutang" || globalBloc.tabMenuTransaction == "Piutang") &&
+                                                                                int.parse(globalBloc.menus[index].total ?? "0") > 0
                                                                             ? Row(
                                                                                 children: <Widget>[
                                                                                   Container(
@@ -612,14 +612,14 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                                                                       vertical: 4,
                                                                                     ),
                                                                                     child: Text(
-                                                                                      formatCurrency.format(_globalBloc.menus[index]['total']),
+                                                                                      formatCurrency.format(globalBloc.menus[index].total),
                                                                                       style: TextStyle(
                                                                                         letterSpacing: 0.5,
                                                                                         fontSize: 13,
                                                                                         fontWeight: FontWeight.bold,
-                                                                                        color: _globalBloc.tabMenuTransaction == "Hutang"
+                                                                                        color: globalBloc.tabMenuTransaction == "Hutang"
                                                                                             ? Colors.amber.shade800
-                                                                                            : _globalBloc.tabMenuTransaction == "Piutang"
+                                                                                            : globalBloc.tabMenuTransaction == "Piutang"
                                                                                                 ? Colors.blue.shade800
                                                                                                 : Colors.black54,
                                                                                       ),
@@ -675,19 +675,18 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                             ),
                                           ),
                                           Container(
-                                            child: !_globalBloc.loadingMenus
-                                                ? _transactionBloc.totalPages >
-                                                        1
+                                            child: !globalBloc.loadingMenus
+                                                ? transactionBloc.totalPages > 1
                                                     ? Pagination(
                                                         totalPage:
-                                                            _transactionBloc
+                                                            transactionBloc
                                                                 .totalPages,
-                                                        page: _transactionBloc
+                                                        page: transactionBloc
                                                             .page,
                                                         height: 10,
                                                         onTap: (page) async {
-                                                          _transactionBloc
-                                                              .page = page;
+                                                          transactionBloc.page =
+                                                              page;
                                                           await CreateModel2()
                                                               .getMenu(context);
                                                         },
@@ -703,7 +702,7 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                         // color: Colors.grey.shade200,
                                         borderRadius: BorderRadius.circular(20),
                                       ),
-                                      child: _globalBloc.loadingMenus
+                                      child: globalBloc.loadingMenus
                                           ? const Center(
                                               child: Text("Memuat...."),
                                             )
@@ -727,12 +726,11 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                                       color: Colors
                                                           .white, // Button color
                                                       child: InkWell(
-                                                        splashColor: _globalBloc
+                                                        splashColor: globalBloc
                                                                     .tabMenuTransaction ==
                                                                 "Hutang"
                                                             ? Colors.amber
-                                                            : _globalBloc
-                                                                        .tabMenuTransaction ==
+                                                            : globalBloc.tabMenuTransaction ==
                                                                     "Piutang"
                                                                 ? Colors.blue
                                                                 : Colors
@@ -760,23 +758,21 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                                     },
                                                     child: Container(
                                                       decoration: BoxDecoration(
-                                                        color: _globalBloc
+                                                        color: globalBloc
                                                                     .tabMenuTransaction ==
                                                                 "Pemasukan"
                                                             ? Colors
                                                                 .green.shade600
-                                                            : _globalBloc
-                                                                        .tabMenuTransaction ==
+                                                            : globalBloc.tabMenuTransaction ==
                                                                     "Pengeluaran"
                                                                 ? Colors.pink
                                                                     .shade600
-                                                                : _globalBloc
-                                                                            .tabMenuTransaction ==
+                                                                : globalBloc.tabMenuTransaction ==
                                                                         "Hutang"
                                                                     ? Colors
                                                                         .amber
                                                                         .shade600
-                                                                    : _globalBloc.tabMenuTransaction ==
+                                                                    : globalBloc.tabMenuTransaction ==
                                                                             "Piutang"
                                                                         ? Colors
                                                                             .blue
@@ -860,8 +856,8 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                     width: 6,
                                   ),
                                   Text(
-                                    "Tambah menu ${_globalBloc.tabMenuTransaction.toLowerCase()}",
-                                    style: TextStyle(
+                                    "Tambah menu ${globalBloc.tabMenuTransaction.toLowerCase()}",
+                                    style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.black54,

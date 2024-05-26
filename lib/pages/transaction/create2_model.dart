@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:keuangan/db/model/tb_menu_model.dart';
 import 'package:keuangan/db/tb_menu.dart';
 import 'package:keuangan/providers/transaction_bloc.dart';
 import 'package:keuangan/services/menu_service.dart';
@@ -34,10 +35,10 @@ class CreateModel2 {
     final transactionBloc =
         Provider.of<TransactionBloc>(context, listen: false);
     globalBloc.loadingMenus = true;
-    final resp = await MenuService().getByType4Transaction(
-        context, globalBloc.tabMenuTransaction, transactionBloc.page);
-    globalBloc.menus = resp['data'];
-    transactionBloc.totalPages = resp['totalPage'];
+    List<TbMenuModel> listData =
+        await TbMenu().getData(globalBloc.tabMenuTransaction);
+    globalBloc.menus = listData;
+    transactionBloc.totalPages = 1;
     globalBloc.loadingMenus = false;
   }
 

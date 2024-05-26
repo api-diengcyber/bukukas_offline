@@ -1,4 +1,5 @@
 import 'package:keuangan/components/circle_custom.dart';
+import 'package:keuangan/db/model/tb_menu_model.dart';
 import 'package:keuangan/helpers/set_menus.dart';
 import 'package:keuangan/pages/transaction/create2_model.dart';
 import 'package:keuangan/providers/global_bloc.dart';
@@ -12,11 +13,11 @@ import 'package:provider/provider.dart';
 
 class CreateTransactionModal extends StatefulWidget {
   const CreateTransactionModal({
-    Key? key,
+    super.key,
     required this.data,
-  }) : super(key: key);
+  });
 
-  final dynamic data;
+  final TbMenuModel data;
 
   @override
   State<CreateTransactionModal> createState() => _CreateTransactionModalState();
@@ -50,21 +51,14 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
 
   checkAllow(BuildContext context) {
     _allowSave = true;
-    final _globalBloc = context.read<GlobalBloc>();
-    if ((widget.data["keu_menu_type"] == "Hutang" ||
-        widget.data["keu_menu_type"] == "Piutang")) {
-      int _indexMenuExist = _globalBloc.cart.indexWhere((element) =>
-          element["menuId"].toString() +
-              "-" +
-              element["type"] +
-              "-" +
+    final globalBloc = context.read<GlobalBloc>();
+    if ((widget.data.type == "Hutang" || widget.data.type == "Piutang")) {
+      int indexMenuExist = globalBloc.cart.indexWhere((element) =>
+          // ignore: prefer_interpolation_to_compose_strings
+          "${element["menuId"] + "-" + element["type"]}-" +
               element["debtType"] ==
-          widget.data["keu_menu_id"].toString() +
-              "-" +
-              widget.data["keu_menu_type"] +
-              "-" +
-              _globalBloc.debtType);
-      if (_indexMenuExist > -1) {
+          "${widget.data.id}-${widget.data.type}-${globalBloc.debtType}");
+      if (indexMenuExist > -1) {
         _allowSave = false;
       }
     }
@@ -72,8 +66,8 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
 
   @override
   Widget build(BuildContext context) {
-    final _globalBloc = context.watch<GlobalBloc>();
-    final _transactionBloc = context.watch<TransactionBloc>();
+    final globalBloc = context.watch<GlobalBloc>();
+    final transactionBloc = context.watch<TransactionBloc>();
 
     checkAllow(context);
 
@@ -83,60 +77,57 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
           .replaceAll(RegExp(r'[.]'), '')
           .replaceAll(RegExp(r'[,]'), '.'));
 
-      int _in = 0;
-      int _out = 0;
+      int gIn = 0;
+      int gOut = 0;
 
       int sisa = 0;
-      if (widget.data["keu_menu_type"] == "Hutang" ||
-          widget.data["keu_menu_type"] == "Piutang") {
-        if (((_globalBloc.debtType == "Bayar"
-                    ? widget.data['total'] - _nominal
-                    : widget.data['total'] + _nominal) *
+      if (widget.data.type == "Hutang" || widget.data.type == "Piutang") {
+        if (((globalBloc.debtType == "Bayar"
+                    ? int.parse(widget.data.total ?? "0") - _nominal
+                    : int.parse(widget.data.total ?? "0") + _nominal) *
                 -1) >
             0) {
-          sisa = ((_globalBloc.debtType == "Bayar"
-                  ? widget.data['total'] - _nominal
-                  : widget.data['total'] + _nominal) *
+          sisa = ((globalBloc.debtType == "Bayar"
+                  ? int.parse(widget.data.total ?? "0") - _nominal
+                  : int.parse(widget.data.total ?? "0") + _nominal) *
               -1);
         }
       }
 
-      if (widget.data["keu_menu_type"] == "Pemasukan") {
-        _in = nominal;
-        _out = 0;
-      } else if (widget.data["keu_menu_type"] == "Pengeluaran") {
-        _in = 0;
-        _out = nominal;
-      } else if (widget.data["keu_menu_type"] == "Hutang") {
-        if (_globalBloc.debtType == "Bayar") {
-          _in = 0;
-          _out = nominal - sisa;
-        } else if (_globalBloc.debtType == "Tambah") {
-          _in = nominal - sisa;
-          _out = 0;
+      if (widget.data.type == "Pemasukan") {
+        gIn = nominal;
+        gOut = 0;
+      } else if (widget.data.type == "Pengeluaran") {
+        gIn = 0;
+        gOut = nominal;
+      } else if (widget.data.type == "Hutang") {
+        if (globalBloc.debtType == "Bayar") {
+          gIn = 0;
+          gOut = nominal - sisa;
+        } else if (globalBloc.debtType == "Tambah") {
+          gIn = nominal - sisa;
+          gOut = 0;
         }
-      } else if (widget.data["keu_menu_type"] == "Piutang") {
-        if (_globalBloc.debtType == "Bayar") {
-          _in = nominal - sisa;
-          _out = 0;
-        } else if (_globalBloc.debtType == "Tambah") {
-          _in = 0;
-          _out = nominal - sisa;
+      } else if (widget.data.type == "Piutang") {
+        if (globalBloc.debtType == "Bayar") {
+          gIn = nominal - sisa;
+          gOut = 0;
+        } else if (globalBloc.debtType == "Tambah") {
+          gIn = 0;
+          gOut = nominal - sisa;
         }
       }
 
-      if (_in > 0 || _out > 0) {
+      if (gIn > 0 || gOut > 0) {
         bool allowSave = true;
 
-        if ((widget.data["keu_menu_type"] == "Hutang" ||
-            widget.data["keu_menu_type"] == "Piutang")) {
-          int _indexMenuExist = _globalBloc.cart.indexWhere(
-              (element) => element["menuId"] == widget.data["keu_menu_id"]);
-          if (_indexMenuExist > -1) {
-            if (_globalBloc.cart[_indexMenuExist]["type"] ==
-                widget.data["keu_menu_type"]) {
-              if (_globalBloc.cart[_indexMenuExist]["debtType"] ==
-                  _globalBloc.debtType) {
+        if ((widget.data.type == "Hutang" || widget.data.type == "Piutang")) {
+          int indexMenuExist = globalBloc.cart
+              .indexWhere((element) => element["menuId"] == widget.data.id);
+          if (indexMenuExist > -1) {
+            if (globalBloc.cart[indexMenuExist]["type"] == widget.data.type) {
+              if (globalBloc.cart[indexMenuExist]["debtType"] ==
+                  globalBloc.debtType) {
                 allowSave = false;
               }
             }
@@ -144,22 +135,22 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
         }
 
         if (allowSave) {
-          _globalBloc.cart.add({
-            "index": _globalBloc.cart.length,
+          globalBloc.cart.add({
+            "index": globalBloc.cart.length,
             "tgl": valueForm["tgl"].toIso8601String(),
-            "in": _in.toString(),
-            "out": _out.toString(),
+            "in": gIn.toString(),
+            "out": gOut.toString(),
             "notes": valueForm["notes"],
             "deadline":
                 valueForm["deadline"] != null && valueForm["deadline"] != ""
                     ? valueForm["deadline"].toIso8601String()
                     : null,
-            "debtType": (widget.data["keu_menu_type"] == "Hutang" ||
-                    widget.data["keu_menu_type"] == "Piutang")
-                ? _globalBloc.debtType
-                : "",
-            "type": widget.data["keu_menu_type"],
-            "menuId": widget.data["keu_menu_id"],
+            "debtType":
+                (widget.data.type == "Hutang" || widget.data.type == "Piutang")
+                    ? globalBloc.debtType
+                    : "",
+            "type": widget.data.type,
+            "menuId": widget.data.id,
             "menuDetail": widget.data,
           });
 
@@ -167,12 +158,12 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
             await CreateModel2().saveTransaction(context);
             Navigator.pop(context, 'success');
             // refresh menu after saving...
-            // if (widget.data["keu_menu_type"] == "Hutang" ||
-            //     widget.data["keu_menu_type"] == "Piutang") {
+            // if (widget.data.type == "Hutang" ||
+            //     widget.data.type == "Piutang") {
             //   await CreateModel2().getMenu(context);
             // }
           } else {
-            _globalBloc.loadingMenus = false;
+            globalBloc.loadingMenus = false;
             Navigator.pop(context);
           }
         } else {
@@ -183,12 +174,12 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
       }
     }
 
-    List<dynamic> _cartByMenu = _globalBloc.cart
-        .where((element) => element["menuId"] == widget.data["keu_menu_id"])
+    List<dynamic> _cartByMenu = globalBloc.cart
+        .where((element) => element["menuId"] == widget.data.id)
         .toList();
     int _totalSameCart = 0;
     for (var item in _cartByMenu) {
-      if (widget.data["keu_menu_type"] == "Hutang") {
+      if (widget.data.type == "Hutang") {
         _totalSameCart += int.parse(item["in"]) - int.parse(item["out"]);
       } else {
         _totalSameCart += int.parse(item["out"]) - int.parse(item["in"]);
@@ -197,10 +188,9 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
 
     DateTime? tempDateDeadline;
     String deadline = "";
-    if (widget.data["keu_menu_type"] == "Hutang" ||
-        widget.data["keu_menu_type"] == "Piutang") {
+    if (widget.data.type == "Hutang" || widget.data.type == "Piutang") {
       tempDateDeadline = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
-          .parse(widget.data["keu_menu_deadline"]);
+          .parse(widget.data.deadline ?? "");
       deadline = DateFormat("yyyy-MM-dd").format(tempDateDeadline);
     }
 
@@ -218,8 +208,8 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                 top: 15,
               ),
               width: double.infinity,
-              height: ((widget.data["keu_menu_type"] == "Hutang" ||
-                              widget.data["keu_menu_type"] == "Piutang")
+              height: ((widget.data.type == "Hutang" ||
+                              widget.data.type == "Piutang")
                           ? .45
                           : .39) *
                       MediaQuery.of(context).size.height +
@@ -229,22 +219,20 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(20),
                   bottomRight: const Radius.circular(20),
-                  topRight: Radius.circular(
-                      (widget.data["keu_menu_type"] == "Hutang" ||
-                              widget.data["keu_menu_type"] == "Piutang")
-                          ? 200
-                          : 200),
-                  bottomLeft: Radius.circular(
-                      (widget.data["keu_menu_type"] == "Hutang" ||
-                              widget.data["keu_menu_type"] == "Piutang")
-                          ? 200
-                          : 200),
+                  topRight: Radius.circular((widget.data.type == "Hutang" ||
+                          widget.data.type == "Piutang")
+                      ? 200
+                      : 200),
+                  bottomLeft: Radius.circular((widget.data.type == "Hutang" ||
+                          widget.data.type == "Piutang")
+                      ? 200
+                      : 200),
                 ),
-                gradient: widget.data["keu_menu_type"] == "Pemasukan"
+                gradient: widget.data.type == "Pemasukan"
                     ? gradientActiveDMenu[0]
-                    : (widget.data["keu_menu_type"] == "Pengeluaran"
+                    : (widget.data.type == "Pengeluaran"
                         ? gradientActiveDMenu[1]
-                        : (widget.data["keu_menu_type"] == "Hutang")
+                        : (widget.data.type == "Hutang")
                             ? gradientActiveDMenu[2]
                             : gradientActiveDMenu[3]),
               ),
@@ -252,8 +240,8 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
             ),
             Container(
               width: double.infinity,
-              height: ((widget.data["keu_menu_type"] == "Hutang" ||
-                          widget.data["keu_menu_type"] == "Piutang")
+              height: ((widget.data.type == "Hutang" ||
+                          widget.data.type == "Piutang")
                       ? .45
                       : .39) *
                   MediaQuery.of(context).size.height,
@@ -301,16 +289,15 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
-                                      widget.data["keu_menu_notes"] != null &&
-                                              widget.data["keu_menu_notes"] !=
-                                                  ""
+                                      widget.data.notes != null &&
+                                              widget.data.notes != ""
                                           ? Container(
                                               margin: const EdgeInsets.only(
                                                 bottom: 12,
                                                 top: 4,
                                               ),
                                               child: Text(
-                                                widget.data["keu_menu_notes"],
+                                                widget.data.notes ?? "",
                                                 style: const TextStyle(
                                                   color: Colors.black54,
                                                 ),
@@ -319,7 +306,7 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                           : const SizedBox(
                                               height: 22,
                                             ),
-                                      _globalBloc.debtType == "Tambah"
+                                      globalBloc.debtType == "Tambah"
                                           ? Container(
                                               margin: const EdgeInsets.only(
                                                   bottom: 24),
@@ -345,7 +332,7 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                         initialValue: DateTime.now(),
                                         format: DateFormat('dd-MM-yyyy'),
                                         enabled: _allowSave &&
-                                            !_transactionBloc.loading,
+                                            !transactionBloc.loading,
                                         decoration: InputDecoration(
                                           labelText: 'Tanggal',
                                           labelStyle: const TextStyle(
@@ -386,22 +373,20 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                       FormBuilderTextField(
                                         name: 'nominal',
                                         enabled: _allowSave &&
-                                            !_transactionBloc.loading,
-                                        initialValue: widget.data[
-                                                    "keu_menu_default_value"] >
+                                            !transactionBloc.loading,
+                                        initialValue: int.parse(
+                                                    widget.data.defaultValue ??
+                                                        "0") >
                                                 0
                                             ? _formatter.formatString(widget
-                                                .data["keu_menu_default_value"]
+                                                .data.defaultValue
                                                 .toString())
                                             : null,
                                         decoration: InputDecoration(
-                                          labelText: (widget.data[
-                                                          "keu_menu_type"] ==
+                                          labelText: (widget.data.type ==
                                                       "Hutang" ||
-                                                  widget.data[
-                                                          "keu_menu_type"] ==
-                                                      "Piutang")
-                                              ? "Nominal ${_globalBloc.debtType.toLowerCase()} ${widget.data["keu_menu_type"].toLowerCase()}"
+                                                  widget.data.type == "Piutang")
+                                              ? "Nominal ${globalBloc.debtType.toLowerCase()} ${(widget.data.type ?? "").toLowerCase()}"
                                               : "Nominal",
                                           labelStyle: const TextStyle(
                                             fontSize: 16,
@@ -459,7 +444,7 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                       const SizedBox(
                                         height: 6,
                                       ),
-                                      _globalBloc.debtType == "Tambah"
+                                      globalBloc.debtType == "Tambah"
                                           ? Container(
                                               margin: const EdgeInsets.only(
                                                 top: 12,
@@ -473,7 +458,7 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                                 format:
                                                     DateFormat('dd-MM-yyyy'),
                                                 enabled: _allowSave &&
-                                                    !_transactionBloc.loading,
+                                                    !transactionBloc.loading,
                                                 decoration: InputDecoration(
                                                   labelText: 'Jatuh tempo',
                                                   labelStyle: const TextStyle(
@@ -519,10 +504,8 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                               ),
                                             )
                                           : const SizedBox(),
-                                      (widget.data["keu_menu_type"] ==
-                                                  "Hutang" ||
-                                              widget.data["keu_menu_type"] ==
-                                                  "Piutang")
+                                      (widget.data.type == "Hutang" ||
+                                              widget.data.type == "Piutang")
                                           ? Container(
                                               width: double.infinity,
                                               decoration: BoxDecoration(
@@ -552,8 +535,7 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                               ),
                                               child: Row(
                                                 children: <Widget>[
-                                                  _globalBloc.debtType ==
-                                                          "Bayar"
+                                                  globalBloc.debtType == "Bayar"
                                                       ? Expanded(
                                                           child: Column(
                                                             children: <Widget>[
@@ -600,20 +582,24 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                                           ),
                                                         )
                                                       : const SizedBox(),
-                                                  (_globalBloc.debtType ==
+                                                  (globalBloc.debtType ==
                                                                   "Bayar"
-                                                              ? widget.data[
-                                                                      'total'] -
+                                                              ? int.parse(widget
+                                                                          .data
+                                                                          .total ??
+                                                                      "") -
                                                                   _nominal
-                                                              : widget.data[
-                                                                      'total'] +
+                                                              : int.parse(widget
+                                                                          .data
+                                                                          .total ??
+                                                                      "") +
                                                                   _nominal) >
                                                           0
                                                       ? Expanded(
                                                           child: Column(
                                                             children: <Widget>[
                                                               Text(
-                                                                "${widget.data["keu_menu_type"].toString()} sekarang",
+                                                                "${widget.data.type.toString()} sekarang",
                                                                 style:
                                                                     const TextStyle(
                                                                   letterSpacing:
@@ -646,12 +632,14 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                                                   //             ","),
                                                                   //   ),
                                                                   Text(
-                                                                    formatCurrency.format(_globalBloc.debtType ==
+                                                                    formatCurrency.format(globalBloc.debtType ==
                                                                             "Bayar"
-                                                                        ? widget.data['total'] -
+                                                                        ? int.parse(widget.data.total ??
+                                                                                "0") -
                                                                             _nominal +
                                                                             _totalSameCart
-                                                                        : widget.data['total'] +
+                                                                        : int.parse(widget.data.total ??
+                                                                                "0") +
                                                                             _nominal +
                                                                             _totalSameCart),
                                                                     style:
@@ -687,9 +675,9 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                                                   fontSize: 15,
                                                                 ),
                                                               ),
-                                                              ((_globalBloc.debtType == "Bayar"
-                                                                              ? widget.data['total'] - _nominal
-                                                                              : widget.data['total'] + _nominal) *
+                                                              ((globalBloc.debtType == "Bayar"
+                                                                              ? int.parse(widget.data.total ?? "0") - _nominal
+                                                                              : int.parse(widget.data.total ?? "0") + _nominal) *
                                                                           -1) >
                                                                       0
                                                                   ? Container(
@@ -699,9 +687,7 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                                                               4),
                                                                       child:
                                                                           Text(
-                                                                        "Sisa: " +
-                                                                            formatCurrency.format((_globalBloc.debtType == "Bayar" ? widget.data['total'] - _nominal : widget.data['total'] + _nominal) *
-                                                                                -1),
+                                                                        "Sisa: ${formatCurrency.format((globalBloc.debtType == "Bayar" ? int.parse(widget.data.total ?? "0") - _nominal : int.parse(widget.data.total ?? "0") + _nominal) * -1)}",
                                                                         style:
                                                                             const TextStyle(
                                                                           letterSpacing:
@@ -729,7 +715,7 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                       FormBuilderTextField(
                                         name: 'notes',
                                         enabled: _allowSave &&
-                                            !_transactionBloc.loading,
+                                            !transactionBloc.loading,
                                         decoration: InputDecoration(
                                           labelText: 'Keterangan (opsional)',
                                           labelStyle: const TextStyle(
@@ -785,7 +771,7 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                       children: <Widget>[
                         Expanded(
                           child: InkWell(
-                            onTap: !_transactionBloc.loading
+                            onTap: !transactionBloc.loading
                                 ? () async {
                                     if (_formKey.currentState!.validate()) {
                                       _formKey.currentState!.save();
@@ -804,15 +790,12 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                 horizontal: 16,
                               ),
                               decoration: BoxDecoration(
-                                gradient: !_globalBloc.loading
-                                    ? (widget.data["keu_menu_type"] ==
-                                            "Pemasukan"
+                                gradient: !globalBloc.loading
+                                    ? (widget.data.type == "Pemasukan"
                                         ? gradientMenu[0]
-                                        : (widget.data["keu_menu_type"] ==
-                                                "Pengeluaran"
+                                        : (widget.data.type == "Pengeluaran"
                                             ? gradientMenu[1]
-                                            : (widget.data["keu_menu_type"] ==
-                                                    "Hutang")
+                                            : (widget.data.type == "Hutang")
                                                 ? gradientMenu[2]
                                                 : gradientMenu[3]))
                                     : null,
@@ -829,7 +812,7 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                               ),
                               child: Center(
                                 child: Text(
-                                  !_transactionBloc.loading
+                                  !transactionBloc.loading
                                       ? "Selesaikan"
                                       : "Menyimpan..",
                                   style: const TextStyle(
@@ -867,19 +850,19 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                       children: <Widget>[
                         CircleCustom(
                           height: 24,
-                          icon: widget.data["keu_menu_type"] == "Pemasukan"
+                          icon: widget.data.type == "Pemasukan"
                               ? iconMenus[0]
-                              : (widget.data["keu_menu_type"] == "Pengeluaran"
+                              : (widget.data.type == "Pengeluaran"
                                   ? iconMenus[1]
-                                  : (widget.data["keu_menu_type"] == "Hutang")
+                                  : (widget.data.type == "Hutang")
                                       ? iconMenus[2]
                                       : iconMenus[3]),
                           iconSize: 12,
-                          gradient: widget.data["keu_menu_type"] == "Pemasukan"
+                          gradient: widget.data.type == "Pemasukan"
                               ? gradientActiveDMenu[0]
-                              : (widget.data["keu_menu_type"] == "Pengeluaran"
+                              : (widget.data.type == "Pengeluaran"
                                   ? gradientActiveDMenu[1]
-                                  : (widget.data["keu_menu_type"] == "Hutang")
+                                  : (widget.data.type == "Hutang")
                                       ? gradientActiveDMenu[2]
                                       : gradientActiveDMenu[3]),
                           active: true,
@@ -888,7 +871,7 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                           width: 6,
                         ),
                         Text(
-                          widget.data["keu_menu_name"],
+                          widget.data.name ?? "",
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -903,8 +886,8 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                   const Expanded(
                     child: SizedBox(),
                   ),
-                  (widget.data["keu_menu_type"] == "Hutang" ||
-                          widget.data["keu_menu_type"] == "Piutang")
+                  (widget.data.type == "Hutang" ||
+                          widget.data.type == "Piutang")
                       ? Container(
                           padding: const EdgeInsets.all(4),
                           decoration: BoxDecoration(
@@ -920,9 +903,8 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                     horizontal: 12,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: _globalBloc.debtType == "Bayar"
-                                        ? widget.data["keu_menu_type"] ==
-                                                "Hutang"
+                                    color: globalBloc.debtType == "Bayar"
+                                        ? widget.data.type == "Hutang"
                                             ? Colors.amber
                                             : Colors.blue
                                         : Colors.white,
@@ -933,14 +915,14 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                     style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold,
-                                      color: _globalBloc.debtType == "Bayar"
+                                      color: globalBloc.debtType == "Bayar"
                                           ? Colors.white
                                           : Colors.grey,
                                     ),
                                   ),
                                 ),
                                 onTap: () {
-                                  _globalBloc.debtType = "Bayar";
+                                  globalBloc.debtType = "Bayar";
                                   checkAllow(context);
                                 },
                               ),
@@ -951,9 +933,8 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                     horizontal: 12,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: _globalBloc.debtType == "Tambah"
-                                        ? widget.data["keu_menu_type"] ==
-                                                "Hutang"
+                                    color: globalBloc.debtType == "Tambah"
+                                        ? widget.data.type == "Hutang"
                                             ? Colors.amber
                                             : Colors.blue
                                         : Colors.white,
@@ -964,14 +945,14 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                     style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold,
-                                      color: _globalBloc.debtType == "Tambah"
+                                      color: globalBloc.debtType == "Tambah"
                                           ? Colors.white
                                           : Colors.grey,
                                     ),
                                   ),
                                 ),
                                 onTap: () {
-                                  _globalBloc.debtType = "Tambah";
+                                  globalBloc.debtType = "Tambah";
                                   checkAllow(context);
                                 },
                               ),

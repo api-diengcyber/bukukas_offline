@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:keuangan/db/model/tb_transaksi_model.dart';
 
 class CreateBloc extends ChangeNotifier {
   bool _loading = false;
@@ -22,9 +23,9 @@ class CreateBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  dynamic _data = [];
-  dynamic get data => _data;
-  set data(dynamic val) {
+  List<TbTransaksiModel> _data = [];
+  List<TbTransaksiModel> get data => _data;
+  set data(List<TbTransaksiModel> val) {
     _data = val;
     notifyListeners();
   }
