@@ -10,14 +10,14 @@ class ReportMenuDetailModel {
   }
 
   Future<void> getMenuDetail(BuildContext context, int id) async {
-    final _reportMenuDetailBloc =
+    final reportMenuDetailBloc =
         Provider.of<ReportMenuDetailBloc>(context, listen: false);
-    _reportMenuDetailBloc.loading = true;
-    final _resp = await ReportService().getMenuDetail(context, id);
-    _reportMenuDetailBloc.detail = _resp['detail'];
-    _reportMenuDetailBloc.data = _resp['data'];
+    reportMenuDetailBloc.loading = true;
+    final resp = await ReportService().getMenuDetail(context, id);
+    reportMenuDetailBloc.detail = resp['detail'];
+    reportMenuDetailBloc.data = resp['data'];
     await Future.delayed(const Duration(milliseconds: 500), () {
-      _reportMenuDetailBloc.loading = false;
+      reportMenuDetailBloc.loading = false;
     });
   }
 }

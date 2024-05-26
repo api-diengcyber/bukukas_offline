@@ -590,7 +590,7 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                                         Row(
                                                           children: [
                                                             Expanded(
-                                                              child: Container(
+                                                              child: SizedBox(
                                                                 width: double
                                                                     .infinity,
                                                                 child: InkWell(
@@ -658,7 +658,7 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                                                     "1"
                                                                 ? Expanded(
                                                                     child:
-                                                                        Container(
+                                                                        SizedBox(
                                                                       width: double
                                                                           .infinity,
                                                                       child:
@@ -703,18 +703,16 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                               ),
                                             ),
                                             createBloc.totalPage > 1
-                                                ? Container(
-                                                    child: Pagination(
-                                                      totalPage:
-                                                          createBloc.totalPage,
-                                                      page: createBloc.page,
-                                                      height: 10,
-                                                      onTap: (page) async {
-                                                        createBloc.page = page;
-                                                        await CreateModel()
-                                                            .getData(context);
-                                                      },
-                                                    ),
+                                                ? Pagination(
+                                                    totalPage:
+                                                        createBloc.totalPage,
+                                                    page: createBloc.page,
+                                                    height: 10,
+                                                    onTap: (page) async {
+                                                      createBloc.page = page;
+                                                      await CreateModel()
+                                                          .getData(context);
+                                                    },
                                                   )
                                                 : const SizedBox(),
                                           ],

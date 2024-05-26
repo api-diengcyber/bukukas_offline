@@ -442,25 +442,7 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                                                 width: 4,
                                               ),
                                               Text(
-                                                "(" +
-                                                    (reportMenuDetailBloc
-                                                                    .detail[
-                                                                "keu_menu_type"] ==
-                                                            "Hutang"
-                                                        ? formatCurrency.format(
-                                                            reportMenuDetailBloc
-                                                                    .detail[
-                                                                "totalIn"])
-                                                        : reportMenuDetailBloc
-                                                                        .detail[
-                                                                    "keu_menu_type"] ==
-                                                                "Piutang"
-                                                            ? formatCurrency.format(
-                                                                reportMenuDetailBloc
-                                                                        .detail[
-                                                                    "totalOut"])
-                                                            : "") +
-                                                    ")",
+                                                "(${reportMenuDetailBloc.detail["keu_menu_type"] == "Hutang" ? formatCurrency.format(reportMenuDetailBloc.detail["totalIn"]) : reportMenuDetailBloc.detail["keu_menu_type"] == "Piutang" ? formatCurrency.format(reportMenuDetailBloc.detail["totalOut"]) : ""})",
                                                 style: const TextStyle(
                                                   color: Colors.grey,
                                                   fontWeight: FontWeight.bold,

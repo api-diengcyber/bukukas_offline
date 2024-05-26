@@ -168,21 +168,21 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                         StreamBuilder(
                           stream: CreateModel2().getCartStream(context),
                           builder: (context, AsyncSnapshot snapshot) {
-                            int _totalIn = 0;
-                            int _totalOut = 0;
-                            int _totalNominal = 0;
+                            int totalIn = 0;
+                            int totalOut = 0;
+                            int totalNominal = 0;
                             if (snapshot.connectionState ==
                                 ConnectionState.done) {
                               for (var i = 0; i < snapshot.data.length; i++) {
-                                _totalIn += int.parse(snapshot.data[i]['in']);
-                                _totalOut += int.parse(snapshot.data[i]['out']);
-                                _totalNominal +=
+                                totalIn += int.parse(snapshot.data[i]['in']);
+                                totalOut += int.parse(snapshot.data[i]['out']);
+                                totalNominal +=
                                     (int.parse(snapshot.data[i]['in']) -
                                         int.parse(snapshot.data[i]['out']));
                               }
-                              totalIn = _totalIn;
-                              totalOut = _totalOut;
-                              totalNominal = _totalNominal;
+                              totalIn = totalIn;
+                              totalOut = totalOut;
+                              totalNominal = totalNominal;
                               trendIndexPemasukan = snapshot.data
                                   .indexWhere((f) => f['type'] == "Pemasukan");
                               trendIndexPengeluaran = snapshot.data.indexWhere(
@@ -322,40 +322,37 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                               )
                                             : const SizedBox(),
                                         globalBloc.cart.isNotEmpty
-                                            ? Container(
-                                                child: InkWell(
-                                                  child: Container(
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              6),
-                                                      boxShadow: [
-                                                        BoxShadow(
-                                                          color: Colors.grey
-                                                              .withOpacity(0.5),
-                                                          spreadRadius: 1,
-                                                          blurRadius: 3,
-                                                          offset: const Offset(
-                                                              0,
-                                                              3), // changes position of shadow
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 5,
-                                                    ),
-                                                    child: const Icon(
-                                                      Icons.arrow_downward,
-                                                      size: 15,
-                                                    ),
+                                            ? InkWell(
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            6),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Colors.grey
+                                                            .withOpacity(0.5),
+                                                        spreadRadius: 1,
+                                                        blurRadius: 3,
+                                                        offset: const Offset(0,
+                                                            3), // changes position of shadow
+                                                      ),
+                                                    ],
                                                   ),
-                                                  onTap: () {
-                                                    openDialogDetailTransaction();
-                                                  },
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    horizontal: 8,
+                                                    vertical: 5,
+                                                  ),
+                                                  child: const Icon(
+                                                    Icons.arrow_downward,
+                                                    size: 15,
+                                                  ),
                                                 ),
+                                                onTap: () {
+                                                  openDialogDetailTransaction();
+                                                },
                                               )
                                             : const SizedBox(),
                                       ],
@@ -874,13 +871,13 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                         StreamBuilder(
                           stream: CreateModel2().getCartStream(context),
                           builder: (context, AsyncSnapshot snapshot) {
-                            bool _showSelesai = false;
+                            bool showSelesai = false;
                             if (snapshot.connectionState ==
                                 ConnectionState.done) {
                               if (snapshot.data.length > 0) {
-                                _showSelesai = true;
+                                showSelesai = true;
                               }
-                              showSelesai = _showSelesai;
+                              showSelesai = showSelesai;
                             }
                             return showSelesai
                                 ? ElevatedButton(

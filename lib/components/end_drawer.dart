@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class EndDrawer extends StatefulWidget {
-  const EndDrawer({Key? key}) : super(key: key);
+  const EndDrawer({super.key});
 
   @override
   State<EndDrawer> createState() => _EndDrawerState();

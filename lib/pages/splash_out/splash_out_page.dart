@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:keuangan/pages/splash_out/splash_out_model.dart';
 
 class SplashOutPage extends StatefulWidget {
-  const SplashOutPage({Key? key}) : super(key: key);
+  const SplashOutPage({super.key});
 
   @override
-  _SplashOutPageState createState() => _SplashOutPageState();
+  SplashOutPageState createState() => SplashOutPageState();
 }
 
-class _SplashOutPageState extends State<SplashOutPage> {
+class SplashOutPageState extends State<SplashOutPage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -37,7 +37,7 @@ class _SplashOutPageState extends State<SplashOutPage> {
             Container(
               decoration: const BoxDecoration(
                 color: Colors.white,
-                image: const DecorationImage(
+                image: DecorationImage(
                   image: AssetImage('assets/bg.png'),
                   fit: BoxFit.cover,
                 ),

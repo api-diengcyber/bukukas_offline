@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 // ignore: must_be_immutable
 class ItemListProfile extends StatelessWidget {
   ItemListProfile({
-    Key? key,
+    super.key,
     this.icon,
     required this.text,
     this.fontWeight = FontWeight.normal,
     this.color = Colors.black87,
     this.onTap,
-  }) : super(key: key);
+  });
 
   IconData? icon;
   String text;

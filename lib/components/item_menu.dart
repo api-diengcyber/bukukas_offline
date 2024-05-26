@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 // ignore: must_be_immutable
 class ItemMenu extends StatelessWidget {
   ItemMenu({
-    Key? key,
+    super.key,
     required this.icon,
     required this.text,
     this.active = false,
@@ -12,7 +12,7 @@ class ItemMenu extends StatelessWidget {
     this.activeGradient,
     this.splashColor = Colors.amber,
     this.onTap,
-  }) : super(key: key);
+  });
 
   final IconData icon;
   final String text;

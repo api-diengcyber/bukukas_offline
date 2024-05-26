@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 // ignore: must_be_immutable
 class CircleCustom extends StatelessWidget {
   CircleCustom({
-    Key? key,
+    super.key,
     required this.height,
     this.icon,
     this.iconSize,
     required this.gradient,
     this.active = false,
-  }) : super(key: key);
+  });
 
   final double height;
   final IconData? icon;

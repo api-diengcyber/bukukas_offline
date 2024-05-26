@@ -44,7 +44,7 @@ class AuthService {
         return false;
       }
     } catch (e) {
-      if (e is DioError) {
+      if (e is DioException) {
         g.Get.snackbar(
           "Ubah password gagal!",
           "${e.response!.data['message'] != "" ? e.response!.data['message'] : e.response!.statusMessage}",
@@ -153,7 +153,7 @@ class AuthService {
         return false;
       }
     } catch (e) {
-      if (e is DioError) {
+      if (e is DioException) {
         g.Get.snackbar(
           "Daftar gagal!",
           "${e.response!.data['message'] != "" ? e.response!.data['message'] : e.response!.statusMessage}",

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class TabChips extends StatefulWidget {
   TabChips({
-    Key? key,
+    super.key,
     this.elevation = 1,
     required this.activeColor,
     required this.activeTextColor,
@@ -11,7 +11,7 @@ class TabChips extends StatefulWidget {
     this.enabled = true,
     required this.data,
     this.onTap,
-  }) : super(key: key);
+  });
 
   double elevation;
   final Color activeColor;

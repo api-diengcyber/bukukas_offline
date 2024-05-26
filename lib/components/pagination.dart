@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 class Pagination extends StatefulWidget {
   Pagination({
-    Key? key,
+    super.key,
     required this.page,
     required this.totalPage,
     this.enabled = true,
     this.height = 12,
     this.shadow = true,
     this.onTap,
-  }) : super(key: key);
+  });
 
   final int page;
   final int totalPage;
@@ -33,21 +33,21 @@ class _PaginationState extends State<Pagination> {
     });
   }
 
-  void _indexChange(_key, _index, _page) {
-    if (_key[_index].currentContext != null) {
+  void _indexChange(fkey, findex, fpage) {
+    if (fkey[findex].currentContext != null) {
       Scrollable.ensureVisible(
-        _key[_index].currentContext,
+        fkey[findex].currentContext,
         alignment: 0.5,
       );
     }
     if (widget.onTap != null) {
-      widget.onTap!(_page);
+      widget.onTap!(fpage);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<GlobalKey> _key =
+    final List<GlobalKey> gkey =
         List.generate(widget.totalPage, (index) => GlobalKey());
 
     return Container(
@@ -76,6 +76,14 @@ class _PaginationState extends State<Pagination> {
           Container(
             margin: const EdgeInsets.only(right: 8),
             child: InkWell(
+              onTap: (widget.enabled && _currentPage > 1)
+                  ? () {
+                      setState(() {
+                        _currentPage--;
+                        _indexChange(gkey, _currentPage - 1, _currentPage);
+                      });
+                    }
+                  : () {},
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -95,14 +103,6 @@ class _PaginationState extends State<Pagination> {
                       : Colors.grey.shade300,
                 ),
               ),
-              onTap: (widget.enabled && _currentPage > 1)
-                  ? () {
-                      setState(() {
-                        _currentPage--;
-                        _indexChange(_key, _currentPage - 1, _currentPage);
-                      });
-                    }
-                  : () {},
             ),
           ),
           Expanded(
@@ -113,7 +113,7 @@ class _PaginationState extends State<Pagination> {
                   children: <Widget>[
                     for (var index = 0; index < widget.totalPage; index++)
                       InkWell(
-                        key: _key[index],
+                        key: gkey[index],
                         child: Container(
                           decoration: BoxDecoration(
                             color: _currentPage == (index + 1)
@@ -138,7 +138,7 @@ class _PaginationState extends State<Pagination> {
                         onTap: () {
                           setState(() {
                             _currentPage = index + 1;
-                            _indexChange(_key, index, _currentPage);
+                            _indexChange(gkey, index, _currentPage);
                           });
                         },
                       )
@@ -150,6 +150,14 @@ class _PaginationState extends State<Pagination> {
           Container(
             margin: const EdgeInsets.only(left: 8),
             child: InkWell(
+              onTap: (_currentPage < widget.totalPage)
+                  ? () {
+                      setState(() {
+                        _currentPage++;
+                        _indexChange(gkey, _currentPage - 1, _currentPage);
+                      });
+                    }
+                  : () {},
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -167,14 +175,6 @@ class _PaginationState extends State<Pagination> {
                       : Colors.grey.shade300,
                 ),
               ),
-              onTap: (_currentPage < widget.totalPage)
-                  ? () {
-                      setState(() {
-                        _currentPage++;
-                        _indexChange(_key, _currentPage - 1, _currentPage);
-                      });
-                    }
-                  : () {},
             ),
           ),
         ],

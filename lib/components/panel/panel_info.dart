@@ -1,10 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:keuangan/pages/splash_out/splash_out_page.dart';
 
 class PanelInfo extends StatefulWidget {
-  const PanelInfo({Key? key}) : super(key: key);
+  const PanelInfo({super.key});
 
   @override
   State<PanelInfo> createState() => _PanelInfoState();

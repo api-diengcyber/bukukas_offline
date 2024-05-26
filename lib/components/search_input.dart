@@ -4,15 +4,16 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class SearchInput extends StatefulWidget {
   SearchInput({
-    Key? key,
+    super.key,
     this.initialValue,
     this.onChanged,
     this.onEditingComplete,
     this.onReset,
     this.onSaved,
-  }) : super(key: key);
+  });
 
   String? initialValue;
   ValueChanged<String?>? onChanged;
@@ -29,17 +30,17 @@ class _SearchInputState extends State<SearchInput> {
 
   @override
   Widget build(BuildContext context) {
-    final _menuBloc = context.watch<MenuBloc>();
+    final menuBloc = context.watch<MenuBloc>();
 
-    Color rColor = _menuBloc.activeTab == 0
+    Color rColor = menuBloc.activeTab == 0
         ? Colors.black54
-        : _menuBloc.activeTab == 1
+        : menuBloc.activeTab == 1
             ? Colors.green.shade700
-            : _menuBloc.activeTab == 2
+            : menuBloc.activeTab == 2
                 ? Colors.pink
-                : _menuBloc.activeTab == 3
+                : menuBloc.activeTab == 3
                     ? Colors.amber.shade700
-                    : _menuBloc.activeTab == 4
+                    : menuBloc.activeTab == 4
                         ? Colors.blue
                         : Colors.grey;
 
@@ -67,7 +68,7 @@ class _SearchInputState extends State<SearchInput> {
               ),
               cursorColor: rColor,
               onChanged: (value) {
-                _menuBloc.search = value!;
+                menuBloc.search = value!;
                 if (widget.onChanged != null) {
                   widget.onChanged!(value);
                 }
@@ -80,7 +81,7 @@ class _SearchInputState extends State<SearchInput> {
               onReset: () {
                 _search.text = '';
                 _search.clear();
-                _menuBloc.search = '';
+                menuBloc.search = '';
                 if (widget.onReset != null) {
                   widget.onReset!();
                 }
@@ -114,7 +115,7 @@ class _SearchInputState extends State<SearchInput> {
               keyboardType: TextInputType.text,
             ),
           ),
-          _menuBloc.search != ""
+          menuBloc.search != ""
               ? Container(
                   margin: const EdgeInsets.only(left: 8),
                   child: InkWell(
@@ -135,7 +136,7 @@ class _SearchInputState extends State<SearchInput> {
                     onTap: () {
                       _search.text = '';
                       _search.clear();
-                      _menuBloc.search = '';
+                      menuBloc.search = '';
                       if (widget.onReset != null) {
                         widget.onReset!();
                       }

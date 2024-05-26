@@ -12,105 +12,102 @@ class ReportModel {
   }
 
   Future<bool> deleteTransaction(BuildContext context, int id) async {
-    final _resp = await TransactionService().delete(context, id);
-    return _resp;
+    final resp = await TransactionService().delete(context, id);
+    return resp;
   }
 
   Future<void> _getMenu(BuildContext context) async {
-    final _reportBloc = Provider.of<ReportBloc>(context, listen: false);
+    final reportBloc = Provider.of<ReportBloc>(context, listen: false);
     var data = {
-      'type': _reportBloc.activeMenuTab,
-      'reportType': _reportBloc.activeChipTab,
+      'type': reportBloc.activeMenuTab,
+      'reportType': reportBloc.activeChipTab,
       'startDate':
-          _reportBloc.activeChipTab == "Semua" ? "" : _reportBloc.startDate,
-      'endDate':
-          _reportBloc.activeChipTab == "Semua" ? "" : _reportBloc.endDate,
+          reportBloc.activeChipTab == "Semua" ? "" : reportBloc.startDate,
+      'endDate': reportBloc.activeChipTab == "Semua" ? "" : reportBloc.endDate,
     };
-    if (_reportBloc.activeChipTab == "Periode" &&
-        (_reportBloc.startDate == "" || _reportBloc.endDate == "")) {
+    if (reportBloc.activeChipTab == "Periode" &&
+        (reportBloc.startDate == "" || reportBloc.endDate == "")) {
     } else {
-      _reportBloc.menus = {};
-      _reportBloc.loadingMenus = true;
-      final _resp = await ReportService().getMenu(context, data);
-      _reportBloc.menus = _resp;
+      reportBloc.menus = {};
+      reportBloc.loadingMenus = true;
+      final resp = await ReportService().getMenu(context, data);
+      reportBloc.menus = resp;
       await Future.delayed(const Duration(milliseconds: 500), () {
-        _reportBloc.loadingMenus = false;
+        reportBloc.loadingMenus = false;
       });
     }
   }
 
   Future<void> _getData(BuildContext context) async {
-    final _reportBloc = Provider.of<ReportBloc>(context, listen: false);
+    final reportBloc = Provider.of<ReportBloc>(context, listen: false);
     var data = {
-      'type': _reportBloc.activeMenuTab,
-      'reportType': _reportBloc.activeChipTab,
+      'type': reportBloc.activeMenuTab,
+      'reportType': reportBloc.activeChipTab,
       'startDate':
-          _reportBloc.activeChipTab == "Semua" ? "" : _reportBloc.startDate,
-      'endDate':
-          _reportBloc.activeChipTab == "Semua" ? "" : _reportBloc.endDate,
+          reportBloc.activeChipTab == "Semua" ? "" : reportBloc.startDate,
+      'endDate': reportBloc.activeChipTab == "Semua" ? "" : reportBloc.endDate,
       'limit': 50,
       'page': 1,
     };
-    if (_reportBloc.activeChipTab == "Periode" &&
-        (_reportBloc.startDate == "" || _reportBloc.endDate == "")) {
+    if (reportBloc.activeChipTab == "Periode" &&
+        (reportBloc.startDate == "" || reportBloc.endDate == "")) {
     } else {
-      _reportBloc.data = {};
-      _reportBloc.loadingData = true;
-      final _resp = await ReportService().getData(context, data);
-      _reportBloc.data = _resp['data'] ?? {};
+      reportBloc.data = {};
+      reportBloc.loadingData = true;
+      final resp = await ReportService().getData(context, data);
+      reportBloc.data = resp['data'] ?? {};
       await Future.delayed(const Duration(milliseconds: 500), () {
-        _reportBloc.loadingData = false;
+        reportBloc.loadingData = false;
       });
     }
   }
 
   Future<void> getTabsData(BuildContext context) async {
-    final _reportBloc = Provider.of<ReportBloc>(context, listen: false);
-    if (_reportBloc.reportIndexActiveTab == 0) {
+    final reportBloc = Provider.of<ReportBloc>(context, listen: false);
+    if (reportBloc.reportIndexActiveTab == 0) {
       // Data
       await _getData(context);
-    } else if (_reportBloc.reportIndexActiveTab == 1) {
-      if (_reportBloc.activeMenuTab == "Semua") {
+    } else if (reportBloc.reportIndexActiveTab == 1) {
+      if (reportBloc.activeMenuTab == "Semua") {
         // Graph
       } else {
         // Menu
         await _getMenu(context);
       }
-    } else if (_reportBloc.reportIndexActiveTab == 2) {
+    } else if (reportBloc.reportIndexActiveTab == 2) {
       // Graph
     }
   }
 
   Future<void> getSummaryReport(BuildContext context) async {
-    final _reportBloc = Provider.of<ReportBloc>(context, listen: false);
+    final reportBloc = Provider.of<ReportBloc>(context, listen: false);
     var data = {
-      'type': _reportBloc.activeMenuTab,
-      'reportType': _reportBloc.activeChipTab,
+      'type': reportBloc.activeMenuTab,
+      'reportType': reportBloc.activeChipTab,
       'startDate':
-          _reportBloc.activeChipTab == "Semua" ? "" : _reportBloc.startDate,
-      'endDate':
-          _reportBloc.activeChipTab == "Semua" ? "" : _reportBloc.endDate,
+          reportBloc.activeChipTab == "Semua" ? "" : reportBloc.startDate,
+      'endDate': reportBloc.activeChipTab == "Semua" ? "" : reportBloc.endDate,
     };
-    if (_reportBloc.activeChipTab == "Periode" &&
-        (_reportBloc.startDate == "" || _reportBloc.endDate == "")) {
+    if (reportBloc.activeChipTab == "Periode" &&
+        (reportBloc.startDate == "" || reportBloc.endDate == "")) {
     } else {
-      _reportBloc.dataSummary = {};
-      _reportBloc.loadingSummary = true;
-      final _resp = await ReportService().getSummary(context, data);
-      _reportBloc.dataSummary = _resp;
-      _reportBloc.totalReport = _resp["total"];
-      _reportBloc.listAvailableMenuType = _resp['listAvailableMenuType'];
+      reportBloc.dataSummary = {};
+      reportBloc.loadingSummary = true;
+      final resp = await ReportService().getSummary(context, data);
+      reportBloc.dataSummary = resp;
+      reportBloc.totalReport = resp["total"];
+      reportBloc.listAvailableMenuType = resp['listAvailableMenuType'];
 
-      if (_reportBloc.activeMenuTab != "Semua") {
-        int _indexExists = _resp['listAvailableMenuType'].indexWhere(
-            (element) => element['name'] == _reportBloc.activeMenuTab);
-        if (_resp['listAvailableMenuType'].isEmpty || _indexExists == -1) {
-          _reportBloc.activeMenuTab = "Semua";
+      if (reportBloc.activeMenuTab != "Semua") {
+        int indexExists = resp['listAvailableMenuType'].indexWhere(
+            (element) => element['name'] == reportBloc.activeMenuTab);
+        if (resp['listAvailableMenuType'].isEmpty || indexExists == -1) {
+          reportBloc.activeMenuTab = "Semua";
         }
       }
 
       await Future.delayed(const Duration(milliseconds: 500), () {
-        _reportBloc.loadingSummary = false;
+        reportBloc.loadingSummary = false;
       });
     }
   }

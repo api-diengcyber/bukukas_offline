@@ -5,7 +5,7 @@ import 'package:get/get_rx/src/rx_typedefs/rx_typedefs.dart';
 // ignore: must_be_immutable
 class CircleMenu extends StatelessWidget {
   CircleMenu({
-    Key? key,
+    super.key,
     required this.icon,
     required this.iconSize,
     required this.name,
@@ -13,7 +13,7 @@ class CircleMenu extends StatelessWidget {
     required this.gradient,
     required this.onTap,
     this.active = false,
-  }) : super(key: key);
+  });
 
   final IconData icon;
   final double iconSize;

@@ -1,7 +1,6 @@
 import 'package:keuangan/db/model/tb_menu_model.dart';
 import 'package:keuangan/db/tb_menu.dart';
 import 'package:keuangan/providers/global_bloc.dart';
-import 'package:keuangan/services/menu_service.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -12,11 +11,11 @@ import 'package:intl/intl.dart';
 // ignore: must_be_immutable
 class CreateMenuModal extends StatefulWidget {
   CreateMenuModal({
-    Key? key,
+    super.key,
     required this.type,
     required this.gradient,
     this.onSuccess,
-  }) : super(key: key);
+  });
 
   final String type;
   LinearGradient gradient;
@@ -207,105 +206,101 @@ class _CreateMenuModalState extends State<CreateMenuModal> {
                                   ),
                                 ),
                           widget.type == "Hutang" || widget.type == "Piutang"
-                              ? Container(
-                                  child: Column(
-                                    children: <Widget>[
-                                      FormBuilderTextField(
-                                        name: 'total',
-                                        decoration: InputDecoration(
-                                          labelText: 'Nominal ${widget.type}',
-                                          labelStyle: const TextStyle(
-                                            fontSize: 16,
-                                          ),
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                          ),
-                                          contentPadding:
-                                              const EdgeInsets.symmetric(
-                                            vertical: 4,
-                                            horizontal: 12,
-                                          ),
+                              ? Column(
+                                  children: <Widget>[
+                                    FormBuilderTextField(
+                                      name: 'total',
+                                      decoration: InputDecoration(
+                                        labelText: 'Nominal ${widget.type}',
+                                        labelStyle: const TextStyle(
+                                          fontSize: 16,
                                         ),
-                                        validator:
-                                            FormBuilderValidators.compose([
-                                          FormBuilderValidators.required(),
-                                        ]),
-                                        keyboardType: TextInputType.number,
-                                        inputFormatters: [
-                                          CurrencyTextInputFormatter(
-                                            NumberFormat.currency(
-                                              decimalDigits: 0,
-                                              locale: 'id',
-                                              symbol: 'Rp',
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                      const SizedBox(
-                                        height: 12,
-                                      ),
-                                      FormBuilderDateTimePicker(
-                                        name: 'deadline',
-                                        inputType: InputType.date,
-                                        initialDate: DateTime.now(),
-                                        format: DateFormat('dd-MM-yyyy'),
-                                        decoration: InputDecoration(
-                                          labelText: 'Jatuh Tempo',
-                                          labelStyle: const TextStyle(
-                                            fontSize: 16,
-                                          ),
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                          ),
-                                          contentPadding:
-                                              const EdgeInsets.symmetric(
-                                            vertical: 4,
-                                            horizontal: 12,
-                                          ),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
                                         ),
-                                        validator:
-                                            FormBuilderValidators.compose([
-                                          FormBuilderValidators.required(),
-                                        ]),
-                                      ),
-                                      const SizedBox(
-                                        height: 12,
-                                      ),
-                                      FormBuilderTextField(
-                                        name: 'paid',
-                                        decoration: InputDecoration(
-                                          labelText: 'Bayar (opsional)',
-                                          labelStyle: const TextStyle(
-                                            fontSize: 16,
-                                          ),
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                          ),
-                                          contentPadding:
-                                              const EdgeInsets.symmetric(
-                                            vertical: 4,
-                                            horizontal: 12,
-                                          ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                          vertical: 4,
+                                          horizontal: 12,
                                         ),
-                                        keyboardType: TextInputType.number,
-                                        inputFormatters: [
-                                          CurrencyTextInputFormatter(
-                                            NumberFormat.currency(
-                                              decimalDigits: 0,
-                                              locale: 'id',
-                                              symbol: 'Rp',
-                                            ),
-                                          )
-                                        ],
                                       ),
-                                      const SizedBox(
-                                        height: 12,
+                                      validator: FormBuilderValidators.compose([
+                                        FormBuilderValidators.required(),
+                                      ]),
+                                      keyboardType: TextInputType.number,
+                                      inputFormatters: [
+                                        CurrencyTextInputFormatter(
+                                          NumberFormat.currency(
+                                            decimalDigits: 0,
+                                            locale: 'id',
+                                            symbol: 'Rp',
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                    FormBuilderDateTimePicker(
+                                      name: 'deadline',
+                                      inputType: InputType.date,
+                                      initialDate: DateTime.now(),
+                                      format: DateFormat('dd-MM-yyyy'),
+                                      decoration: InputDecoration(
+                                        labelText: 'Jatuh Tempo',
+                                        labelStyle: const TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                          vertical: 4,
+                                          horizontal: 12,
+                                        ),
                                       ),
-                                    ],
-                                  ),
+                                      validator: FormBuilderValidators.compose([
+                                        FormBuilderValidators.required(),
+                                      ]),
+                                    ),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                    FormBuilderTextField(
+                                      name: 'paid',
+                                      decoration: InputDecoration(
+                                        labelText: 'Bayar (opsional)',
+                                        labelStyle: const TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                          vertical: 4,
+                                          horizontal: 12,
+                                        ),
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                      inputFormatters: [
+                                        CurrencyTextInputFormatter(
+                                          NumberFormat.currency(
+                                            decimalDigits: 0,
+                                            locale: 'id',
+                                            symbol: 'Rp',
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                  ],
                                 )
                               : Container(),
                           SizedBox(

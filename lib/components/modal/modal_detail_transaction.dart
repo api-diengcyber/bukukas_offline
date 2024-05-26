@@ -32,7 +32,7 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
   }
 
   Widget _getListData(BuildContext context, AsyncSnapshot snapshot) {
-    final _globalBloc = context.read<GlobalBloc>();
+    final globalBloc = context.read<GlobalBloc>();
     datas = groupBy(snapshot.data, (dynamic obj) => obj['type']);
     return ListView.builder(
       shrinkWrap: true,
@@ -174,10 +174,10 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                                 child: IconButton(
                                   onPressed: () async {
                                     setState(() async {
-                                      _globalBloc.cart.remove(e);
+                                      globalBloc.cart.remove(e);
                                       datas[key]!.remove(e);
-                                      if (_globalBloc.cart.isEmpty) {
-                                        _globalBloc.loading = false;
+                                      if (globalBloc.cart.isEmpty) {
+                                        globalBloc.loading = false;
                                         Navigator.pop(context);
                                       } else {
                                         await CreateModel2().getMenu(context);

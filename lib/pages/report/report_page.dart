@@ -11,7 +11,7 @@ import 'package:intl/intl.dart';
 import '../../components/panel/panel_report_tabs.dart';
 
 class ReportPage extends StatefulWidget {
-  const ReportPage({Key? key}) : super(key: key);
+  const ReportPage({super.key});
 
   @override
   State<ReportPage> createState() => _ReportPageState();
@@ -33,7 +33,7 @@ class _ReportPageState extends State<ReportPage> {
 
   @override
   Widget build(BuildContext context) {
-    final _reportBloc = context.watch<ReportBloc>();
+    final reportBloc = context.watch<ReportBloc>();
 
     AppBar appBar = AppBar(
       systemOverlayStyle: SystemUiOverlayStyle.dark,
@@ -62,15 +62,15 @@ class _ReportPageState extends State<ReportPage> {
       extendBodyBehindAppBar: true,
       appBar: appBar,
       body: Container(
-        color: _reportBloc.activeMenuTab == "Semua"
+        color: reportBloc.activeMenuTab == "Semua"
             ? Colors.grey.shade100
-            : _reportBloc.activeMenuTab == "Pemasukan"
+            : reportBloc.activeMenuTab == "Pemasukan"
                 ? Colors.green.shade100
-                : _reportBloc.activeMenuTab == "Pengeluaran"
+                : reportBloc.activeMenuTab == "Pengeluaran"
                     ? Colors.pink.shade100
-                    : _reportBloc.activeMenuTab == "Hutang"
+                    : reportBloc.activeMenuTab == "Hutang"
                         ? Colors.amber.shade100
-                        : _reportBloc.activeMenuTab == "Piutang"
+                        : reportBloc.activeMenuTab == "Piutang"
                             ? Colors.blue.shade100
                             : Colors.grey.shade100,
         constraints: const BoxConstraints.expand(),
@@ -90,7 +90,7 @@ class _ReportPageState extends State<ReportPage> {
                   height: double.infinity,
                   child: Column(
                     children: <Widget>[
-                      _reportBloc.activeMenuTab != "Semua"
+                      reportBloc.activeMenuTab != "Semua"
                           ? Container(
                               width: double.infinity,
                               margin: const EdgeInsets.only(
@@ -123,7 +123,7 @@ class _ReportPageState extends State<ReportPage> {
                                         ),
                                         Text(
                                           formatCurrency
-                                              .format(_reportBloc.totalReport),
+                                              .format(reportBloc.totalReport),
                                           style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 17,
@@ -144,8 +144,8 @@ class _ReportPageState extends State<ReportPage> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,
                                       children: [
-                                        for (var item in _reportBloc
-                                            .listAvailableMenuType)
+                                        for (var item
+                                            in reportBloc.listAvailableMenuType)
                                           Container(
                                             margin:
                                                 const EdgeInsets.only(left: 4),
@@ -177,10 +177,9 @@ class _ReportPageState extends State<ReportPage> {
                         child: SingleChildScrollView(
                           child: Column(
                             children: <Widget>[
-                              !_reportBloc.loadingSummary &&
-                                      (_reportBloc.activeMenuTab == "Hutang" ||
-                                          _reportBloc.activeMenuTab ==
-                                              "Piutang")
+                              !reportBloc.loadingSummary &&
+                                      (reportBloc.activeMenuTab == "Hutang" ||
+                                          reportBloc.activeMenuTab == "Piutang")
                                   ? Container(
                                       padding: const EdgeInsets.symmetric(
                                         vertical: 6,
@@ -201,13 +200,13 @@ class _ReportPageState extends State<ReportPage> {
                                             const Expanded(
                                               child: SizedBox(),
                                             ),
-                                            int.parse(_reportBloc.dataSummary[
+                                            int.parse(reportBloc.dataSummary[
                                                             "debtMenuStatus"]
                                                         ["Belum"]) !=
                                                     0
                                                 ? Text(
                                                     "Belum lunas: " +
-                                                        _reportBloc.dataSummary[
+                                                        reportBloc.dataSummary[
                                                                 "debtMenuStatus"]
                                                             ["Belum"],
                                                     style: const TextStyle(
@@ -217,11 +216,11 @@ class _ReportPageState extends State<ReportPage> {
                                                     ),
                                                   )
                                                 : const SizedBox(),
-                                            (int.parse(_reportBloc.dataSummary[
+                                            (int.parse(reportBloc.dataSummary[
                                                                 "debtMenuStatus"]
                                                             ["Belum"]) !=
                                                         0 &&
-                                                    int.parse(_reportBloc
+                                                    int.parse(reportBloc
                                                                     .dataSummary[
                                                                 "debtMenuStatus"]
                                                             ["Lunas"]) !=
@@ -231,13 +230,13 @@ class _ReportPageState extends State<ReportPage> {
                                                     thickness: 1,
                                                   )
                                                 : const SizedBox(),
-                                            int.parse(_reportBloc.dataSummary[
+                                            int.parse(reportBloc.dataSummary[
                                                             "debtMenuStatus"]
                                                         ["Lunas"]) !=
                                                     0
                                                 ? Text(
                                                     "Lunas: " +
-                                                        _reportBloc.dataSummary[
+                                                        reportBloc.dataSummary[
                                                                 "debtMenuStatus"]
                                                             ["Lunas"],
                                                     style: const TextStyle(
