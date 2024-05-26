@@ -197,7 +197,7 @@ class _CreateMenuModalState extends State<CreateMenuModal> {
                                     keyboardType: TextInputType.number,
                                     inputFormatters: [
                                       CurrencyTextInputFormatter(
-                                        NumberFormat.compactCurrency(
+                                        NumberFormat.currency(
                                           decimalDigits: 0,
                                           locale: 'id',
                                           symbol: 'Rp',
@@ -234,7 +234,7 @@ class _CreateMenuModalState extends State<CreateMenuModal> {
                                         keyboardType: TextInputType.number,
                                         inputFormatters: [
                                           CurrencyTextInputFormatter(
-                                            NumberFormat.compactCurrency(
+                                            NumberFormat.currency(
                                               decimalDigits: 0,
                                               locale: 'id',
                                               symbol: 'Rp',
@@ -293,7 +293,7 @@ class _CreateMenuModalState extends State<CreateMenuModal> {
                                         keyboardType: TextInputType.number,
                                         inputFormatters: [
                                           CurrencyTextInputFormatter(
-                                            NumberFormat.compactCurrency(
+                                            NumberFormat.currency(
                                               decimalDigits: 0,
                                               locale: 'id',
                                               symbol: 'Rp',

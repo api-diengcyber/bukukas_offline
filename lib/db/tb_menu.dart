@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:keuangan/db/db.dart';
 import 'package:keuangan/db/model/tb_menu_model.dart';
 import 'package:keuangan/db/tb_installed.dart';
+import 'package:keuangan/utils/currency.dart';
 import 'package:sqflite/sqflite.dart';
 
 class TbMenu extends DB {
@@ -22,8 +23,8 @@ class TbMenu extends DB {
             listData[i].name,
             listData[i].type,
             listData[i].notes,
-            listData[i].defaultValue,
-            listData[i].total,
+            currencyToDoubleString(listData[i].defaultValue ?? ""),
+            currencyToDoubleString(listData[i].total ?? ""),
             listData[i].paid,
             listData[i].deadline,
             listData[i].statusPaidOff,
@@ -70,7 +71,7 @@ class TbMenu extends DB {
     Database database = await getDB();
     TbMenuModel d = TbMenuModel.fromJson(data);
     await database.rawUpdate(
-        "UPDATE menu SET name='${d.name}', notes='${d.notes ?? ""}', defaultValue='${d.defaultValue ?? ""}' WHERE id='$id'");
+        "UPDATE menu SET name='${d.name}', notes='${d.notes ?? ""}', defaultValue='${currencyToDoubleString(d.defaultValue ?? "") ?? ""}' WHERE id='$id'");
   }
 
   Future<void> delete(int id) async {

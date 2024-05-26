@@ -23,7 +23,7 @@ class _TabReportDataState extends State<TabReportData> {
     decimalDigits: 0,
   );
   final CurrencyTextInputFormatter _formatter = CurrencyTextInputFormatter(
-    NumberFormat.compactCurrency(
+    NumberFormat.currency(
       decimalDigits: 0,
       locale: 'id',
       symbol: 'Rp',

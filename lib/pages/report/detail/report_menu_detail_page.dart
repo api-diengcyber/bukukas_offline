@@ -12,10 +12,10 @@ import '../../../helpers/set_menus.dart';
 
 class ReportMenuDetailPage extends StatefulWidget {
   const ReportMenuDetailPage({
-    Key? key,
+    super.key,
     required this.menuId,
     required this.type,
-  }) : super(key: key);
+  });
 
   final int menuId;
   final String type;
@@ -30,7 +30,7 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
     decimalDigits: 0,
   );
   final CurrencyTextInputFormatter _formatter =
-      CurrencyTextInputFormatter(NumberFormat.compactCurrency(
+      CurrencyTextInputFormatter(NumberFormat.currency(
     decimalDigits: 0,
     locale: 'id',
     symbol: 'Rp',
@@ -48,7 +48,7 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final _reportMenuDetailBloc = context.watch<ReportMenuDetailBloc>();
+    final reportMenuDetailBloc = context.watch<ReportMenuDetailBloc>();
 
     onDeleteMenu(data) async {
       DateTime tempDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
@@ -78,11 +78,11 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
         btnOkText: "Hapus transaksi",
         btnCancelOnPress: () {},
         btnOkOnPress: () async {
-          var _resp = await ReportModel()
+          var resp = await ReportModel()
               .deleteTransaction(context, data["keu_transaction_id"]);
-          if (_resp) {
+          if (resp) {
             await ReportMenuDetailModel().getMenuDetail(context, widget.menuId);
-            if (_reportMenuDetailBloc.data.isEmpty) {
+            if (reportMenuDetailBloc.data.isEmpty) {
               Navigator.pop(context);
             }
           }
@@ -90,7 +90,7 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
       ).show();
     }
 
-    if (_reportMenuDetailBloc.data.isEmpty) {
+    if (reportMenuDetailBloc.data.isEmpty) {
       Navigator.pop(context);
     }
 
@@ -167,7 +167,7 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
     //               boxShadow: [
     //                 BoxShadow(
     //                   color: activeTabColor(
-    //                       _reportMenuDetailBloc.detail["keu_menu_type"],
+    //                       reportMenuDetailBloc.detail["keu_menu_type"],
     //                       chipsColor),
     //                   spreadRadius: 0,
     //                   blurRadius: 2,
@@ -322,7 +322,7 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                       ),
                     ],
                   ),
-                  child: _reportMenuDetailBloc.loading
+                  child: reportMenuDetailBloc.loading
                       ? SkeletonAnimation(
                           borderRadius: BorderRadius.circular(20.0),
                           shimmerColor: Colors.blueGrey.shade50,
@@ -339,35 +339,34 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              _reportMenuDetailBloc.detail["keu_menu_name"],
+                              reportMenuDetailBloc.detail["keu_menu_name"],
                               style: TextStyle(
                                 fontSize: 15,
                                 color: activeTabColor(
-                                    _reportMenuDetailBloc
+                                    reportMenuDetailBloc
                                         .detail["keu_menu_type"],
                                     reportActiveTabColor),
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            _reportMenuDetailBloc.detail["keu_menu_notes"] !=
+                            reportMenuDetailBloc.detail["keu_menu_notes"] !=
                                         "" &&
-                                    _reportMenuDetailBloc
+                                    reportMenuDetailBloc
                                             .detail["keu_menu_notes"] !=
                                         null
                                 ? Text(
-                                    _reportMenuDetailBloc
+                                    reportMenuDetailBloc
                                         .detail["keu_menu_notes"],
                                     style: const TextStyle(
                                       fontSize: 14,
                                     ),
                                   )
                                 : const SizedBox(),
-                            _reportMenuDetailBloc.detail['defaultValue'] !=
-                                        "" &&
-                                    _reportMenuDetailBloc
+                            reportMenuDetailBloc.detail['defaultValue'] != "" &&
+                                    reportMenuDetailBloc
                                             .detail['defaultValue'] !=
                                         null &&
-                                    _reportMenuDetailBloc
+                                    reportMenuDetailBloc
                                             .detail['defaultValue'] >
                                         0
                                 ? Container(
@@ -380,23 +379,23 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                                     margin: const EdgeInsets.only(top: 3),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(20),
-                                      color: _reportMenuDetailBloc
-                                                  .detail['type'] ==
-                                              "Pemasukan"
-                                          ? Colors.green.shade100
-                                          : (_reportMenuDetailBloc
-                                                      .detail['type'] ==
-                                                  "Pengeluaran"
-                                              ? Colors.pink.shade100
-                                              : (_reportMenuDetailBloc
+                                      color:
+                                          reportMenuDetailBloc.detail['type'] ==
+                                                  "Pemasukan"
+                                              ? Colors.green.shade100
+                                              : (reportMenuDetailBloc
                                                           .detail['type'] ==
-                                                      "Hutang")
-                                                  ? Colors.amber.shade100
-                                                  : Colors.blue.shade100),
+                                                      "Pengeluaran"
+                                                  ? Colors.pink.shade100
+                                                  : (reportMenuDetailBloc
+                                                              .detail['type'] ==
+                                                          "Hutang")
+                                                      ? Colors.amber.shade100
+                                                      : Colors.blue.shade100),
                                     ),
                                     child: Text(
                                       _formatter.formatString(
-                                          _reportMenuDetailBloc
+                                          reportMenuDetailBloc
                                               .detail['defaultValue']
                                               .toString()),
                                       style: const TextStyle(
@@ -408,12 +407,12 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                                 : const SizedBox(),
                             Row(
                               children: <Widget>[
-                                _reportMenuDetailBloc.detail["total"] != 0 &&
-                                        _reportMenuDetailBloc.detail["total"] !=
+                                reportMenuDetailBloc.detail["total"] != 0 &&
+                                        reportMenuDetailBloc.detail["total"] !=
                                             null
                                     ? Text(
                                         formatCurrency.format(
-                                            _reportMenuDetailBloc
+                                            reportMenuDetailBloc
                                                 .detail["total"]),
                                         style: const TextStyle(
                                           color: Colors.black87,
@@ -421,13 +420,13 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                                           fontSize: 14,
                                         ),
                                       )
-                                    : (_reportMenuDetailBloc.detail[
+                                    : (reportMenuDetailBloc.detail[
                                                         "keu_menu_type"] ==
                                                     "Hutang" ||
-                                                _reportMenuDetailBloc.detail[
+                                                reportMenuDetailBloc.detail[
                                                         "keu_menu_type"] ==
                                                     "Piutang") &&
-                                            _reportMenuDetailBloc.detail[
+                                            reportMenuDetailBloc.detail[
                                                     "keu_menu_status_paid_off"] ==
                                                 1
                                         ? Row(
@@ -444,20 +443,20 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                                               ),
                                               Text(
                                                 "(" +
-                                                    (_reportMenuDetailBloc
+                                                    (reportMenuDetailBloc
                                                                     .detail[
                                                                 "keu_menu_type"] ==
                                                             "Hutang"
                                                         ? formatCurrency.format(
-                                                            _reportMenuDetailBloc
+                                                            reportMenuDetailBloc
                                                                     .detail[
                                                                 "totalIn"])
-                                                        : _reportMenuDetailBloc
+                                                        : reportMenuDetailBloc
                                                                         .detail[
                                                                     "keu_menu_type"] ==
                                                                 "Piutang"
                                                             ? formatCurrency.format(
-                                                                _reportMenuDetailBloc
+                                                                reportMenuDetailBloc
                                                                         .detail[
                                                                     "totalOut"])
                                                             : "") +
@@ -473,16 +472,16 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                                 const Expanded(
                                   child: SizedBox(),
                                 ),
-                                (_reportMenuDetailBloc
+                                (reportMenuDetailBloc
                                                 .detail["keu_menu_deadline"] !=
                                             null &&
-                                        _reportMenuDetailBloc
+                                        reportMenuDetailBloc
                                                 .detail["keu_menu_deadline"] !=
                                             "" &&
-                                        (_reportMenuDetailBloc
+                                        (reportMenuDetailBloc
                                                     .detail["keu_menu_type"] ==
                                                 "Hutang" ||
-                                            _reportMenuDetailBloc
+                                            reportMenuDetailBloc
                                                     .detail["keu_menu_type"] ==
                                                 "Piutang"))
                                     ? Container(
@@ -509,11 +508,11 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                                           DateFormat("yyyy-MM-dd").format(
                                               DateFormat(
                                                       "yyyy-MM-dd'T'HH:mm:ss.SSS")
-                                                  .parse(_reportMenuDetailBloc
+                                                  .parse(reportMenuDetailBloc
                                                           .detail[
                                                       "keu_menu_deadline"])),
                                           style: TextStyle(
-                                            color: _reportMenuDetailBloc.detail[
+                                            color: reportMenuDetailBloc.detail[
                                                         "keu_menu_status_paid_off"] ==
                                                     1
                                                 ? Colors.grey
@@ -553,8 +552,8 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                         ),
                       ],
                     ),
-                    // child: !_reportMenuDetailBloc.loading
-                    //     ? _reportMenuDetailBloc.data.isNotEmpty
+                    // child: !reportMenuDetailBloc.loading
+                    //     ? reportMenuDetailBloc.data.isNotEmpty
                     //         ? TimelineTheme(
                     //             data: TimelineThemeData(
                     //               lineColor: colorT,
@@ -567,9 +566,9 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                     //               altOffset: const Offset(5, 16),
                     //               anchor: IndicatorPosition.top,
                     //               events: <TimelineEventDisplay>[
-                    //                 for (var item in _reportMenuDetailBloc.data)
+                    //                 for (var item in reportMenuDetailBloc.data)
                     //                   timelineWidget(item),
-                    //                 if (_reportMenuDetailBloc.detail[
+                    //                 if (reportMenuDetailBloc.detail[
                     //                         "keu_menu_status_paid_off"] ==
                     //                     1)
                     //                   TimelineEventDisplay(
@@ -609,7 +608,7 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                     //                         boxShadow: [
                     //                           BoxShadow(
                     //                             color: activeTabColor(
-                    //                                 _reportMenuDetailBloc
+                    //                                 reportMenuDetailBloc
                     //                                         .detail[
                     //                                     "keu_menu_type"],
                     //                                 chipsColor),

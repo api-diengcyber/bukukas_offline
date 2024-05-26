@@ -31,7 +31,7 @@ void main() async {
       child: const MyApp(),
     ),
   );
-  DB().initTables();
+  await DB().initTables();
 }
 
 class MyApp extends StatelessWidget {

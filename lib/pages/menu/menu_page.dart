@@ -81,7 +81,7 @@ class _MenuPageState extends State<MenuPage> {
     decimalDigits: 0,
   );
   final CurrencyTextInputFormatter _formatter = CurrencyTextInputFormatter(
-    NumberFormat.compactCurrency(
+    NumberFormat.currency(
       decimalDigits: 0,
       locale: 'id',
       symbol: 'Rp',

@@ -29,7 +29,7 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
     decimalDigits: 0,
   );
   final CurrencyTextInputFormatter _formatter =
-      CurrencyTextInputFormatter(NumberFormat.compactCurrency(
+      CurrencyTextInputFormatter(NumberFormat.currency(
     decimalDigits: 0,
     locale: 'id',
     symbol: 'Rp',

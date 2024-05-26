@@ -1,23 +1,22 @@
 import 'package:keuangan/db/model/tb_menu_model.dart';
 import 'package:keuangan/db/tb_menu.dart';
 import 'package:keuangan/providers/global_bloc.dart';
-import 'package:keuangan/services/menu_service.dart';
-import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:provider/provider.dart';
+import 'package:keuangan/utils/currency.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class EditMenuModal extends StatefulWidget {
   EditMenuModal({
-    Key? key,
+    super.key,
     required this.type,
     required this.gradient,
     this.data,
     this.onSuccess,
-  }) : super(key: key);
+  });
 
   final String type;
   LinearGradient gradient;
@@ -30,13 +29,6 @@ class EditMenuModal extends StatefulWidget {
 
 class _EditMenuModalState extends State<EditMenuModal> {
   final formKey = GlobalKey<FormBuilderState>();
-  final CurrencyTextInputFormatter _formatter = CurrencyTextInputFormatter(
-    NumberFormat.compactCurrency(
-      decimalDigits: 0,
-      locale: 'id',
-      symbol: 'Rp',
-    ),
-  );
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +160,7 @@ class _EditMenuModalState extends State<EditMenuModal> {
                                                             .defaultValue) ??
                                                     "0") >
                                             0
-                                        ? _formatter.formatString(widget
+                                        ? formatter.formatString(widget
                                             .data!.defaultValue
                                             .toString())
                                         : null,
@@ -187,7 +179,7 @@ class _EditMenuModalState extends State<EditMenuModal> {
                                       ),
                                     ),
                                     keyboardType: TextInputType.number,
-                                    inputFormatters: [_formatter],
+                                    inputFormatters: [formatter],
                                   ),
                                 ),
                           ((widget.type == "Hutang" ||
