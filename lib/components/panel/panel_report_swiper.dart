@@ -10,7 +10,7 @@ import 'package:skeleton_text/skeleton_text.dart';
 import 'package:intl/intl.dart';
 
 class PanelReportSwiper extends StatefulWidget {
-  const PanelReportSwiper({Key? key}) : super(key: key);
+  const PanelReportSwiper({super.key});
 
   @override
   State<StatefulWidget> createState() => _PanelReportSwiperState();
@@ -46,7 +46,7 @@ class _PanelReportSwiperState extends State<PanelReportSwiper> {
 
   @override
   Widget build(BuildContext context) {
-    final _reportBloc = context.watch<ReportBloc>();
+    final reportBloc = context.watch<ReportBloc>();
 
     showDateTimeRange() async {
       DateTimeRange? result = await showDateRangePicker(
@@ -57,10 +57,10 @@ class _PanelReportSwiperState extends State<PanelReportSwiper> {
             DateTime(DateTime.now().year + 1, 12, 31), // the latest allowable
         currentDate: DateTime.now(),
         initialDateRange:
-            _reportBloc.startDate != "" && _reportBloc.startDate != ""
+            reportBloc.startDate != "" && reportBloc.startDate != ""
                 ? DateTimeRange(
-                    start: DateTime.parse(_reportBloc.startDate),
-                    end: DateTime.parse(_reportBloc.endDate),
+                    start: DateTime.parse(reportBloc.startDate),
+                    end: DateTime.parse(reportBloc.endDate),
                   )
                 : null,
         saveText: 'Selesai',
@@ -68,55 +68,55 @@ class _PanelReportSwiperState extends State<PanelReportSwiper> {
       if (result != null) {
         DateTime startDate = result.start;
         DateTime endDate = result.end;
-        _reportBloc.startDate = formatter.format(startDate);
-        _reportBloc.endDate = formatter.format(endDate);
+        reportBloc.startDate = formatter.format(startDate);
+        reportBloc.endDate = formatter.format(endDate);
         await ReportModel().getSummaryReport(context);
         await ReportModel().getTabsData(context);
       }
     }
 
     return SizedBox(
-      height: _reportBloc.activeChipTab == "Periode" ? 170 : 130,
+      height: reportBloc.activeChipTab == "Periode" ? 170 : 130,
       child: Swiper(
         loop: false,
         autoplay: false,
-        physics: (_reportBloc.loadingSummary || _reportBloc.loadingData)
-            ? _reportBloc.listAvailableMenuType.isNotEmpty
+        physics: (reportBloc.loadingSummary || reportBloc.loadingData)
+            ? reportBloc.listAvailableMenuType.isNotEmpty
                 ? const NeverScrollableScrollPhysics()
                 : null
             : null,
-        itemCount: _reportBloc.listAvailableMenuType.length + 1,
+        itemCount: reportBloc.listAvailableMenuType.length + 1,
         scrollDirection: Axis.horizontal,
-        control: _reportBloc.listAvailableMenuType.isNotEmpty
+        control: reportBloc.listAvailableMenuType.isNotEmpty
             ? const SwiperControl(
                 color: Colors.black45,
                 size: 28,
               )
             : null,
-        index: (_reportBloc.activeMenuTab == "Semua" ||
-                _reportBloc.listAvailableMenuType.isEmpty)
+        index: (reportBloc.activeMenuTab == "Semua" ||
+                reportBloc.listAvailableMenuType.isEmpty)
             ? 0
-            : _reportBloc.listAvailableMenuType.indexWhere(
-                    (element) => element['name'] == _reportBloc.activeMenuTab) +
+            : reportBloc.listAvailableMenuType.indexWhere(
+                    (element) => element['name'] == reportBloc.activeMenuTab) +
                 1,
         onIndexChanged: (index) async {
           if (index == 0) {
-            _reportBloc.activeMenuTab = _listMenuName[index];
-            _reportBloc.reportIndexActiveTab = 0;
+            reportBloc.activeMenuTab = _listMenuName[index];
+            reportBloc.reportIndexActiveTab = 0;
           } else {
-            if (_reportBloc.activeMenuTab == "Semua") {
-              if (_reportBloc.reportIndexActiveTab == 1) {
-                _reportBloc.reportIndexActiveTab = 2;
+            if (reportBloc.activeMenuTab == "Semua") {
+              if (reportBloc.reportIndexActiveTab == 1) {
+                reportBloc.reportIndexActiveTab = 2;
               }
             }
-            var rowIndex = _reportBloc.listAvailableMenuType[index - 1];
-            _reportBloc.activeMenuTab = rowIndex["name"];
+            var rowIndex = reportBloc.listAvailableMenuType[index - 1];
+            reportBloc.activeMenuTab = rowIndex["name"];
           }
           await ReportModel().getSummaryReport(context);
           await ReportModel().getTabsData(context);
         },
         itemBuilder: (BuildContext context, int index) {
-          int rIndex = _listMenuName.indexOf(_reportBloc.activeMenuTab);
+          int rIndex = _listMenuName.indexOf(reportBloc.activeMenuTab);
           return Container(
             padding: const EdgeInsets.symmetric(
               vertical: 12,
@@ -147,11 +147,11 @@ class _PanelReportSwiperState extends State<PanelReportSwiper> {
                 Row(
                   children: <Widget>[
                     Text(
-                      _reportBloc.activeMenuTab,
+                      reportBloc.activeMenuTab,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 17,
-                        color: _reportBloc.activeMenuTab == "Semua"
+                        color: reportBloc.activeMenuTab == "Semua"
                             ? Colors.black
                             : Colors.white,
                       ),
@@ -159,12 +159,11 @@ class _PanelReportSwiperState extends State<PanelReportSwiper> {
                     const Expanded(
                       child: SizedBox(),
                     ),
-                    _reportBloc.activeMenuTab == "Semua"
+                    reportBloc.activeMenuTab == "Semua"
                         ? Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              for (var item
-                                  in _reportBloc.listAvailableMenuType)
+                              for (var item in reportBloc.listAvailableMenuType)
                                 Container(
                                   margin: const EdgeInsets.only(left: 4),
                                   child: CircleCustom(
@@ -187,8 +186,14 @@ class _PanelReportSwiperState extends State<PanelReportSwiper> {
                 PanelReportChipsMenu(
                   backgroundColor: chipsColor[rIndex],
                 ),
-                _reportBloc.activeChipTab == "Periode"
+                reportBloc.activeChipTab == "Periode"
                     ? InkWell(
+                        onTap: !reportBloc.loadingSummary &&
+                                !reportBloc.loadingData
+                            ? () async {
+                                await showDateTimeRange();
+                              }
+                            : () {},
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             vertical: 4,
@@ -216,10 +221,10 @@ class _PanelReportSwiperState extends State<PanelReportSwiper> {
                                       fontSize: 13,
                                     ),
                                   ),
-                                  _reportBloc.startDate != "" &&
-                                          _reportBloc.endDate != ""
+                                  reportBloc.startDate != "" &&
+                                          reportBloc.endDate != ""
                                       ? Text(
-                                          "${_reportBloc.startDate} s/d ${_reportBloc.endDate}",
+                                          "${reportBloc.startDate} s/d ${reportBloc.endDate}",
                                           style: const TextStyle(
                                             fontSize: 13,
                                           ),
@@ -230,25 +235,19 @@ class _PanelReportSwiperState extends State<PanelReportSwiper> {
                             ],
                           ),
                         ),
-                        onTap: !_reportBloc.loadingSummary &&
-                                !_reportBloc.loadingData
-                            ? () async {
-                                await showDateTimeRange();
-                              }
-                            : () {},
                       )
                     : const SizedBox(),
                 const Expanded(
                   child: SizedBox(),
                 ),
-                !_reportBloc.loadingSummary
+                !reportBloc.loadingSummary
                     ? Text(
                         formatCurrency
-                            .format(_reportBloc.dataSummary['totalByType']),
+                            .format(reportBloc.dataSummary['totalByType']),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 22,
-                          color: _reportBloc.activeMenuTab == "Semua"
+                          color: reportBloc.activeMenuTab == "Semua"
                               ? Colors.black
                               : Colors.white,
                         ),

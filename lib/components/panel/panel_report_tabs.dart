@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class PanelReportTabs extends StatefulWidget {
-  const PanelReportTabs({Key? key}) : super(key: key);
+  const PanelReportTabs({super.key});
 
   @override
   State<StatefulWidget> createState() => _PanelReportTabsState();

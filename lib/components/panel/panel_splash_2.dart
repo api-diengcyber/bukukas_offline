@@ -2,7 +2,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 
 class PanelSplash2 extends StatefulWidget {
-  const PanelSplash2({Key? key}) : super(key: key);
+  const PanelSplash2({super.key});
 
   @override
   State<PanelSplash2> createState() => _PanelSplash2State();

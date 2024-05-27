@@ -86,7 +86,7 @@ class _TabReportDataState extends State<TabReportData> {
 
     return (!_reportBloc.loadingSummary && !_reportBloc.loadingData)
         ? _reportBloc.data.length > 0
-            ? Container(
+            ? SizedBox(
                 height: double.infinity,
                 child: Column(
                   children: <Widget>[
@@ -233,13 +233,13 @@ class _TabReportDataState extends State<TabReportData> {
                                 Row(
                                   children: <Widget>[
                                     Expanded(
-                                      child: Container(
+                                      child: SizedBox(
                                         width: double.infinity,
                                         child: InkWell(
-                                          child: Row(
+                                          child: const Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
-                                            children: const <Widget>[
+                                            children: <Widget>[
                                               Icon(
                                                 Icons.content_paste_search,
                                                 color: Colors.black87,
@@ -274,13 +274,13 @@ class _TabReportDataState extends State<TabReportData> {
                                     ),
                                     data["keu_transaction_allow_delete"] == 1
                                         ? Expanded(
-                                            child: Container(
+                                            child: SizedBox(
                                               width: double.infinity,
                                               child: InkWell(
-                                                child: Row(
+                                                child: const Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
-                                                  children: const <Widget>[
+                                                  children: <Widget>[
                                                     Icon(
                                                       Icons.delete,
                                                       color: Colors.red,
@@ -316,10 +316,10 @@ class _TabReportDataState extends State<TabReportData> {
                   ],
                 ),
               )
-            : Center(
+            : const Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const <Widget>[
+                  children: <Widget>[
                     Icon(
                       Icons.emoji_symbols,
                       color: Colors.grey,

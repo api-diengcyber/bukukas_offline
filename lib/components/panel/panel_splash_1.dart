@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class PanelSplash1 extends StatefulWidget {
-  const PanelSplash1({Key? key}) : super(key: key);
+  const PanelSplash1({super.key});
 
   @override
   State<PanelSplash1> createState() => _PanelSplash1State();

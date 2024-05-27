@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 
 // ignore: must_be_immutable
 class PanelTransaction extends StatefulWidget {
-  const PanelTransaction({Key? key}) : super(key: key);
+  const PanelTransaction({super.key});
 
   @override
   State<PanelTransaction> createState() => _PanelTransactionState();
@@ -253,12 +253,12 @@ class _PanelTransactionState extends State<PanelTransaction> {
                           );
                         },
                       )
-                    : Center(
+                    : const Center(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 26),
+                          padding: EdgeInsets.symmetric(vertical: 26),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: const <Widget>[
+                            children: <Widget>[
                               Icon(
                                 Icons.list_alt,
                                 color: Colors.grey,

@@ -5,7 +5,7 @@ import 'package:keuangan/pages/dashboard/dashboard_controller.dart';
 
 // ignore: must_be_immutable
 class PanelChart extends StatefulWidget {
-  const PanelChart({Key? key}) : super(key: key);
+  const PanelChart({super.key});
 
   @override
   State<PanelChart> createState() => _PanelChartState();

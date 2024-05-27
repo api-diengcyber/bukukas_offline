@@ -75,9 +75,9 @@ class _PanelMenuButtonState extends State<PanelMenuButton> {
                       ),
                     );
                   },
-                  child: Container(
+                  child: const SizedBox(
                     width: double.infinity,
-                    child: const Column(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Icon(

@@ -6,7 +6,7 @@ import 'package:skeleton_text/skeleton_text.dart';
 
 // ignore: must_be_immutable
 class PanelDashboard extends StatefulWidget {
-  const PanelDashboard({Key? key}) : super(key: key);
+  const PanelDashboard({super.key});
 
   @override
   State<PanelDashboard> createState() => _PanelDashboardState();
