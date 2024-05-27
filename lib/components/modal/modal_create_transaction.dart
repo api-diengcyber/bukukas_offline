@@ -174,15 +174,17 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
       }
     }
 
-    List<dynamic> cartByMenu = globalBloc.cart
+    List<CartModel> cartByMenu = globalBloc.cart
         .where((element) => element.menuId == widget.data.id)
         .toList();
     int totalSameCart = 0;
     for (var item in cartByMenu) {
       if (widget.data.type == "Hutang") {
-        totalSameCart += int.parse(item["in"]) - int.parse(item["out"]);
+        totalSameCart +=
+            int.parse(item.gin ?? "0") - int.parse(item.gout ?? "0");
       } else {
-        totalSameCart += int.parse(item["out"]) - int.parse(item["in"]);
+        totalSameCart +=
+            int.parse(item.gout ?? "0") - int.parse(item.gin ?? "0");
       }
     }
 

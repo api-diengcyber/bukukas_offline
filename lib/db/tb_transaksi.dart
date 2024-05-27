@@ -46,7 +46,7 @@ class TbTransaksi extends DB {
     await database.transaction((txn) async {
       for (int i = 0; i < listData.length; i++) {
         await txn.rawInsert(
-          'INSERT INTO menu(transactionDate,notes,valueIn,valueOut,debtType,createdOn,allowDelete,menuId) VALUES(?, ?, ?, ?, ?, ?, ?, ?)',
+          'INSERT INTO transaksi(transactionDate,notes,valueIn,valueOut,debtType,createdOn,allowDelete,menuId) VALUES(?, ?, ?, ?, ?, ?, ?, ?)',
           [
             listData[i].transactionDate,
             listData[i].notes,

@@ -339,10 +339,10 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                           width: 12,
                                         ),
                                         Text(
-                                          "Tambahkan ${globalBloc.tabMenuTransaction}",
+                                          "${globalBloc.tabMenuTransaction} baru",
                                           style: const TextStyle(
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
                                             color: Colors.black54,
                                           ),
                                         ),
@@ -353,370 +353,366 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                               ),
                               Expanded(
                                 child: !createBloc.loading
-                                    ? Container(
-                                        child: Column(
-                                          children: [
-                                            createBloc.data.length > 0
-                                                ? const SizedBox(
-                                                    height: 6,
-                                                  )
-                                                : const SizedBox(),
-                                            createBloc.data.length > 0
-                                                ? const Divider(
-                                                    height: 0,
-                                                  )
-                                                : const SizedBox(),
-                                            createBloc.data.length > 0
-                                                ? Container(
-                                                    width: double.infinity,
-                                                    padding: const EdgeInsets
-                                                        .symmetric(vertical: 7),
-                                                    color: Colors.grey.shade50,
-                                                    child: Center(
-                                                      child: Text(
-                                                        "Riwayat ${globalBloc.tabMenuTransaction.toLowerCase()}",
-                                                        style: const TextStyle(
-                                                          fontSize: 16,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color: Colors.black54,
-                                                        ),
+                                    ? Column(
+                                        children: [
+                                          createBloc.data.isNotEmpty
+                                              ? const SizedBox(
+                                                  height: 6,
+                                                )
+                                              : const SizedBox(),
+                                          createBloc.data.isNotEmpty
+                                              ? const Divider(
+                                                  height: 0,
+                                                )
+                                              : const SizedBox(),
+                                          createBloc.data.isNotEmpty
+                                              ? Container(
+                                                  width: double.infinity,
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                    top: 9,
+                                                    bottom: 7,
+                                                  ),
+                                                  color: Colors.white,
+                                                  child: Center(
+                                                    child: Text(
+                                                      "${globalBloc.tabMenuTransaction.toUpperCase()} TERAKHIR",
+                                                      style: const TextStyle(
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        color: Colors.black54,
                                                       ),
                                                     ),
-                                                  )
-                                                : const SizedBox(),
-                                            const SizedBox(
-                                              height: 6,
-                                            ),
-                                            Expanded(
-                                              child: ListView.builder(
-                                                shrinkWrap: true,
-                                                padding:
-                                                    const EdgeInsets.all(0),
-                                                itemCount:
-                                                    createBloc.data.length,
-                                                itemBuilder: (context, index) {
-                                                  var data =
-                                                      createBloc.data[index];
-                                                  DateTime tempDate = DateFormat(
-                                                          "yyyy-MM-dd'T'HH:mm:ss.SSS")
-                                                      .parse(
-                                                          data.transactionDate ??
-                                                              "");
-                                                  return Container(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                      vertical: 12,
-                                                      horizontal: 18,
-                                                    ),
-                                                    margin:
-                                                        const EdgeInsets.only(
-                                                            bottom: 8,
-                                                            left: 12,
-                                                            right: 12),
-                                                    decoration: BoxDecoration(
-                                                      color: activeTabColor(
-                                                          data.menuType ?? "",
-                                                          labelsColor),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
-                                                      boxShadow: [
-                                                        BoxShadow(
+                                                  ),
+                                                )
+                                              : const SizedBox(),
+                                          const SizedBox(
+                                            height: 6,
+                                          ),
+                                          Expanded(
+                                            child: ListView.builder(
+                                              shrinkWrap: true,
+                                              padding: const EdgeInsets.all(0),
+                                              itemCount: createBloc.data.length,
+                                              itemBuilder: (context, index) {
+                                                var data =
+                                                    createBloc.data[index];
+                                                DateTime tempDate = DateFormat(
+                                                        "yyyy-MM-dd'T'HH:mm:ss.SSS")
+                                                    .parse(
+                                                        data.transactionDate ??
+                                                            "");
+                                                return Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    vertical: 12,
+                                                    horizontal: 18,
+                                                  ),
+                                                  margin: const EdgeInsets.only(
+                                                      bottom: 8,
+                                                      left: 12,
+                                                      right: 12),
+                                                  decoration: BoxDecoration(
+                                                    color: activeTabColor(
+                                                        data.menuType ?? "",
+                                                        labelsColor),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: activeTabColor(
+                                                            data.menuType ?? "",
+                                                            chipsColor),
+                                                        spreadRadius: 0,
+                                                        blurRadius: 0.2,
+                                                        offset: const Offset(0,
+                                                            0.1), // changes position of shadow
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        data.menuName ?? "",
+                                                        style: TextStyle(
                                                           color: activeTabColor(
                                                               data.menuType ??
                                                                   "",
-                                                              chipsColor),
-                                                          spreadRadius: 0,
-                                                          blurRadius: 0.2,
-                                                          offset: const Offset(
-                                                              0,
-                                                              0.1), // changes position of shadow
+                                                              reportActiveTabColor),
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 15,
                                                         ),
-                                                      ],
-                                                    ),
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          data.menuName ?? "",
-                                                          style: TextStyle(
-                                                            color: activeTabColor(
-                                                                data.menuType ??
-                                                                    "",
-                                                                reportActiveTabColor),
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 15,
-                                                          ),
-                                                        ),
-                                                        data.menuNotes !=
-                                                                    null &&
-                                                                data.menuNotes !=
-                                                                    ""
-                                                            ? Text(
-                                                                data.menuNotes ??
-                                                                    "",
-                                                                style:
-                                                                    const TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  fontSize: 14,
-                                                                ),
-                                                              )
-                                                            : const SizedBox(),
-                                                        Text(
-                                                          DateFormat(
-                                                                  "yyyy-MM-dd HH:mm:ss")
-                                                              .format(tempDate),
-                                                          style:
-                                                              const TextStyle(
-                                                            color:
-                                                                Colors.black87,
-                                                            fontSize: 14,
-                                                          ),
-                                                        ),
-                                                        data.notes != null &&
-                                                                data.notes != ""
-                                                            ? Text(
-                                                                data.notes ??
-                                                                    "",
-                                                                style:
-                                                                    const TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  fontSize: 14,
-                                                                ),
-                                                              )
-                                                            : const SizedBox(),
-                                                        Row(
-                                                          children: [
-                                                            Container(
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                color: Colors
-                                                                    .white,
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            10),
-                                                                boxShadow: [
-                                                                  BoxShadow(
-                                                                    color: Colors
-                                                                        .grey
-                                                                        .withOpacity(
-                                                                            0.5),
-                                                                    spreadRadius:
-                                                                        0,
-                                                                    blurRadius:
-                                                                        0.2,
-                                                                    offset: const Offset(
-                                                                        0,
-                                                                        0.2), // changes position of shadow
-                                                                  ),
-                                                                ],
+                                                      ),
+                                                      data.menuNotes != null &&
+                                                              data.menuNotes !=
+                                                                  ""
+                                                          ? Text(
+                                                              data.menuNotes ??
+                                                                  "",
+                                                              style:
+                                                                  const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 14,
                                                               ),
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .symmetric(
-                                                                horizontal: 6,
-                                                                vertical: 4,
+                                                            )
+                                                          : const SizedBox(),
+                                                      Text(
+                                                        DateFormat(
+                                                                "yyyy-MM-dd HH:mm:ss")
+                                                            .format(tempDate),
+                                                        style: const TextStyle(
+                                                          color: Colors.black87,
+                                                          fontSize: 14,
+                                                        ),
+                                                      ),
+                                                      data.notes != null &&
+                                                              data.notes != ""
+                                                          ? Text(
+                                                              data.notes ?? "",
+                                                              style:
+                                                                  const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 14,
                                                               ),
-                                                              child: Text(
-                                                                formatCurrency.format(int.parse(
-                                                                        data.valueIn ??
-                                                                            "0") -
-                                                                    int.parse(
-                                                                        data.valueOut ??
-                                                                            "0")),
-                                                                style:
-                                                                    const TextStyle(
+                                                            )
+                                                          : const SizedBox(),
+                                                      Row(
+                                                        children: [
+                                                          Container(
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color:
+                                                                  Colors.white,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
+                                                              boxShadow: [
+                                                                BoxShadow(
                                                                   color: Colors
-                                                                      .black87,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  fontSize: 14,
+                                                                      .grey
+                                                                      .withOpacity(
+                                                                          0.5),
+                                                                  spreadRadius:
+                                                                      0,
+                                                                  blurRadius:
+                                                                      0.2,
+                                                                  offset: const Offset(
+                                                                      0,
+                                                                      0.2), // changes position of shadow
                                                                 ),
+                                                              ],
+                                                            ),
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                              horizontal: 6,
+                                                              vertical: 4,
+                                                            ),
+                                                            child: Text(
+                                                              formatCurrency.format(int
+                                                                      .parse(data
+                                                                              .valueIn ??
+                                                                          "0") -
+                                                                  int.parse(
+                                                                      data.valueOut ??
+                                                                          "0")),
+                                                              style:
+                                                                  const TextStyle(
+                                                                color: Colors
+                                                                    .black87,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 14,
                                                               ),
                                                             ),
-                                                            const Expanded(
-                                                              child: SizedBox(),
-                                                            ),
-                                                            data.debtType !=
-                                                                    "NON"
-                                                                ? Container(
-                                                                    margin: const EdgeInsets
-                                                                        .only(
-                                                                        left:
-                                                                            6),
-                                                                    decoration:
-                                                                        BoxDecoration(
+                                                          ),
+                                                          const Expanded(
+                                                            child: SizedBox(),
+                                                          ),
+                                                          data.debtType != "NON"
+                                                              ? Container(
+                                                                  margin:
+                                                                      const EdgeInsets
+                                                                          .only(
+                                                                          left:
+                                                                              6),
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color: Colors
+                                                                        .white54,
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            10),
+                                                                  ),
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                          .symmetric(
+                                                                    horizontal:
+                                                                        12,
+                                                                    vertical: 4,
+                                                                  ),
+                                                                  child: Text(
+                                                                    "${data.debtType} ${data.menuType.toString().toLowerCase()}",
+                                                                    style:
+                                                                        const TextStyle(
                                                                       color: Colors
-                                                                          .white54,
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              10),
+                                                                          .black54,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontSize:
+                                                                          13,
                                                                     ),
-                                                                    padding:
-                                                                        const EdgeInsets
-                                                                            .symmetric(
-                                                                      horizontal:
-                                                                          12,
-                                                                      vertical:
-                                                                          4,
+                                                                  ),
+                                                                )
+                                                              : const SizedBox(),
+                                                        ],
+                                                      ),
+                                                      const Divider(),
+                                                      Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: SizedBox(
+                                                              width: double
+                                                                  .infinity,
+                                                              child: InkWell(
+                                                                child:
+                                                                    const Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .center,
+                                                                  children: [
+                                                                    Icon(
+                                                                      Icons
+                                                                          .content_paste_search,
+                                                                      color: Colors
+                                                                          .black87,
+                                                                      size: 20,
                                                                     ),
-                                                                    child: Text(
-                                                                      "${data.debtType} ${data.menuType.toString().toLowerCase()}",
+                                                                    SizedBox(
+                                                                      width: 4,
+                                                                    ),
+                                                                    Text(
+                                                                      "Detail",
                                                                       style:
-                                                                          const TextStyle(
-                                                                        color: Colors
-                                                                            .black54,
-                                                                        fontWeight:
-                                                                            FontWeight.bold,
+                                                                          TextStyle(
                                                                         fontSize:
                                                                             13,
                                                                       ),
                                                                     ),
-                                                                  )
-                                                                : const SizedBox(),
-                                                          ],
-                                                        ),
-                                                        const Divider(),
-                                                        Row(
-                                                          children: [
-                                                            Expanded(
-                                                              child: SizedBox(
-                                                                width: double
-                                                                    .infinity,
-                                                                child: InkWell(
-                                                                  child:
-                                                                      const Row(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .center,
-                                                                    children: [
-                                                                      Icon(
-                                                                        Icons
-                                                                            .content_paste_search,
-                                                                        color: Colors
-                                                                            .black87,
-                                                                        size:
-                                                                            20,
-                                                                      ),
-                                                                      SizedBox(
-                                                                        width:
-                                                                            4,
-                                                                      ),
-                                                                      Text(
-                                                                        "Detail",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              13,
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                  onTap: () {
-                                                                    Navigator
-                                                                        .push(
-                                                                      context,
-                                                                      PageTransition(
-                                                                        type: PageTransitionType
-                                                                            .bottomToTop,
-                                                                        child:
-                                                                            ReportMenuDetailPage(
-                                                                          menuId:
-                                                                              data.menuId ?? 0,
-                                                                          type: data.menuType ??
-                                                                              "",
-                                                                        ),
-                                                                      ),
-                                                                    ).then(
-                                                                        (value) async {
-                                                                      if (value !=
-                                                                          null) {
-                                                                        if (value ==
-                                                                            'load') {
-                                                                          createBloc.page =
-                                                                              1;
-                                                                          await CreateModel()
-                                                                              .getData(context);
-                                                                        }
-                                                                      }
-                                                                    });
-                                                                  },
+                                                                  ],
                                                                 ),
-                                                              ),
-                                                            ),
-                                                            data.allowDelete ==
-                                                                    "1"
-                                                                ? Expanded(
-                                                                    child:
-                                                                        SizedBox(
-                                                                      width: double
-                                                                          .infinity,
+                                                                onTap: () {
+                                                                  Navigator
+                                                                      .push(
+                                                                    context,
+                                                                    PageTransition(
+                                                                      type: PageTransitionType
+                                                                          .bottomToTop,
                                                                       child:
-                                                                          InkWell(
-                                                                        child:
-                                                                            const Row(
-                                                                          mainAxisAlignment:
-                                                                              MainAxisAlignment.center,
-                                                                          children: [
-                                                                            Icon(
-                                                                              Icons.delete,
-                                                                              color: Colors.red,
-                                                                              size: 20,
-                                                                            ),
-                                                                            SizedBox(
-                                                                              width: 4,
-                                                                            ),
-                                                                            Text(
-                                                                              "Hapus",
-                                                                              style: TextStyle(
-                                                                                fontSize: 13,
-                                                                                color: Colors.red,
-                                                                              ),
-                                                                            ),
-                                                                          ],
-                                                                        ),
-                                                                        onTap:
-                                                                            () async {
-                                                                          await onDeleteMenu(
-                                                                              data);
-                                                                        },
+                                                                          ReportMenuDetailPage(
+                                                                        menuId:
+                                                                            data.menuId ??
+                                                                                0,
+                                                                        type: data.menuType ??
+                                                                            "",
                                                                       ),
                                                                     ),
-                                                                  )
-                                                                : const SizedBox(),
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  );
-                                                },
-                                              ),
+                                                                  ).then(
+                                                                      (value) async {
+                                                                    if (value !=
+                                                                        null) {
+                                                                      if (value ==
+                                                                          'load') {
+                                                                        createBloc
+                                                                            .page = 1;
+                                                                        await CreateModel()
+                                                                            .getData(context);
+                                                                      }
+                                                                    }
+                                                                  });
+                                                                },
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          data.allowDelete ==
+                                                                  "1"
+                                                              ? Expanded(
+                                                                  child:
+                                                                      SizedBox(
+                                                                    width: double
+                                                                        .infinity,
+                                                                    child:
+                                                                        InkWell(
+                                                                      child:
+                                                                          const Row(
+                                                                        mainAxisAlignment:
+                                                                            MainAxisAlignment.center,
+                                                                        children: [
+                                                                          Icon(
+                                                                            Icons.delete,
+                                                                            color:
+                                                                                Colors.red,
+                                                                            size:
+                                                                                20,
+                                                                          ),
+                                                                          SizedBox(
+                                                                            width:
+                                                                                4,
+                                                                          ),
+                                                                          Text(
+                                                                            "Hapus",
+                                                                            style:
+                                                                                TextStyle(
+                                                                              fontSize: 13,
+                                                                              color: Colors.red,
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                      onTap:
+                                                                          () async {
+                                                                        await onDeleteMenu(
+                                                                            data);
+                                                                      },
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                              : const SizedBox(),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              },
                                             ),
-                                            createBloc.totalPage > 1
-                                                ? Pagination(
-                                                    totalPage:
-                                                        createBloc.totalPage,
-                                                    page: createBloc.page,
-                                                    height: 10,
-                                                    onTap: (page) async {
-                                                      createBloc.page = page;
-                                                      await CreateModel()
-                                                          .getData(context);
-                                                    },
-                                                  )
-                                                : const SizedBox(),
-                                          ],
-                                        ),
+                                          ),
+                                          createBloc.totalPage > 1
+                                              ? Pagination(
+                                                  totalPage:
+                                                      createBloc.totalPage,
+                                                  page: createBloc.page,
+                                                  height: 10,
+                                                  onTap: (page) async {
+                                                    createBloc.page = page;
+                                                    await CreateModel()
+                                                        .getData(context);
+                                                  },
+                                                )
+                                              : const SizedBox(),
+                                        ],
                                       )
                                     : Center(
                                         child: SpinKitDoubleBounce(
