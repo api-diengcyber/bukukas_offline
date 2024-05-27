@@ -1,4 +1,5 @@
 import 'package:keuangan/components/circle_custom.dart';
+import 'package:keuangan/components/modal/cart_model.dart';
 import 'package:keuangan/db/model/tb_menu_model.dart';
 import 'package:keuangan/helpers/set_menus.dart';
 import 'package:keuangan/pages/transaction/create2_model.dart';
@@ -55,8 +56,7 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
     if ((widget.data.type == "Hutang" || widget.data.type == "Piutang")) {
       int indexMenuExist = globalBloc.cart.indexWhere((element) =>
           // ignore: prefer_interpolation_to_compose_strings
-          "${element["menuId"] + "-" + element["type"]}-" +
-              element["debtType"] ==
+          "${element.menuId}-${element.type}-${element.debtType}" ==
           "${widget.data.id}-${widget.data.type}-${globalBloc.debtType}");
       if (indexMenuExist > -1) {
         _allowSave = false;
@@ -123,10 +123,10 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
 
         if ((widget.data.type == "Hutang" || widget.data.type == "Piutang")) {
           int indexMenuExist = globalBloc.cart
-              .indexWhere((element) => element["menuId"] == widget.data.id);
+              .indexWhere((element) => element.menuId == widget.data.id);
           if (indexMenuExist > -1) {
-            if (globalBloc.cart[indexMenuExist]["type"] == widget.data.type) {
-              if (globalBloc.cart[indexMenuExist]["debtType"] ==
+            if (globalBloc.cart[indexMenuExist].type == widget.data.type) {
+              if (globalBloc.cart[indexMenuExist].debtType ==
                   globalBloc.debtType) {
                 allowSave = false;
               }
@@ -135,33 +135,33 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
         }
 
         if (allowSave) {
-          globalBloc.cart.add({
-            "index": globalBloc.cart.length,
-            "tgl": valueForm["tgl"].toIso8601String(),
-            "in": gIn.toString(),
-            "out": gOut.toString(),
-            "notes": valueForm["notes"],
-            "deadline":
+          globalBloc.cart.add(CartModel(
+            index: globalBloc.cart.length,
+            tgl: valueForm["tgl"].toIso8601String(),
+            gin: gIn.toString(),
+            gout: gOut.toString(),
+            notes: valueForm["notes"],
+            deadline:
                 valueForm["deadline"] != null && valueForm["deadline"] != ""
                     ? valueForm["deadline"].toIso8601String()
                     : null,
-            "debtType":
+            debtType:
                 (widget.data.type == "Hutang" || widget.data.type == "Piutang")
                     ? globalBloc.debtType
                     : "",
-            "type": widget.data.type,
-            "menuId": widget.data.id,
-            "menuDetail": widget.data,
-          });
+            type: widget.data.type,
+            menuId: widget.data.id,
+          ));
 
           if (isFinish) {
             await CreateModel2().saveTransaction(context);
+            // ignore: use_build_context_synchronously
             Navigator.pop(context, 'success');
             // refresh menu after saving...
-            // if (widget.data.type == "Hutang" ||
-            //     widget.data.type == "Piutang") {
-            //   await CreateModel2().getMenu(context);
-            // }
+            if (widget.data.type == "Hutang" || widget.data.type == "Piutang") {
+              // ignore: use_build_context_synchronously
+              await CreateModel2().getMenu(context);
+            }
           } else {
             globalBloc.loadingMenus = false;
             Navigator.pop(context);
@@ -174,15 +174,15 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
       }
     }
 
-    List<dynamic> _cartByMenu = globalBloc.cart
-        .where((element) => element["menuId"] == widget.data.id)
+    List<dynamic> cartByMenu = globalBloc.cart
+        .where((element) => element.menuId == widget.data.id)
         .toList();
-    int _totalSameCart = 0;
-    for (var item in _cartByMenu) {
+    int totalSameCart = 0;
+    for (var item in cartByMenu) {
       if (widget.data.type == "Hutang") {
-        _totalSameCart += int.parse(item["in"]) - int.parse(item["out"]);
+        totalSameCart += int.parse(item["in"]) - int.parse(item["out"]);
       } else {
-        _totalSameCart += int.parse(item["out"]) - int.parse(item["in"]);
+        totalSameCart += int.parse(item["out"]) - int.parse(item["in"]);
       }
     }
 
@@ -621,7 +621,7 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                                                         .center,
                                                                 children: <Widget>[
                                                                   // for (var item
-                                                                  //     in _cartByMenu)
+                                                                  //     in cartByMenu)
                                                                   //   Container(
                                                                   //     margin: const EdgeInsets
                                                                   //             .only(
@@ -637,11 +637,11 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                                                         ? int.parse(widget.data.total ??
                                                                                 "0") -
                                                                             _nominal +
-                                                                            _totalSameCart
+                                                                            totalSameCart
                                                                         : int.parse(widget.data.total ??
                                                                                 "0") +
                                                                             _nominal +
-                                                                            _totalSameCart),
+                                                                            totalSameCart),
                                                                     style:
                                                                         const TextStyle(
                                                                       letterSpacing:

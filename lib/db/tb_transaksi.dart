@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:keuangan/components/modal/cart_model.dart';
 import 'package:keuangan/db/db.dart';
 import 'package:keuangan/db/model/tb_transaksi_model.dart';
+import 'package:keuangan/utils/currency.dart';
 import 'package:sqflite/sqflite.dart';
 
 class TbTransaksi extends DB {
@@ -20,5 +22,43 @@ class TbTransaksi extends DB {
     List<Map> list = await database.rawQuery(
         'SELECT a.*, b.name AS menuName, b.type AS menuType FROM transaksi a JOIN menu b ON a.menuId=b.id $whereStr');
     return tbTransaksiModelFromJson(jsonEncode(list));
+  }
+
+  Future<void> createByCart(List<CartModel> listData) async {
+    List<TbTransaksiModel> l = [];
+    for (int i = 0; i < listData.length; i++) {
+      l.add(TbTransaksiModel(
+        transactionDate: listData[i].tgl,
+        valueIn: listData[i].gin,
+        valueOut: listData[i].gout,
+        notes: listData[i].notes,
+        debtType: listData[i].debtType,
+        menuId: listData[i].menuId,
+        menuType: listData[i].type,
+        menuDeadline: listData[i].deadline,
+      ));
+    }
+    await create(l);
+  }
+
+  Future<void> create(List<TbTransaksiModel> listData) async {
+    Database database = await getDB();
+    await database.transaction((txn) async {
+      for (int i = 0; i < listData.length; i++) {
+        await txn.rawInsert(
+          'INSERT INTO menu(transactionDate,notes,valueIn,valueOut,debtType,createdOn,allowDelete,menuId) VALUES(?, ?, ?, ?, ?, ?, ?, ?)',
+          [
+            listData[i].transactionDate,
+            listData[i].notes,
+            currencyToDoubleString(listData[i].valueIn ?? "0"),
+            currencyToDoubleString(listData[i].valueOut ?? "0"),
+            listData[i].debtType,
+            listData[i].createdOn,
+            listData[i].allowDelete,
+            listData[i].menuId,
+          ],
+        );
+      }
+    });
   }
 }

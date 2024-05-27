@@ -1,5 +1,4 @@
 import 'package:keuangan/providers/report_bloc.dart';
-import 'package:keuangan/services/transaction_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,8 +11,9 @@ class ReportModel {
   }
 
   Future<bool> deleteTransaction(BuildContext context, int id) async {
-    final resp = await TransactionService().delete(context, id);
-    return resp;
+    // final resp = await TransactionService().delete(context, id);
+    // return resp;
+    return true;
   }
 
   Future<void> _getMenu(BuildContext context) async {

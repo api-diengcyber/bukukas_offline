@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:keuangan/components/modal/cart_model.dart';
 import 'package:keuangan/db/model/tb_menu_model.dart';
 
 class GlobalBloc extends ChangeNotifier {
@@ -45,9 +46,9 @@ class GlobalBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<dynamic> _cart = [];
-  List<dynamic> get cart => _cart;
-  set cart(List<dynamic> val) {
+  List<CartModel> _cart = [];
+  List<CartModel> get cart => _cart;
+  set cart(List<CartModel> val) {
     _cart = val;
     notifyListeners();
   }

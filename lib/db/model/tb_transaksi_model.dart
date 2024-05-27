@@ -24,6 +24,7 @@ class TbTransaksiModel {
   String? menuType;
   String? menuName;
   String? menuNotes;
+  String? menuDeadline;
 
   TbTransaksiModel({
     this.id,
@@ -38,6 +39,7 @@ class TbTransaksiModel {
     this.menuType,
     this.menuName,
     this.menuNotes,
+    this.menuDeadline,
   });
 
   factory TbTransaksiModel.fromJson(Map<String, dynamic> json) =>
@@ -54,6 +56,7 @@ class TbTransaksiModel {
         menuType: json["menuType"],
         menuName: json["menuName"],
         menuNotes: json["menuNotes"],
+        menuDeadline: json["menuDeadline"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -69,5 +72,6 @@ class TbTransaksiModel {
         "menuType": menuType,
         "menuName": menuName,
         "menuNotes": menuNotes,
+        "menuDeadline": menuDeadline,
       };
 }

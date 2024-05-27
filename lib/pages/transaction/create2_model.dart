@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:keuangan/db/model/tb_menu_model.dart';
 import 'package:keuangan/db/tb_menu.dart';
+import 'package:keuangan/db/tb_transaksi.dart';
 import 'package:keuangan/providers/transaction_bloc.dart';
-import 'package:keuangan/services/transaction_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/global_bloc.dart';
@@ -17,16 +17,11 @@ class CreateModel2 {
     final transactionBloc =
         Provider.of<TransactionBloc>(context, listen: false);
     transactionBloc.loading = true;
-    final resp = await TransactionService().save(context, globalBloc.cart);
-    if (resp) {
-      await Future.delayed(const Duration(milliseconds: 900), () {
-        transactionBloc.loading = false;
-        globalBloc.cart.clear();
-      });
-    } else {
+    await TbTransaksi().createByCart(globalBloc.cart);
+    await Future.delayed(const Duration(milliseconds: 900), () {
       transactionBloc.loading = false;
-      // globalBloc.cart.clear();
-    }
+      globalBloc.cart.clear();
+    });
   }
 
   Future<void> getMenu(BuildContext context) async {
