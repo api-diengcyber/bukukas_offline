@@ -172,7 +172,7 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                             int totalIn = 0;
                             int totalOut = 0;
                             int totalNominal = 0;
-                            List<CartModel> sdata = snapshot.data;
+                            List<CartModel> sdata = snapshot.data ?? [];
                             if (snapshot.connectionState ==
                                 ConnectionState.done) {
                               for (var i = 0; i < sdata.length; i++) {

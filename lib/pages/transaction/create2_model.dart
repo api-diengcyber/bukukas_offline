@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:keuangan/components/modal/cart_model.dart';
 import 'package:keuangan/db/model/tb_menu_model.dart';
 import 'package:keuangan/db/tb_menu.dart';
 import 'package:keuangan/db/tb_transaksi.dart';
@@ -36,12 +37,12 @@ class CreateModel2 {
     globalBloc.loadingMenus = false;
   }
 
-  Stream<List<dynamic>> getMenuStream(BuildContext context) async* {
+  Stream<List<TbMenuModel>> getMenuStream(BuildContext context) async* {
     final globalBloc = Provider.of<GlobalBloc>(context, listen: false);
     yield globalBloc.menus;
   }
 
-  Stream<List<dynamic>> getCartStream(BuildContext context) async* {
+  Stream<List<CartModel>> getCartStream(BuildContext context) async* {
     final globalBloc = Provider.of<GlobalBloc>(context, listen: false);
     yield globalBloc.cart;
   }

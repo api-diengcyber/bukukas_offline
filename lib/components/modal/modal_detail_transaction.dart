@@ -1,4 +1,5 @@
 import 'package:keuangan/components/circle_custom.dart';
+import 'package:keuangan/components/modal/cart_model.dart';
 import 'package:keuangan/helpers/set_menus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -9,7 +10,7 @@ import 'package:provider/provider.dart';
 import '../../providers/global_bloc.dart';
 
 class DetailTransactionModal extends StatefulWidget {
-  const DetailTransactionModal({Key? key}) : super(key: key);
+  const DetailTransactionModal({super.key});
 
   @override
   State<DetailTransactionModal> createState() => DetailTransactionModalState();
@@ -31,8 +32,9 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
     });
   }
 
-  Widget _getListData(BuildContext context, AsyncSnapshot snapshot) {
+  Widget getListData(BuildContext context, AsyncSnapshot snapshot) {
     final globalBloc = context.read<GlobalBloc>();
+    print(snapshot.data);
     datas = groupBy(snapshot.data, (dynamic obj) => obj['type']);
     return ListView.builder(
       shrinkWrap: true,
@@ -223,10 +225,11 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
             stream: CreateModel2().getCartStream(context),
             builder: (context, AsyncSnapshot snapshot) {
               int totalNominal = 0;
+              List<CartModel> sdata = snapshot.data ?? [];
               if (snapshot.connectionState == ConnectionState.done) {
-                for (var i = 0; i < snapshot.data.length; i++) {
-                  totalNominal += (int.parse(snapshot.data[i]['in']) -
-                      int.parse(snapshot.data[i]['out']));
+                for (var i = 0; i < sdata.length; i++) {
+                  totalNominal += (int.parse(sdata[i].gin ?? "0") -
+                      int.parse(sdata[i].gout ?? "0"));
                 }
               }
               return Column(
@@ -266,7 +269,7 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                   const Divider(),
                   Flexible(
                     child: SingleChildScrollView(
-                      child: _getListData(context, snapshot),
+                      child: getListData(context, snapshot),
                     ),
                   ),
                   SizedBox(
