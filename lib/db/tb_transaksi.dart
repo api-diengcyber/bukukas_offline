@@ -24,6 +24,13 @@ class TbTransaksi extends DB {
     return tbTransaksiModelFromJson(jsonEncode(list));
   }
 
+  Future<List<TbTransaksiModel>> getDataByMenuId(int? menuId) async {
+    Database database = await getDB();
+    List<Map> list = await database.rawQuery(
+        'SELECT a.*, b.name AS menuName, b.type AS menuType FROM transaksi a JOIN menu b ON a.menuId=b.id WHERE a.menuId=$menuId');
+    return tbTransaksiModelFromJson(jsonEncode(list));
+  }
+
   Future<void> createByCart(List<CartModel> listData) async {
     List<TbTransaksiModel> l = [];
     for (int i = 0; i < listData.length; i++) {

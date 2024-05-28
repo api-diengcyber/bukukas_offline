@@ -67,6 +67,13 @@ class TbMenu extends DB {
     return tbMenuModelFromJson(jsonEncode(list));
   }
 
+  Future<TbMenuModel> getDataById(int? id) async {
+    Database database = await getDB();
+    List<Map> list = await database.rawQuery(
+        'SELECT a.*, COUNT(b.id) AS totalTransaction FROM menu a LEFT JOIN transaksi b ON a.id=b.menuId WHERE a.id=$id GROUP BY a.id LIMIT 0,1');
+    return tbMenuModelFromJson(jsonEncode(list)).first;
+  }
+
   Future<void> update(int id, String type, Map<String, dynamic> data) async {
     Database database = await getDB();
     TbMenuModel d = TbMenuModel.fromJson(data);

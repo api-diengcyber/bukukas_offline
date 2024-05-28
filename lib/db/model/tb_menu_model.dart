@@ -29,6 +29,8 @@ class TbMenuModel {
   String? statusPaidOff;
   String? createdOn;
   int? totalTransaction;
+  String? totalIn;
+  String? totalOut;
 
   TbMenuModel({
     this.id,
@@ -42,6 +44,8 @@ class TbMenuModel {
     this.statusPaidOff,
     this.createdOn,
     this.totalTransaction,
+    this.totalIn,
+    this.totalOut,
   });
 
   factory TbMenuModel.fromJson(Map<String, dynamic> json) => TbMenuModel(
@@ -56,6 +60,8 @@ class TbMenuModel {
         statusPaidOff: json["statusPaidOff"],
         createdOn: json["createdOn"],
         totalTransaction: json["totalTransaction"],
+        totalIn: json["totalIn"],
+        totalOut: json["totalOut"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -70,5 +76,7 @@ class TbMenuModel {
         "statusPaidOff": statusPaidOff,
         "createdOn": createdOn,
         "totalTransaction": totalTransaction,
+        "totalIn": totalIn,
+        "totalOut": totalOut,
       };
 }

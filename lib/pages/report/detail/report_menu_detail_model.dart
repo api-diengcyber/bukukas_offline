@@ -1,8 +1,8 @@
+import 'package:keuangan/db/tb_menu.dart';
+import 'package:keuangan/db/tb_transaksi.dart';
 import 'package:keuangan/providers/report_menu_detail_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../../services/report_service.dart';
 
 class ReportMenuDetailModel {
   void init(BuildContext context, int id) async {
@@ -13,9 +13,8 @@ class ReportMenuDetailModel {
     final reportMenuDetailBloc =
         Provider.of<ReportMenuDetailBloc>(context, listen: false);
     reportMenuDetailBloc.loading = true;
-    final resp = await ReportService().getMenuDetail(context, id);
-    reportMenuDetailBloc.detail = resp['detail'];
-    reportMenuDetailBloc.data = resp['data'];
+    reportMenuDetailBloc.detail = await TbMenu().getDataById(id);
+    reportMenuDetailBloc.data = await TbTransaksi().getDataByMenuId(id);
     await Future.delayed(const Duration(milliseconds: 500), () {
       reportMenuDetailBloc.loading = false;
     });

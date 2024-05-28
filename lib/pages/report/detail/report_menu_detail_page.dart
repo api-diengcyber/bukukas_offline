@@ -1,5 +1,11 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:keuangan/components/timelines/event_item.dart';
+import 'package:keuangan/components/timelines/indicator_position.dart';
+import 'package:keuangan/components/timelines/timeline.dart';
+import 'package:keuangan/components/timelines/timeline_theme_data.dart';
+import 'package:keuangan/db/model/tb_transaksi_model.dart';
 import 'package:keuangan/pages/report/detail/report_menu_detail_model.dart';
 import 'package:keuangan/pages/report/report_model.dart';
 import 'package:keuangan/providers/report_menu_detail_bloc.dart';
@@ -8,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:skeleton_text/skeleton_text.dart';
+import '../../../components/timelines/timeline_theme.dart';
 import '../../../helpers/set_menus.dart';
 
 class ReportMenuDetailPage extends StatefulWidget {
@@ -127,156 +134,150 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
     double marginTopScreen =
         appBar.preferredSize.height + MediaQuery.of(context).viewPadding.top;
 
-    // TimelineEventDisplay timelineWidget(dynamic data) {
-    //   DateTime tempDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
-    //       .parse(data["keu_transaction_transaction_date"]);
+    TimelineEventDisplay timelineWidget(TbTransaksiModel data) {
+      DateTime tempDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
+          .parse(data.transactionDate ?? "");
 
-    //   return TimelineEventDisplay(
-    //     anchor: IndicatorPosition.top,
-    //     indicator: Container(
-    //       width: 5,
-    //       height: 5,
-    //       decoration: BoxDecoration(
-    //         color: widget.type == "Pemasukan"
-    //             ? Colors.green
-    //             : widget.type == "Pengeluaran"
-    //                 ? Colors.pink
-    //                 : widget.type == "Hutang"
-    //                     ? Colors.amber
-    //                     : widget.type == "Piutang"
-    //                         ? Colors.blue
-    //                         : Colors.grey,
-    //         borderRadius: const BorderRadius.all(
-    //           Radius.circular(64),
-    //         ),
-    //       ),
-    //     ),
-    //     child: Row(
-    //       crossAxisAlignment: CrossAxisAlignment.center,
-    //       children: <Widget>[
-    //         Expanded(
-    //           child: Container(
-    //             margin: const EdgeInsets.only(left: 8),
-    //             padding: const EdgeInsets.symmetric(
-    //               vertical: 12,
-    //               horizontal: 16,
-    //             ),
-    //             decoration: BoxDecoration(
-    //               color: Colors.white,
-    //               borderRadius: BorderRadius.circular(20),
-    //               boxShadow: [
-    //                 BoxShadow(
-    //                   color: activeTabColor(
-    //                       reportMenuDetailBloc.detail["keu_menu_type"],
-    //                       chipsColor),
-    //                   spreadRadius: 0,
-    //                   blurRadius: 2,
-    //                   offset: const Offset(0, 2), // changes position of shadow
-    //                 ),
-    //               ],
-    //             ),
-    //             child: Column(
-    //               crossAxisAlignment: CrossAxisAlignment.start,
-    //               children: <Widget>[
-    //                 Text(
-    //                   DateFormat("yyyy-MM-dd HH:mm:ss").format(tempDate),
-    //                   style: const TextStyle(
-    //                     fontWeight: FontWeight.bold,
-    //                   ),
-    //                 ),
-    //                 data["keu_transaction_notes"] != "" &&
-    //                         data["keu_transaction_notes"] != null
-    //                     ? Text(
-    //                         data["keu_transaction_notes"],
-    //                         style: const TextStyle(
-    //                           fontWeight: FontWeight.bold,
-    //                         ),
-    //                       )
-    //                     : const SizedBox(),
-    //                 Row(
-    //                   children: <Widget>[
-    //                     Container(
-    //                       decoration: BoxDecoration(
-    //                         color: Colors.white,
-    //                         borderRadius: BorderRadius.circular(10),
-    //                         boxShadow: [
-    //                           BoxShadow(
-    //                             color: Colors.grey.withOpacity(0.5),
-    //                             spreadRadius: 0,
-    //                             blurRadius: 0.2,
-    //                             offset: const Offset(
-    //                                 0, 0.2), // changes position of shadow
-    //                           ),
-    //                         ],
-    //                       ),
-    //                       padding: const EdgeInsets.symmetric(
-    //                         horizontal: 6,
-    //                         vertical: 4,
-    //                       ),
-    //                       child: Text(
-    //                         formatCurrency.format(
-    //                             data["keu_transaction_value_in"] -
-    //                                 data["keu_transaction_value_out"]),
-    //                         style: const TextStyle(
-    //                           color: Colors.black87,
-    //                           fontWeight: FontWeight.bold,
-    //                           fontSize: 14,
-    //                         ),
-    //                       ),
-    //                     ),
-    //                     const Expanded(
-    //                       child: SizedBox(),
-    //                     ),
-    //                     data["keu_transaction_debtType"] != "NON"
-    //                         ? Container(
-    //                             margin: const EdgeInsets.only(left: 6),
-    //                             decoration: BoxDecoration(
-    //                               color: Colors.grey.shade100,
-    //                               borderRadius: BorderRadius.circular(10),
-    //                             ),
-    //                             padding: const EdgeInsets.symmetric(
-    //                               horizontal: 12,
-    //                               vertical: 4,
-    //                             ),
-    //                             child: Text(
-    //                               data["keu_transaction_debtType"] +
-    //                                   " " +
-    //                                   data["menus_type"]
-    //                                       .toString()
-    //                                       .toLowerCase(),
-    //                               style: const TextStyle(
-    //                                 color: Colors.black54,
-    //                                 fontWeight: FontWeight.bold,
-    //                                 fontSize: 13,
-    //                               ),
-    //                             ),
-    //                           )
-    //                         : const SizedBox(),
-    //                   ],
-    //                 ),
-    //               ],
-    //             ),
-    //           ),
-    //         ),
-    //         data["keu_transaction_allow_delete"] == 1
-    //             ? Container(
-    //                 margin: const EdgeInsets.only(left: 12),
-    //                 child: InkWell(
-    //                   child: const Icon(
-    //                     Icons.delete,
-    //                     color: Colors.red,
-    //                     size: 20,
-    //                   ),
-    //                   onTap: () async {
-    //                     await onDeleteMenu(data);
-    //                   },
-    //                 ),
-    //               )
-    //             : const SizedBox(),
-    //       ],
-    //     ),
-    //   );
-    // }
+      return TimelineEventDisplay(
+        anchor: IndicatorPosition.top,
+        indicator: Container(
+          width: 5,
+          height: 5,
+          decoration: BoxDecoration(
+            color: widget.type == "Pemasukan"
+                ? Colors.green
+                : widget.type == "Pengeluaran"
+                    ? Colors.pink
+                    : widget.type == "Hutang"
+                        ? Colors.amber
+                        : widget.type == "Piutang"
+                            ? Colors.blue
+                            : Colors.grey,
+            borderRadius: const BorderRadius.all(
+              Radius.circular(64),
+            ),
+          ),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(left: 8),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 16,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: activeTabColor(
+                          reportMenuDetailBloc.detail.type ?? "", chipsColor),
+                      spreadRadius: 0,
+                      blurRadius: 2,
+                      offset: const Offset(0, 2), // changes position of shadow
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      DateFormat("yyyy-MM-dd HH:mm:ss").format(tempDate),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    data.notes != "" && data.notes != null
+                        ? Text(
+                            data.notes ?? "",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        : const SizedBox(),
+                    Row(
+                      children: <Widget>[
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 0,
+                                blurRadius: 0.2,
+                                offset: const Offset(
+                                    0, 0.2), // changes position of shadow
+                              ),
+                            ],
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 4,
+                          ),
+                          child: Text(
+                            formatCurrency.format(
+                                int.parse(data.valueIn ?? "0") -
+                                    int.parse(data.valueOut ?? "0")),
+                            style: const TextStyle(
+                              color: Colors.black87,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        const Expanded(
+                          child: SizedBox(),
+                        ),
+                        data.debtType != "NON"
+                            ? Container(
+                                margin: const EdgeInsets.only(left: 6),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade100,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 4,
+                                ),
+                                child: Text(
+                                  "${data.debtType} ${data.menuType.toString().toLowerCase()}",
+                                  style: const TextStyle(
+                                    color: Colors.black54,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              )
+                            : const SizedBox(),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            data.allowDelete == "1"
+                ? Container(
+                    margin: const EdgeInsets.only(left: 12),
+                    child: InkWell(
+                      child: const Icon(
+                        Icons.delete,
+                        color: Colors.red,
+                        size: 20,
+                      ),
+                      onTap: () async {
+                        await onDeleteMenu(data);
+                      },
+                    ),
+                  )
+                : const SizedBox(),
+          ],
+        ),
+      );
+    }
 
     return WillPopScope(
       onWillPop: () {
@@ -339,35 +340,30 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              reportMenuDetailBloc.detail["keu_menu_name"],
+                              reportMenuDetailBloc.detail.name ?? "",
                               style: TextStyle(
                                 fontSize: 15,
                                 color: activeTabColor(
-                                    reportMenuDetailBloc
-                                        .detail["keu_menu_type"],
+                                    reportMenuDetailBloc.detail.type ?? "",
                                     reportActiveTabColor),
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            reportMenuDetailBloc.detail["keu_menu_notes"] !=
-                                        "" &&
-                                    reportMenuDetailBloc
-                                            .detail["keu_menu_notes"] !=
-                                        null
+                            reportMenuDetailBloc.detail.notes != "" &&
+                                    reportMenuDetailBloc.detail.notes != null
                                 ? Text(
-                                    reportMenuDetailBloc
-                                        .detail["keu_menu_notes"],
+                                    reportMenuDetailBloc.detail.notes ?? "",
                                     style: const TextStyle(
                                       fontSize: 14,
                                     ),
                                   )
                                 : const SizedBox(),
-                            reportMenuDetailBloc.detail['defaultValue'] != "" &&
-                                    reportMenuDetailBloc
-                                            .detail['defaultValue'] !=
+                            reportMenuDetailBloc.detail.defaultValue != "" &&
+                                    reportMenuDetailBloc.detail.defaultValue !=
                                         null &&
-                                    reportMenuDetailBloc
-                                            .detail['defaultValue'] >
+                                    int.parse(reportMenuDetailBloc
+                                                .detail.defaultValue ??
+                                            "0") >
                                         0
                                 ? Container(
                                     padding: const EdgeInsets.only(
@@ -379,24 +375,22 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                                     margin: const EdgeInsets.only(top: 3),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(20),
-                                      color:
-                                          reportMenuDetailBloc.detail['type'] ==
-                                                  "Pemasukan"
-                                              ? Colors.green.shade100
+                                      color: reportMenuDetailBloc.detail.type ==
+                                              "Pemasukan"
+                                          ? Colors.green.shade100
+                                          : (reportMenuDetailBloc.detail.type ==
+                                                  "Pengeluaran"
+                                              ? Colors.pink.shade100
                                               : (reportMenuDetailBloc
-                                                          .detail['type'] ==
-                                                      "Pengeluaran"
-                                                  ? Colors.pink.shade100
-                                                  : (reportMenuDetailBloc
-                                                              .detail['type'] ==
-                                                          "Hutang")
-                                                      ? Colors.amber.shade100
-                                                      : Colors.blue.shade100),
+                                                          .detail.type ==
+                                                      "Hutang")
+                                                  ? Colors.amber.shade100
+                                                  : Colors.blue.shade100),
                                     ),
                                     child: Text(
                                       _formatter.formatString(
                                           reportMenuDetailBloc
-                                              .detail['defaultValue']
+                                              .detail.defaultValue
                                               .toString()),
                                       style: const TextStyle(
                                         color: Colors.black87,
@@ -407,28 +401,25 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                                 : const SizedBox(),
                             Row(
                               children: <Widget>[
-                                reportMenuDetailBloc.detail["total"] != 0 &&
-                                        reportMenuDetailBloc.detail["total"] !=
-                                            null
+                                reportMenuDetailBloc.detail.total != "0" &&
+                                        reportMenuDetailBloc.detail.total != ""
                                     ? Text(
                                         formatCurrency.format(
-                                            reportMenuDetailBloc
-                                                .detail["total"]),
+                                            reportMenuDetailBloc.detail.total),
                                         style: const TextStyle(
                                           color: Colors.black87,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 14,
                                         ),
                                       )
-                                    : (reportMenuDetailBloc.detail[
-                                                        "keu_menu_type"] ==
+                                    : (reportMenuDetailBloc.detail.type ==
                                                     "Hutang" ||
-                                                reportMenuDetailBloc.detail[
-                                                        "keu_menu_type"] ==
+                                                reportMenuDetailBloc
+                                                        .detail.type ==
                                                     "Piutang") &&
-                                            reportMenuDetailBloc.detail[
-                                                    "keu_menu_status_paid_off"] ==
-                                                1
+                                            reportMenuDetailBloc
+                                                    .detail.statusPaidOff ==
+                                                "1"
                                         ? Row(
                                             children: <Widget>[
                                               const Text(
@@ -442,7 +433,7 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                                                 width: 4,
                                               ),
                                               Text(
-                                                "(${reportMenuDetailBloc.detail["keu_menu_type"] == "Hutang" ? formatCurrency.format(reportMenuDetailBloc.detail["totalIn"]) : reportMenuDetailBloc.detail["keu_menu_type"] == "Piutang" ? formatCurrency.format(reportMenuDetailBloc.detail["totalOut"]) : ""})",
+                                                "(${reportMenuDetailBloc.detail.type == "Hutang" ? formatCurrency.format(reportMenuDetailBloc.detail.totalIn) : reportMenuDetailBloc.detail.type == "Piutang" ? formatCurrency.format(reportMenuDetailBloc.detail.totalOut) : ""})",
                                                 style: const TextStyle(
                                                   color: Colors.grey,
                                                   fontWeight: FontWeight.bold,
@@ -454,17 +445,12 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                                 const Expanded(
                                   child: SizedBox(),
                                 ),
-                                (reportMenuDetailBloc
-                                                .detail["keu_menu_deadline"] !=
-                                            null &&
-                                        reportMenuDetailBloc
-                                                .detail["keu_menu_deadline"] !=
+                                (reportMenuDetailBloc.detail.deadline != null &&
+                                        reportMenuDetailBloc.detail.deadline !=
                                             "" &&
-                                        (reportMenuDetailBloc
-                                                    .detail["keu_menu_type"] ==
+                                        (reportMenuDetailBloc.detail.type ==
                                                 "Hutang" ||
-                                            reportMenuDetailBloc
-                                                    .detail["keu_menu_type"] ==
+                                            reportMenuDetailBloc.detail.type ==
                                                 "Piutang"))
                                     ? Container(
                                         decoration: BoxDecoration(
@@ -491,12 +477,12 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                                               DateFormat(
                                                       "yyyy-MM-dd'T'HH:mm:ss.SSS")
                                                   .parse(reportMenuDetailBloc
-                                                          .detail[
-                                                      "keu_menu_deadline"])),
+                                                          .detail.deadline ??
+                                                      "")),
                                           style: TextStyle(
-                                            color: reportMenuDetailBloc.detail[
-                                                        "keu_menu_status_paid_off"] ==
-                                                    1
+                                            color: reportMenuDetailBloc
+                                                        .detail.statusPaidOff ==
+                                                    "1"
                                                 ? Colors.grey
                                                 : Colors.red,
                                             fontWeight: FontWeight.bold,
@@ -534,91 +520,91 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                         ),
                       ],
                     ),
-                    // child: !reportMenuDetailBloc.loading
-                    //     ? reportMenuDetailBloc.data.isNotEmpty
-                    //         ? TimelineTheme(
-                    //             data: TimelineThemeData(
-                    //               lineColor: colorT,
-                    //               strokeWidth: 2,
-                    //             ),
-                    //             child: Timeline(
-                    //               indicatorSize: 10,
-                    //               separatorBuilder: (context, index) =>
-                    //                   const SizedBox(height: 24),
-                    //               altOffset: const Offset(5, 16),
-                    //               anchor: IndicatorPosition.top,
-                    //               events: <TimelineEventDisplay>[
-                    //                 for (var item in reportMenuDetailBloc.data)
-                    //                   timelineWidget(item),
-                    //                 if (reportMenuDetailBloc.detail[
-                    //                         "keu_menu_status_paid_off"] ==
-                    //                     1)
-                    //                   TimelineEventDisplay(
-                    //                     anchor: IndicatorPosition.top,
-                    //                     indicatorOffset: const Offset(0, -3),
-                    //                     indicator: Container(
-                    //                       width: 5,
-                    //                       height: 5,
-                    //                       decoration: BoxDecoration(
-                    //                         color: widget.type == "Pemasukan"
-                    //                             ? Colors.green
-                    //                             : widget.type == "Pengeluaran"
-                    //                                 ? Colors.pink
-                    //                                 : widget.type == "Hutang"
-                    //                                     ? Colors.amber
-                    //                                     : widget.type ==
-                    //                                             "Piutang"
-                    //                                         ? Colors.blue
-                    //                                         : Colors.grey,
-                    //                         borderRadius:
-                    //                             const BorderRadius.all(
-                    //                           Radius.circular(64),
-                    //                         ),
-                    //                       ),
-                    //                     ),
-                    //                     child: Container(
-                    //                       margin:
-                    //                           const EdgeInsets.only(left: 8),
-                    //                       padding: const EdgeInsets.symmetric(
-                    //                         vertical: 12,
-                    //                         horizontal: 16,
-                    //                       ),
-                    //                       decoration: BoxDecoration(
-                    //                         color: Colors.white,
-                    //                         borderRadius:
-                    //                             BorderRadius.circular(20),
-                    //                         boxShadow: [
-                    //                           BoxShadow(
-                    //                             color: activeTabColor(
-                    //                                 reportMenuDetailBloc
-                    //                                         .detail[
-                    //                                     "keu_menu_type"],
-                    //                                 chipsColor),
-                    //                             spreadRadius: 0,
-                    //                             blurRadius: 2,
-                    //                             offset: const Offset(0,
-                    //                                 2), // changes position of shadow
-                    //                           ),
-                    //                         ],
-                    //                       ),
-                    //                       child: const Text(
-                    //                         "Lunas",
-                    //                         style: TextStyle(
-                    //                           color: Colors.green,
-                    //                           fontWeight: FontWeight.bold,
-                    //                         ),
-                    //                       ),
-                    //                     ),
-                    //                   ),
-                    //               ],
-                    //             ),
-                    //           )
-                    //         : const SizedBox()
-                    //     : Center(
-                    //         child: SpinKitDoubleBounce(
-                    //           color: colorT,
-                    //         ),
-                    //       ),
+                    child: !reportMenuDetailBloc.loading
+                        ? reportMenuDetailBloc.data.isNotEmpty
+                            ? TimelineTheme(
+                                data: TimelineThemeData(
+                                  lineColor: colorT,
+                                  strokeWidth: 2,
+                                ),
+                                child: Timeline(
+                                  indicatorSize: 10,
+                                  separatorBuilder: (context, index) =>
+                                      const SizedBox(height: 24),
+                                  altOffset: const Offset(5, 16),
+                                  anchor: IndicatorPosition.top,
+                                  events: <TimelineEventDisplay>[
+                                    for (var item in reportMenuDetailBloc.data)
+                                      timelineWidget(item),
+                                    if (reportMenuDetailBloc
+                                            .detail.statusPaidOff ==
+                                        "1")
+                                      TimelineEventDisplay(
+                                        anchor: IndicatorPosition.top,
+                                        indicatorOffset: const Offset(0, -3),
+                                        indicator: Container(
+                                          width: 5,
+                                          height: 5,
+                                          decoration: BoxDecoration(
+                                            color: widget.type == "Pemasukan"
+                                                ? Colors.green
+                                                : widget.type == "Pengeluaran"
+                                                    ? Colors.pink
+                                                    : widget.type == "Hutang"
+                                                        ? Colors.amber
+                                                        : widget.type ==
+                                                                "Piutang"
+                                                            ? Colors.blue
+                                                            : Colors.grey,
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                              Radius.circular(64),
+                                            ),
+                                          ),
+                                        ),
+                                        child: Container(
+                                          margin:
+                                              const EdgeInsets.only(left: 8),
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 12,
+                                            horizontal: 16,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: activeTabColor(
+                                                    reportMenuDetailBloc
+                                                            .detail.type ??
+                                                        "",
+                                                    chipsColor),
+                                                spreadRadius: 0,
+                                                blurRadius: 2,
+                                                offset: const Offset(0,
+                                                    2), // changes position of shadow
+                                              ),
+                                            ],
+                                          ),
+                                          child: const Text(
+                                            "Lunas",
+                                            style: TextStyle(
+                                              color: Colors.green,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              )
+                            : const SizedBox()
+                        : Center(
+                            child: SpinKitDoubleBounce(
+                              color: colorT,
+                            ),
+                          ),
                   ),
                 ),
               ],

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:keuangan/db/model/tb_menu_model.dart';
+import 'package:keuangan/db/model/tb_transaksi_model.dart';
 
 class ReportMenuDetailBloc extends ChangeNotifier {
-  List<dynamic> _data = [];
-  List<dynamic> get data => _data;
-  set data(List<dynamic> val) {
+  List<TbTransaksiModel> _data = [];
+  List<TbTransaksiModel> get data => _data;
+  set data(List<TbTransaksiModel> val) {
     _data = val;
     notifyListeners();
   }
 
-  dynamic _detail = {};
-  dynamic get detail => _detail;
-  set detail(dynamic val) {
+  TbMenuModel _detail = TbMenuModel();
+  TbMenuModel get detail => _detail;
+  set detail(TbMenuModel val) {
     _detail = val;
     notifyListeners();
   }
