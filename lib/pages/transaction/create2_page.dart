@@ -1,5 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:keuangan/components/circle_custom.dart';
+import 'package:keuangan/components/modal/cart_model.dart';
 import 'package:keuangan/components/modal/modal_detail_transaction.dart';
 import 'package:keuangan/components/modal/modal_create_menu.dart';
 import 'package:keuangan/components/modal/modal_create_transaction.dart';
@@ -171,26 +172,27 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                             int totalIn = 0;
                             int totalOut = 0;
                             int totalNominal = 0;
+                            List<CartModel> sdata = snapshot.data;
                             if (snapshot.connectionState ==
                                 ConnectionState.done) {
-                              for (var i = 0; i < snapshot.data.length; i++) {
-                                totalIn += int.parse(snapshot.data[i]['in']);
-                                totalOut += int.parse(snapshot.data[i]['out']);
+                              for (var i = 0; i < sdata.length; i++) {
+                                totalIn += int.parse(sdata[i].gin ?? "0");
+                                totalOut += int.parse(sdata[i].gout ?? "0");
                                 totalNominal +=
-                                    (int.parse(snapshot.data[i]['in']) -
-                                        int.parse(snapshot.data[i]['out']));
+                                    (int.parse(sdata[i].gin ?? "0") -
+                                        int.parse(sdata[i].gout ?? "0"));
                               }
                               totalIn = totalIn;
                               totalOut = totalOut;
                               totalNominal = totalNominal;
-                              trendIndexPemasukan = snapshot.data
-                                  .indexWhere((f) => f['type'] == "Pemasukan");
-                              trendIndexPengeluaran = snapshot.data.indexWhere(
-                                  (f) => f['type'] == "Pengeluaran");
-                              trendIndexHutang = snapshot.data
-                                  .indexWhere((f) => f['type'] == "Hutang");
-                              trendIndexPiutang = snapshot.data
-                                  .indexWhere((f) => f['type'] == "Piutang");
+                              trendIndexPemasukan = sdata
+                                  .indexWhere((f) => f.type == "Pemasukan");
+                              trendIndexPengeluaran = sdata
+                                  .indexWhere((f) => f.type == "Pengeluaran");
+                              trendIndexHutang =
+                                  sdata.indexWhere((f) => f.type == "Hutang");
+                              trendIndexPiutang =
+                                  sdata.indexWhere((f) => f.type == "Piutang");
                             }
 
                             return (totalIn > 0 || totalOut > 0)

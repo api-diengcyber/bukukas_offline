@@ -777,7 +777,61 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                 ? () async {
                                     if (_formKey.currentState!.validate()) {
                                       _formKey.currentState!.save();
-
+                                      await processSave(
+                                          _formKey.currentState!.value, false);
+                                    }
+                                  }
+                                : null,
+                            child: Container(
+                              margin: const EdgeInsets.only(
+                                left: 12,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 9,
+                                horizontal: 16,
+                              ),
+                              decoration: BoxDecoration(
+                                gradient: !globalBloc.loading
+                                    ? (widget.data.type == "Pemasukan"
+                                        ? gradientMenu[0]
+                                        : (widget.data.type == "Pengeluaran"
+                                            ? gradientMenu[1]
+                                            : (widget.data.type == "Hutang")
+                                                ? gradientMenu[2]
+                                                : gradientMenu[3]))
+                                    : null,
+                                borderRadius: BorderRadius.circular(30),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 0,
+                                    blurRadius: 2,
+                                    offset: const Offset(
+                                        0, 2), // changes position of shadow
+                                  ),
+                                ],
+                              ),
+                              child: Center(
+                                child: Text(
+                                  !transactionBloc.loading
+                                      ? "Lanjut"
+                                      : "Menyimpan..",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: InkWell(
+                            onTap: !transactionBloc.loading
+                                ? () async {
+                                    if (_formKey.currentState!.validate()) {
+                                      _formKey.currentState!.save();
                                       await processSave(
                                           _formKey.currentState!.value, true);
                                     }
