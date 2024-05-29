@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:collection/collection.dart';
 import 'package:keuangan/pages/transaction/create2_model.dart';
+import 'package:keuangan/utils/currency.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/global_bloc.dart';
@@ -17,12 +18,7 @@ class DetailTransactionModal extends StatefulWidget {
 }
 
 class DetailTransactionModalState extends State<DetailTransactionModal> {
-  final formatCurrency = NumberFormat.simpleCurrency(
-    locale: 'id_ID',
-    decimalDigits: 0,
-  );
-
-  Map<dynamic, List<dynamic>> datas = {};
+  Map<dynamic, List<CartModel>> datas = {};
 
   @override
   void initState() {
@@ -32,15 +28,13 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
     });
   }
 
-  Widget getListData(BuildContext context, AsyncSnapshot snapshot) {
+  Widget getListData(BuildContext context, List<CartModel> datas) {
     final globalBloc = context.read<GlobalBloc>();
-    print(snapshot.data);
-    datas = groupBy(snapshot.data, (dynamic obj) => obj['type']);
     return ListView.builder(
       shrinkWrap: true,
       itemCount: datas.length,
       itemBuilder: (context, index) {
-        String key = datas.keys.elementAt(index).toString();
+        String key = datas.elementAt(index).toString();
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(
@@ -99,12 +93,13 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: datas[key]!.map((dynamic e) {
-                        var menuDetail = e["menuDetail"];
-                        int nominal = int.parse(e["in"]) - int.parse(e["out"]);
+                      children: datas.map((CartModel e) {
+                        var menuDetail = e.menuDetail;
+                        int nominal =
+                            int.parse(e.gin ?? "0") - int.parse(e.gout ?? "0");
                         DateTime tempDate =
                             DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
-                                .parse(e["tgl"]);
+                                .parse(e.tgl ?? "");
 
                         return Container(
                           margin: const EdgeInsets.only(bottom: 6),
@@ -115,16 +110,16 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
                                     Text(
-                                      menuDetail["keu_menu_name"],
+                                      menuDetail!.name ?? "",
                                       style: const TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    menuDetail["keu_menu_notes"] != null &&
-                                            menuDetail["keu_menu_notes"] != ""
+                                    menuDetail.notes != null &&
+                                            menuDetail.notes != ""
                                         ? Text(
-                                            menuDetail["keu_menu_notes"],
+                                            menuDetail.notes ?? "",
                                             style: const TextStyle(
                                               fontSize: 13,
                                             ),
@@ -137,9 +132,9 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                                         fontSize: 13,
                                       ),
                                     ),
-                                    e["notes"] != null
+                                    e.notes != null
                                         ? Text(
-                                            e["notes"],
+                                            e.notes ?? "",
                                             style: const TextStyle(
                                               fontSize: 13,
                                             ),
@@ -151,11 +146,9 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: <Widget>[
-                                  e["debtType"] != ""
+                                  e.debtType != ""
                                       ? Text(
-                                          e["debtType"] +
-                                              " " +
-                                              key.toString().toLowerCase(),
+                                          "${e.debtType} ${key.toString().toLowerCase()}",
                                           style: const TextStyle(
                                             fontSize: 11,
                                             color: Colors.black54,
@@ -163,7 +156,7 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                                         )
                                       : const SizedBox(),
                                   Text(
-                                    formatCurrency.format(nominal),
+                                    simpleFormatCurrency.format(nominal),
                                     style: const TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.bold,
@@ -177,7 +170,7 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                                   onPressed: () async {
                                     setState(() async {
                                       globalBloc.cart.remove(e);
-                                      datas[key]!.remove(e);
+                                      datas.remove(e);
                                       if (globalBloc.cart.isEmpty) {
                                         globalBloc.loading = false;
                                         Navigator.pop(context);
@@ -256,7 +249,7 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                           ),
                         ),
                         Text(
-                          formatCurrency.format(totalNominal),
+                          simpleFormatCurrency.format(totalNominal),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
@@ -269,7 +262,7 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                   const Divider(),
                   Flexible(
                     child: SingleChildScrollView(
-                      child: getListData(context, snapshot),
+                      child: getListData(context, sdata),
                     ),
                   ),
                   SizedBox(

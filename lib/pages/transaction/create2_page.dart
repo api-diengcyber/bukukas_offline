@@ -810,7 +810,7 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                         Container(
                           padding: const EdgeInsets.only(
                             top: 5,
-                            bottom: 12,
+                            bottom: 7,
                             left: 12,
                             right: 12,
                           ),
@@ -872,17 +872,52 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                               showSelesai = showSelesai;
                             }
                             return showSelesai
-                                ? ElevatedButton(
-                                    onPressed: () async {
-                                      await Future.delayed(
-                                          const Duration(milliseconds: 400),
-                                          () async {
-                                        await CreateModel2()
-                                            .saveTransaction(context);
-                                        // _key.currentState!.reset();
-                                      });
-                                    },
-                                    child: const Text("Simpan"),
+                                ? Container(
+                                    margin: const EdgeInsets.only(
+                                      left: 12,
+                                      right: 12,
+                                    ),
+                                    width: double.infinity,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundBuilder: (context, s, x) {
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            gradient: globalBloc
+                                                        .tabMenuTransaction ==
+                                                    "Pemasukan"
+                                                ? modalGradientMenu[0]
+                                                : (globalBloc
+                                                            .tabMenuTransaction ==
+                                                        "Pengeluaran"
+                                                    ? modalGradientMenu[1]
+                                                    : (globalBloc
+                                                                .tabMenuTransaction ==
+                                                            "Hutang")
+                                                        ? modalGradientMenu[2]
+                                                        : modalGradientMenu[3]),
+                                          ),
+                                          child: x,
+                                        );
+                                      }),
+                                      onPressed: () async {
+                                        await Future.delayed(
+                                            const Duration(milliseconds: 400),
+                                            () async {
+                                          await CreateModel2()
+                                              .saveTransaction(context);
+                                          // _key.currentState!.reset();
+                                        });
+                                      },
+                                      child: const Text(
+                                        "Simpan",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
                                   )
                                 : const SizedBox();
                           },

@@ -1,4 +1,4 @@
-import 'package:keuangan/db/tb_menu.dart';
+import 'package:keuangan/db/model/tb_menu_model.dart';
 
 class CartModel {
   int? index;
@@ -10,7 +10,7 @@ class CartModel {
   String? debtType;
   String? type;
   int? menuId;
-  TbMenu? menuDetail;
+  TbMenuModel? menuDetail;
 
   CartModel({
     this.index,

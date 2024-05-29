@@ -144,6 +144,7 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                     : "",
             type: widget.data.type,
             menuId: widget.data.id,
+            menuDetail: widget.data,
           ));
 
           if (isFinish) {

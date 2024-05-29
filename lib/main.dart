@@ -1,5 +1,4 @@
 import 'package:keuangan/db/db.dart';
-import 'package:keuangan/pages/dashboard/dashboard_page.dart';
 import 'package:keuangan/pages/splash/splash_page.dart';
 import 'package:keuangan/providers/create_bloc.dart';
 import 'package:keuangan/providers/global_bloc.dart';
