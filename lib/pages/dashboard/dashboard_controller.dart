@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:get/get.dart';
-import 'package:keuangan/services/report_service.dart';
 
 class DashboardController extends GetxController {
   final _loading = false.obs;
@@ -19,10 +18,10 @@ class DashboardController extends GetxController {
     if (!loading) {
       loading = true;
     }
-    final resp = await ReportService().getDashboard(Get.context!);
-    Future.delayed(const Duration(milliseconds: 200), () {
-      loading = false;
-      dataDashboard = resp;
-    });
+    // final resp = await ReportService().getDashboard(Get.context!);
+    // Future.delayed(const Duration(milliseconds: 200), () {
+    //   loading = false;
+    //   dataDashboard = resp;
+    // });
   }
 }

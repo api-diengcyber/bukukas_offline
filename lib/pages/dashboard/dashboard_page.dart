@@ -9,7 +9,7 @@ import 'package:keuangan/pages/dashboard/dashboard_controller.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({Key? key}) : super(key: key);
+  const DashboardPage({super.key});
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();

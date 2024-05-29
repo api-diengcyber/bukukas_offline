@@ -2,8 +2,6 @@ import 'package:keuangan/providers/report_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../services/report_service.dart';
-
 class ReportModel {
   void init(BuildContext context) async {
     await getSummaryReport(context);
@@ -30,8 +28,8 @@ class ReportModel {
     } else {
       reportBloc.menus = {};
       reportBloc.loadingMenus = true;
-      final resp = await ReportService().getMenu(context, data);
-      reportBloc.menus = resp;
+      // final resp = await ReportService().getMenu(context, data);
+      // reportBloc.menus = resp;
       await Future.delayed(const Duration(milliseconds: 500), () {
         reportBloc.loadingMenus = false;
       });
@@ -54,8 +52,8 @@ class ReportModel {
     } else {
       reportBloc.data = {};
       reportBloc.loadingData = true;
-      final resp = await ReportService().getData(context, data);
-      reportBloc.data = resp['data'] ?? {};
+      // final resp = await ReportService().getData(context, data);
+      // reportBloc.data = resp['data'] ?? {};
       await Future.delayed(const Duration(milliseconds: 500), () {
         reportBloc.loadingData = false;
       });
@@ -93,18 +91,18 @@ class ReportModel {
     } else {
       reportBloc.dataSummary = {};
       reportBloc.loadingSummary = true;
-      final resp = await ReportService().getSummary(context, data);
-      reportBloc.dataSummary = resp;
-      reportBloc.totalReport = resp["total"];
-      reportBloc.listAvailableMenuType = resp['listAvailableMenuType'];
+      // final resp = await ReportService().getSummary(context, data);
+      // reportBloc.dataSummary = resp;
+      // reportBloc.totalReport = resp["total"];
+      // reportBloc.listAvailableMenuType = resp['listAvailableMenuType'];
 
-      if (reportBloc.activeMenuTab != "Semua") {
-        int indexExists = resp['listAvailableMenuType'].indexWhere(
-            (element) => element['name'] == reportBloc.activeMenuTab);
-        if (resp['listAvailableMenuType'].isEmpty || indexExists == -1) {
-          reportBloc.activeMenuTab = "Semua";
-        }
-      }
+      // if (reportBloc.activeMenuTab != "Semua") {
+      //   int indexExists = resp['listAvailableMenuType'].indexWhere(
+      //       (element) => element['name'] == reportBloc.activeMenuTab);
+      //   if (resp['listAvailableMenuType'].isEmpty || indexExists == -1) {
+      //     reportBloc.activeMenuTab = "Semua";
+      //   }
+      // }
 
       await Future.delayed(const Duration(milliseconds: 500), () {
         reportBloc.loadingSummary = false;

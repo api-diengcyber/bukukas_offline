@@ -40,7 +40,8 @@ class TimelineEventCard extends StatelessWidget {
   final Widget content;
   final EdgeInsetsGeometry padding;
 
-  TimelineEventCard({
+  const TimelineEventCard({
+    super.key,
     required this.title,
     required this.content,
     this.padding =
@@ -50,8 +51,8 @@ class TimelineEventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        decoration: BoxDecoration(
-          borderRadius: new BorderRadius.all(new Radius.circular(2.0)),
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(2.0)),
         ),
         child: _buildBody(context));
   }
@@ -63,7 +64,7 @@ class TimelineEventCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _title(context),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
             _description(context),
@@ -73,14 +74,14 @@ class TimelineEventCard extends StatelessWidget {
 
   Widget _title(BuildContext context) {
     return DefaultTextStyle(
-      style: Theme.of(context).textTheme.titleMedium ?? TextStyle(),
+      style: Theme.of(context).textTheme.titleMedium ?? const TextStyle(),
       child: title,
     );
   }
 
   Widget _description(BuildContext context) {
     return DefaultTextStyle(
-      style: Theme.of(context).textTheme.labelSmall ?? TextStyle(),
+      style: Theme.of(context).textTheme.labelSmall ?? const TextStyle(),
       child: content,
     );
   }
@@ -95,8 +96,7 @@ class TimelineSectionDivider extends StatelessWidget {
     );
   }
 
-  const TimelineSectionDivider({Key? key, required this.content})
-      : super(key: key);
+  const TimelineSectionDivider({super.key, required this.content});
 
   @override
   Widget build(BuildContext context) {
@@ -105,8 +105,8 @@ class TimelineSectionDivider extends StatelessWidget {
 
   Widget _content(BuildContext context) {
     return AnimatedDefaultTextStyle(
-        child: content,
-        style: Theme.of(context).textTheme.headlineSmall ?? TextStyle(),
-        duration: kThemeChangeDuration);
+        style: Theme.of(context).textTheme.headlineSmall ?? const TextStyle(),
+        duration: kThemeChangeDuration,
+        child: content);
   }
 }

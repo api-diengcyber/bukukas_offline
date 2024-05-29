@@ -793,12 +793,12 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                               decoration: BoxDecoration(
                                 gradient: !globalBloc.loading
                                     ? (widget.data.type == "Pemasukan"
-                                        ? gradientMenu[0]
+                                        ? gradient2[0]
                                         : (widget.data.type == "Pengeluaran"
-                                            ? gradientMenu[1]
+                                            ? gradient2[1]
                                             : (widget.data.type == "Hutang")
-                                                ? gradientMenu[2]
-                                                : gradientMenu[3]))
+                                                ? gradient2[2]
+                                                : gradient2[3]))
                                     : null,
                                 borderRadius: BorderRadius.circular(30),
                                 boxShadow: [
@@ -817,7 +817,7 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                       ? "Lanjut"
                                       : "Menyimpan..",
                                   style: const TextStyle(
-                                    color: Colors.white,
+                                    color: Colors.black54,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
                                   ),

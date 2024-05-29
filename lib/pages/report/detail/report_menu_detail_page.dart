@@ -402,10 +402,14 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                             Row(
                               children: <Widget>[
                                 reportMenuDetailBloc.detail.total != "0" &&
-                                        reportMenuDetailBloc.detail.total != ""
+                                        reportMenuDetailBloc.detail.total !=
+                                            "" &&
+                                        reportMenuDetailBloc.detail.total !=
+                                            null
                                     ? Text(
                                         formatCurrency.format(
-                                            reportMenuDetailBloc.detail.total),
+                                            reportMenuDetailBloc.detail.total ??
+                                                "0"),
                                         style: const TextStyle(
                                           color: Colors.black87,
                                           fontWeight: FontWeight.bold,

@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:form_builder_validators/localization/l10n.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'providers/menu_bloc.dart';
 
@@ -44,7 +43,7 @@ class MyApp extends StatelessWidget {
       title: 'BukuKas',
       theme: ThemeData(
         primarySwatch: Colors.amber,
-        fontFamily: GoogleFonts.rubik().fontFamily,
+        fontFamily: 'Plus Jakarta Sans',
         useMaterial3: true,
       ),
       supportedLocales: const [
