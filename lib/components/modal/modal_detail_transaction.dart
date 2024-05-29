@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:keuangan/components/circle_custom.dart';
 import 'package:keuangan/components/models/cart_model.dart';
 import 'package:keuangan/helpers/set_menus.dart';
@@ -27,12 +28,14 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
     });
   }
 
-  Widget getListData(BuildContext context, List<CartModel> datas) {
+  Widget getListData(BuildContext context, List<CartModel> dataCart) {
     final globalBloc = context.read<GlobalBloc>();
+    datas = groupBy(dataCart, (CartModel obj) => obj.type);
     return ListView.builder(
       shrinkWrap: true,
       itemCount: datas.length,
       itemBuilder: (context, index) {
+        String key = datas.keys.elementAt(index).toString();
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(
@@ -49,11 +52,11 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                 ),
                 child: CircleCustom(
                   height: 12,
-                  gradient: datas[index].type == "Pemasukan"
+                  gradient: key == "Pemasukan"
                       ? gradientActiveDMenu[0]
-                      : (datas[index].type == "Pengeluaran"
+                      : (key == "Pengeluaran"
                           ? gradientActiveDMenu[1]
-                          : (datas[index].type == "Hutang")
+                          : (key == "Hutang")
                               ? gradientActiveDMenu[2]
                               : gradientActiveDMenu[3]),
                   active: true,
@@ -63,11 +66,11 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                 child: Container(
                   padding: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
-                    gradient: datas[index].type == "Pemasukan"
+                    gradient: key == "Pemasukan"
                         ? gradientActiveDMenu[0]
-                        : (datas[index].type == "Pengeluaran"
+                        : (key == "Pengeluaran"
                             ? gradientActiveDMenu[1]
-                            : (datas[index].type == "Hutang")
+                            : (key == "Hutang")
                                 ? gradientActiveDMenu[2]
                                 : gradientActiveDMenu[3]),
                     borderRadius: BorderRadius.circular(19),
@@ -80,18 +83,18 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                       right: 12,
                     ),
                     decoration: BoxDecoration(
-                      gradient: datas[index].type == "Pemasukan"
+                      gradient: key == "Pemasukan"
                           ? gradient2[0]
-                          : (datas[index].type == "Pengeluaran"
+                          : (key == "Pengeluaran"
                               ? gradient2[1]
-                              : (datas[index].type == "Hutang")
+                              : (key == "Hutang")
                                   ? gradient2[2]
                                   : gradient2[3]),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: datas.map((CartModel e) {
+                      children: datas[key]!.map((CartModel e) {
                         var menuDetail = e.menuDetail;
                         int nominal =
                             int.parse(e.gin ?? "0") - int.parse(e.gout ?? "0");
@@ -146,7 +149,7 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                                 children: <Widget>[
                                   e.debtType != ""
                                       ? Text(
-                                          "${e.debtType} ${datas[index].type.toString().toLowerCase()}",
+                                          "${e.debtType} ${key.toString().toLowerCase()}",
                                           style: const TextStyle(
                                             fontSize: 11,
                                             color: Colors.black54,
