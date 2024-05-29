@@ -66,6 +66,9 @@ class _DashboardPageState extends State<DashboardPage> {
           child: SingleChildScrollView(
             child: Column(
               children: [
+                SizedBox(
+                  height: dashboardController.loading ? 1 : 0,
+                ),
                 const PanelDashboard(),
                 const SizedBox(height: 10),
                 const SizedBox(
