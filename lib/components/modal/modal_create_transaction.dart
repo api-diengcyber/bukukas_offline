@@ -370,13 +370,17 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                         name: 'nominal',
                                         enabled: _allowSave &&
                                             !transactionBloc.loading,
-                                        initialValue: int.parse(
-                                                    widget.data.defaultValue ??
+                                        initialValue: widget
+                                                    .data.defaultValue !=
+                                                ""
+                                            ? int.parse(widget.data
+                                                            .defaultValue ??
                                                         "0") >
-                                                0
-                                            ? formatter.formatString(widget
-                                                .data.defaultValue
-                                                .toString())
+                                                    0
+                                                ? formatter.formatString(widget
+                                                    .data.defaultValue
+                                                    .toString())
+                                                : null
                                             : null,
                                         decoration: InputDecoration(
                                           labelText: (widget.data.type ==

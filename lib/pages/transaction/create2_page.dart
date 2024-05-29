@@ -886,16 +886,17 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                             gradient: globalBloc
                                                         .tabMenuTransaction ==
                                                     "Pemasukan"
-                                                ? modalGradientMenu[0]
+                                                ? gradientActiveDMenu[0]
                                                 : (globalBloc
                                                             .tabMenuTransaction ==
                                                         "Pengeluaran"
-                                                    ? modalGradientMenu[1]
+                                                    ? gradientActiveDMenu[1]
                                                     : (globalBloc
                                                                 .tabMenuTransaction ==
                                                             "Hutang")
-                                                        ? modalGradientMenu[2]
-                                                        : modalGradientMenu[3]),
+                                                        ? gradientActiveDMenu[2]
+                                                        : gradientActiveDMenu[
+                                                            3]),
                                           ),
                                           child: x,
                                         );

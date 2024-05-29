@@ -55,9 +55,9 @@ class _TabReportDataState extends State<TabReportData> {
         btnOkText: "Hapus transaksi",
         btnCancelOnPress: () {},
         btnOkOnPress: () async {
-          var _resp = await ReportModel()
+          var resp = await ReportModel()
               .deleteTransaction(context, data["keu_transaction_id"]);
-          if (_resp) {
+          if (resp) {
             await ReportModel().getTabsData(context);
             await ReportModel().getSummaryReport(context);
           }

@@ -3,7 +3,6 @@ import 'package:keuangan/components/models/cart_model.dart';
 import 'package:keuangan/helpers/set_menus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:collection/collection.dart';
 import 'package:keuangan/pages/transaction/create2_model.dart';
 import 'package:keuangan/utils/currency.dart';
 import 'package:provider/provider.dart';
@@ -34,7 +33,6 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
       shrinkWrap: true,
       itemCount: datas.length,
       itemBuilder: (context, index) {
-        String key = datas.elementAt(index).toString();
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(
@@ -51,11 +49,11 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                 ),
                 child: CircleCustom(
                   height: 12,
-                  gradient: key == "Pemasukan"
+                  gradient: datas[index].type == "Pemasukan"
                       ? gradientActiveDMenu[0]
-                      : (key == "Pengeluaran"
+                      : (datas[index].type == "Pengeluaran"
                           ? gradientActiveDMenu[1]
-                          : (key == "Hutang")
+                          : (datas[index].type == "Hutang")
                               ? gradientActiveDMenu[2]
                               : gradientActiveDMenu[3]),
                   active: true,
@@ -65,14 +63,14 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                 child: Container(
                   padding: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
-                    gradient: key == "Pemasukan"
+                    gradient: datas[index].type == "Pemasukan"
                         ? gradientActiveDMenu[0]
-                        : (key == "Pengeluaran"
+                        : (datas[index].type == "Pengeluaran"
                             ? gradientActiveDMenu[1]
-                            : (key == "Hutang")
+                            : (datas[index].type == "Hutang")
                                 ? gradientActiveDMenu[2]
                                 : gradientActiveDMenu[3]),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(19),
                   ),
                   child: Container(
                     padding: const EdgeInsets.only(
@@ -82,14 +80,14 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                       right: 12,
                     ),
                     decoration: BoxDecoration(
-                      gradient: key == "Pemasukan"
+                      gradient: datas[index].type == "Pemasukan"
                           ? gradient2[0]
-                          : (key == "Pengeluaran"
+                          : (datas[index].type == "Pengeluaran"
                               ? gradient2[1]
-                              : (key == "Hutang")
+                              : (datas[index].type == "Hutang")
                                   ? gradient2[2]
                                   : gradient2[3]),
-                      borderRadius: BorderRadius.circular(7),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,7 +146,7 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                                 children: <Widget>[
                                   e.debtType != ""
                                       ? Text(
-                                          "${e.debtType} ${key.toString().toLowerCase()}",
+                                          "${e.debtType} ${datas[index].type.toString().toLowerCase()}",
                                           style: const TextStyle(
                                             fontSize: 11,
                                             color: Colors.black54,
@@ -211,7 +209,7 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
         child: Container(
           width: double.maxFinite,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Colors.grey.shade100,
             borderRadius: BorderRadius.circular(32.0),
           ),
           child: StreamBuilder(
@@ -259,7 +257,6 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                       ],
                     ),
                   ),
-                  const Divider(),
                   Flexible(
                     child: SingleChildScrollView(
                       child: getListData(context, sdata),
