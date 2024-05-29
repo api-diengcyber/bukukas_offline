@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:keuangan/components/modal/cart_model.dart';
+import 'package:keuangan/components/models/cart_model.dart';
 import 'package:keuangan/db/db.dart';
 import 'package:keuangan/db/model/tb_transaksi_model.dart';
 import 'package:keuangan/utils/currency.dart';

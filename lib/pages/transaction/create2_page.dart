@@ -1,6 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:keuangan/components/circle_custom.dart';
-import 'package:keuangan/components/modal/cart_model.dart';
+import 'package:keuangan/components/models/cart_model.dart';
 import 'package:keuangan/components/modal/modal_detail_transaction.dart';
 import 'package:keuangan/components/modal/modal_create_menu.dart';
 import 'package:keuangan/components/modal/modal_create_transaction.dart';

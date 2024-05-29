@@ -1,5 +1,5 @@
 import 'package:keuangan/components/circle_custom.dart';
-import 'package:keuangan/components/modal/cart_model.dart';
+import 'package:keuangan/components/models/cart_model.dart';
 import 'package:keuangan/db/model/tb_menu_model.dart';
 import 'package:keuangan/helpers/set_menus.dart';
 import 'package:keuangan/pages/transaction/create2_model.dart';

@@ -1,3 +1,4 @@
+import 'package:keuangan/components/models/data_summary_model.dart';
 import 'package:keuangan/providers/report_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -89,7 +90,7 @@ class ReportModel {
     if (reportBloc.activeChipTab == "Periode" &&
         (reportBloc.startDate == "" || reportBloc.endDate == "")) {
     } else {
-      reportBloc.dataSummary = {};
+      reportBloc.dataSummary = DataSummaryModel();
       reportBloc.loadingSummary = true;
       // final resp = await ReportService().getSummary(context, data);
       // reportBloc.dataSummary = resp;

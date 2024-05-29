@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:keuangan/components/modal/cart_model.dart';
+import 'package:keuangan/components/models/cart_model.dart';
 import 'package:keuangan/db/model/tb_menu_model.dart';
 
 class GlobalBloc extends ChangeNotifier {

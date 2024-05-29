@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:keuangan/components/modal/cart_model.dart';
+import 'package:keuangan/components/models/cart_model.dart';
 import 'package:keuangan/db/model/tb_menu_model.dart';
 import 'package:keuangan/db/tb_menu.dart';
 import 'package:keuangan/db/tb_transaksi.dart';

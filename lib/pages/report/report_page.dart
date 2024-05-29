@@ -151,14 +151,11 @@ class _ReportPageState extends State<ReportPage> {
                                                 const EdgeInsets.only(left: 4),
                                             child: CircleCustom(
                                               height: 8,
-                                              gradient: item["name"] ==
-                                                      "Pemasukan"
+                                              gradient: item.name == "Pemasukan"
                                                   ? gradientActiveDMenu[0]
-                                                  : (item["name"] ==
-                                                          "Pengeluaran"
+                                                  : (item.name == "Pengeluaran"
                                                       ? gradientActiveDMenu[1]
-                                                      : (item["name"] ==
-                                                              "Hutang")
+                                                      : (item.name == "Hutang")
                                                           ? gradientActiveDMenu[
                                                               2]
                                                           : gradientActiveDMenu[
@@ -200,15 +197,13 @@ class _ReportPageState extends State<ReportPage> {
                                             const Expanded(
                                               child: SizedBox(),
                                             ),
-                                            int.parse(reportBloc.dataSummary[
-                                                            "debtMenuStatus"]
-                                                        ["Belum"]) !=
+                                            reportBloc
+                                                        .dataSummary
+                                                        .debtMenuStatus!
+                                                        .belum !=
                                                     0
                                                 ? Text(
-                                                    "Belum lunas: " +
-                                                        reportBloc.dataSummary[
-                                                                "debtMenuStatus"]
-                                                            ["Belum"],
+                                                    "Belum lunas: ${reportBloc.dataSummary.debtMenuStatus!.belum}",
                                                     style: const TextStyle(
                                                       fontSize: 13,
                                                       fontWeight:
@@ -216,29 +211,28 @@ class _ReportPageState extends State<ReportPage> {
                                                     ),
                                                   )
                                                 : const SizedBox(),
-                                            (int.parse(reportBloc.dataSummary[
-                                                                "debtMenuStatus"]
-                                                            ["Belum"]) !=
+                                            (reportBloc
+                                                            .dataSummary
+                                                            .debtMenuStatus!
+                                                            .belum !=
                                                         0 &&
-                                                    int.parse(reportBloc
-                                                                    .dataSummary[
-                                                                "debtMenuStatus"]
-                                                            ["Lunas"]) !=
+                                                    reportBloc
+                                                            .dataSummary
+                                                            .debtMenuStatus!
+                                                            .lunas !=
                                                         0)
                                                 ? const VerticalDivider(
                                                     color: Colors.black,
                                                     thickness: 1,
                                                   )
                                                 : const SizedBox(),
-                                            int.parse(reportBloc.dataSummary[
-                                                            "debtMenuStatus"]
-                                                        ["Lunas"]) !=
+                                            reportBloc
+                                                        .dataSummary
+                                                        .debtMenuStatus!
+                                                        .lunas !=
                                                     0
                                                 ? Text(
-                                                    "Lunas: " +
-                                                        reportBloc.dataSummary[
-                                                                "debtMenuStatus"]
-                                                            ["Lunas"],
+                                                    "Lunas: ${reportBloc.dataSummary.debtMenuStatus!.lunas}",
                                                     style: const TextStyle(
                                                       fontSize: 13,
                                                       fontWeight:

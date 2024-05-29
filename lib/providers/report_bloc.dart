@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:keuangan/components/models/data_summary_model.dart';
+import 'package:keuangan/db/tb_menu.dart';
 
 class ReportBloc extends ChangeNotifier {
   bool _loadingMenus = false;
@@ -29,9 +31,9 @@ class ReportBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<dynamic> _listAvailableMenuType = [];
-  List<dynamic> get listAvailableMenuType => _listAvailableMenuType;
-  set listAvailableMenuType(List<dynamic> val) {
+  List<TbMenu> _listAvailableMenuType = [];
+  List<TbMenu> get listAvailableMenuType => _listAvailableMenuType;
+  set listAvailableMenuType(List<TbMenu> val) {
     _listAvailableMenuType = val;
     notifyListeners();
   }
@@ -43,9 +45,9 @@ class ReportBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  dynamic _dataSummary = {};
-  dynamic get dataSummary => _dataSummary;
-  set dataSummary(dynamic val) {
+  DataSummaryModel _dataSummary = DataSummaryModel();
+  DataSummaryModel get dataSummary => _dataSummary;
+  set dataSummary(DataSummaryModel val) {
     _dataSummary = val;
     notifyListeners();
   }

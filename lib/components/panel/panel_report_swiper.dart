@@ -97,7 +97,7 @@ class _PanelReportSwiperState extends State<PanelReportSwiper> {
                 reportBloc.listAvailableMenuType.isEmpty)
             ? 0
             : reportBloc.listAvailableMenuType.indexWhere(
-                    (element) => element['name'] == reportBloc.activeMenuTab) +
+                    (element) => element.name == reportBloc.activeMenuTab) +
                 1,
         onIndexChanged: (index) async {
           if (index == 0) {
@@ -110,7 +110,7 @@ class _PanelReportSwiperState extends State<PanelReportSwiper> {
               }
             }
             var rowIndex = reportBloc.listAvailableMenuType[index - 1];
-            reportBloc.activeMenuTab = rowIndex["name"];
+            reportBloc.activeMenuTab = rowIndex.name;
           }
           await ReportModel().getSummaryReport(context);
           await ReportModel().getTabsData(context);
@@ -168,11 +168,11 @@ class _PanelReportSwiperState extends State<PanelReportSwiper> {
                                   margin: const EdgeInsets.only(left: 4),
                                   child: CircleCustom(
                                     height: 8,
-                                    gradient: item["name"] == "Pemasukan"
+                                    gradient: item.name == "Pemasukan"
                                         ? gradientActiveDMenu[0]
-                                        : (item["name"] == "Pengeluaran"
+                                        : (item.name == "Pengeluaran"
                                             ? gradientActiveDMenu[1]
-                                            : (item["name"] == "Hutang")
+                                            : (item.name == "Hutang")
                                                 ? gradientActiveDMenu[2]
                                                 : gradientActiveDMenu[3]),
                                     active: true,
@@ -243,7 +243,7 @@ class _PanelReportSwiperState extends State<PanelReportSwiper> {
                 !reportBloc.loadingSummary
                     ? Text(
                         formatCurrency
-                            .format(reportBloc.dataSummary['totalByType']),
+                            .format(reportBloc.dataSummary.totalByType ?? 0),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 22,
