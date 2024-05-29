@@ -6,7 +6,6 @@ import 'package:keuangan/components/panel/panel_chart.dart';
 import 'package:keuangan/components/panel/panel_transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:keuangan/pages/dashboard/dashboard_controller.dart';
-import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -18,9 +17,7 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  late TutorialCoachMark tutorialCoachMark;
   late DashboardController dashboardController;
-  List<TargetFocus> targets = <TargetFocus>[];
 
   GlobalKey keyAddButton = GlobalKey();
 
