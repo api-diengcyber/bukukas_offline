@@ -575,7 +575,6 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
                                                               : const SizedBox(),
                                                         ],
                                                       ),
-                                                      const Divider(),
                                                       Row(
                                                         children: [
                                                           Expanded(
