@@ -9,17 +9,17 @@ import 'package:keuangan/helpers/set_menus.dart';
 import 'package:keuangan/pages/menu/menu_model.dart';
 import 'package:keuangan/providers/global_bloc.dart';
 import 'package:keuangan/providers/menu_bloc.dart';
-import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
+import 'package:keuangan/utils/currency.dart';
 import 'package:provider/provider.dart';
 import 'package:skeleton_text/skeleton_text.dart';
 import '../../components/modal/modal_edit_menu.dart';
 
 class MenuPage extends StatefulWidget {
-  const MenuPage({Key? key}) : super(key: key);
+  const MenuPage({super.key});
 
   @override
   State<MenuPage> createState() => _MenuPageState();
@@ -79,13 +79,6 @@ class _MenuPageState extends State<MenuPage> {
   final formatCurrency = NumberFormat.simpleCurrency(
     locale: 'id_ID',
     decimalDigits: 0,
-  );
-  final CurrencyTextInputFormatter _formatter = CurrencyTextInputFormatter(
-    NumberFormat.currency(
-      decimalDigits: 0,
-      locale: 'id',
-      symbol: 'Rp',
-    ),
   );
 
   @override
@@ -415,7 +408,7 @@ class _MenuPageState extends State<MenuPage> {
                                                                             : Colors.blue.shade100),
                                                               ),
                                                               child: Text(
-                                                                _formatter.formatString(data
+                                                                formatter.formatString(data
                                                                     .defaultValue
                                                                     .toString()),
                                                                 style:

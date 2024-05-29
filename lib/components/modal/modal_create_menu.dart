@@ -5,6 +5,7 @@ import 'package:currency_text_input_formatter/currency_text_input_formatter.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:keuangan/utils/currency.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
@@ -195,13 +196,7 @@ class _CreateMenuModalState extends State<CreateMenuModal> {
                                     ),
                                     keyboardType: TextInputType.number,
                                     inputFormatters: [
-                                      CurrencyTextInputFormatter(
-                                        NumberFormat.currency(
-                                          decimalDigits: 0,
-                                          locale: 'id',
-                                          symbol: 'Rp',
-                                        ),
-                                      )
+                                      formatter,
                                     ],
                                   ),
                                 ),
@@ -230,13 +225,7 @@ class _CreateMenuModalState extends State<CreateMenuModal> {
                                       ]),
                                       keyboardType: TextInputType.number,
                                       inputFormatters: [
-                                        CurrencyTextInputFormatter(
-                                          NumberFormat.currency(
-                                            decimalDigits: 0,
-                                            locale: 'id',
-                                            symbol: 'Rp',
-                                          ),
-                                        )
+                                        formatter,
                                       ],
                                     ),
                                     const SizedBox(
@@ -288,13 +277,7 @@ class _CreateMenuModalState extends State<CreateMenuModal> {
                                       ),
                                       keyboardType: TextInputType.number,
                                       inputFormatters: [
-                                        CurrencyTextInputFormatter(
-                                          NumberFormat.currency(
-                                            decimalDigits: 0,
-                                            locale: 'id',
-                                            symbol: 'Rp',
-                                          ),
-                                        )
+                                        formatter,
                                       ],
                                     ),
                                     const SizedBox(

@@ -14,6 +14,7 @@ import 'package:keuangan/providers/global_bloc.dart';
 import 'package:keuangan/providers/transaction_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:keuangan/utils/currency.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -33,12 +34,6 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
     locale: 'id_ID',
     decimalDigits: 0,
   );
-  final CurrencyTextInputFormatter _formatter =
-      CurrencyTextInputFormatter(NumberFormat.currency(
-    decimalDigits: 0,
-    locale: 'id',
-    symbol: 'Rp',
-  ));
 
   int totalIn = 0;
   int totalOut = 0;
@@ -76,7 +71,7 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
       if (data.notes != null && data.notes != "") {
         desc += "\n ${data.notes}";
       }
-      desc += "\n ${_formatter.formatString(jml.toString())}";
+      desc += "\n ${formatter.formatString(jml.toString())}";
 
       AwesomeDialog(
         context: context,

@@ -9,9 +9,9 @@ import 'package:keuangan/db/model/tb_transaksi_model.dart';
 import 'package:keuangan/pages/report/detail/report_menu_detail_model.dart';
 import 'package:keuangan/pages/report/report_model.dart';
 import 'package:keuangan/providers/report_menu_detail_bloc.dart';
-import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:keuangan/utils/currency.dart';
 import 'package:provider/provider.dart';
 import 'package:skeleton_text/skeleton_text.dart';
 import '../../../components/timelines/timeline_theme.dart';
@@ -36,12 +36,6 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
     locale: 'id_ID',
     decimalDigits: 0,
   );
-  final CurrencyTextInputFormatter _formatter =
-      CurrencyTextInputFormatter(NumberFormat.currency(
-    decimalDigits: 0,
-    locale: 'id',
-    symbol: 'Rp',
-  ));
 
   // List<TimelineEventDisplay> events = [];
 
@@ -69,7 +63,7 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
           data['keu_transaction_notes'] != "") {
         desc += "\n ${data['keu_transaction_notes']}";
       }
-      desc += "\n ${_formatter.formatString(jml.toString())}";
+      desc += "\n ${formatter.formatString(jml.toString())}";
 
       AwesomeDialog(
         context: context,
@@ -388,7 +382,7 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                                                   : Colors.blue.shade100),
                                     ),
                                     child: Text(
-                                      _formatter.formatString(
+                                      formatter.formatString(
                                           reportMenuDetailBloc
                                               .detail.defaultValue
                                               .toString()),

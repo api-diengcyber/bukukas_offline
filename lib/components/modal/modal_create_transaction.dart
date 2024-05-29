@@ -10,6 +10,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:intl/intl.dart';
 import 'package:keuangan/providers/transaction_bloc.dart';
+import 'package:keuangan/utils/currency.dart';
 import 'package:provider/provider.dart';
 
 class CreateTransactionModal extends StatefulWidget {
@@ -29,13 +30,6 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
   final formatCurrency = NumberFormat.simpleCurrency(
     locale: 'id_ID',
     decimalDigits: 0,
-  );
-  final CurrencyTextInputFormatter _formatter = CurrencyTextInputFormatter(
-    NumberFormat.currency(
-      decimalDigits: 0,
-      locale: 'id',
-      symbol: 'Rp',
-    ),
   );
 
   int _nominal = 0;
@@ -380,7 +374,7 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                                     widget.data.defaultValue ??
                                                         "0") >
                                                 0
-                                            ? _formatter.formatString(widget
+                                            ? formatter.formatString(widget
                                                 .data.defaultValue
                                                 .toString())
                                             : null,
@@ -422,7 +416,7 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                           FormBuilderValidators.required(),
                                         ]),
                                         keyboardType: TextInputType.number,
-                                        inputFormatters: [_formatter],
+                                        inputFormatters: [formatter],
                                         onChanged: (val) {
                                           int total = 0;
                                           if (val != null && val != "") {

@@ -10,6 +10,11 @@ final CurrencyTextInputFormatter formatter = CurrencyTextInputFormatter(
   enableNegative: false,
 );
 
+final simpleFormatCurrency = NumberFormat.simpleCurrency(
+  locale: 'id_ID',
+  decimalDigits: 0,
+);
+
 currencyToDoubleString(String data) {
   data = data.replaceAll('Rp', '');
   data = data.replaceAll('.', '');

@@ -46,9 +46,8 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
     );
 
-    double marginTopScreen = appBar.preferredSize.height +
-        MediaQuery.of(context).viewPadding.top +
-        8;
+    double marginTopScreen =
+        appBar.preferredSize.height + MediaQuery.of(context).viewPadding.top;
 
     return Obx(
       () => Scaffold(
@@ -67,12 +66,7 @@ class _DashboardPageState extends State<DashboardPage> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox(
-                  height: dashboardController.loading ? 10 : 0,
-                ),
                 const PanelDashboard(),
-                // const SizedBox(height: 10),
-                // const PanelInfo(),
                 const SizedBox(height: 10),
                 const SizedBox(
                   height: 180,

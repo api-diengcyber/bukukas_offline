@@ -10,11 +10,11 @@ import 'package:keuangan/helpers/set_menus.dart';
 import 'package:keuangan/pages/transaction/create2_model.dart';
 import 'package:keuangan/providers/global_bloc.dart';
 import 'package:keuangan/providers/transaction_bloc.dart';
-import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:keuangan/utils/currency.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
@@ -26,17 +26,6 @@ class CreateTransaction2Page extends StatefulWidget {
 }
 
 class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
-  final formatCurrency = NumberFormat.simpleCurrency(
-    locale: 'id_ID',
-    decimalDigits: 0,
-  );
-  final CurrencyTextInputFormatter _formatter =
-      CurrencyTextInputFormatter(NumberFormat.currency(
-    decimalDigits: 0,
-    locale: 'id',
-    symbol: 'Rp',
-  ));
-
   int totalIn = 0;
   int totalOut = 0;
   int totalNominal = 0;
@@ -215,7 +204,8 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                       children: <Widget>[
                                         Expanded(
                                           child: Text(
-                                            formatCurrency.format(totalNominal),
+                                            simpleFormatCurrency
+                                                .format(totalNominal),
                                             style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 17,
@@ -580,7 +570,7 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                                                                               : Colors.blue.shade100),
                                                                                 ),
                                                                                 child: Text(
-                                                                                  _formatter.formatString(globalBloc.menus[index].defaultValue.toString()),
+                                                                                  formatter.formatString(globalBloc.menus[index].defaultValue.toString()),
                                                                                   style: const TextStyle(
                                                                                     color: Colors.black87,
                                                                                     fontSize: 14,
@@ -611,7 +601,7 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                                                                       vertical: 4,
                                                                                     ),
                                                                                     child: Text(
-                                                                                      formatCurrency.format(globalBloc.menus[index].total),
+                                                                                      simpleFormatCurrency.format(globalBloc.menus[index].total),
                                                                                       style: TextStyle(
                                                                                         letterSpacing: 0.5,
                                                                                         fontSize: 13,

@@ -2,16 +2,16 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:keuangan/helpers/set_menus.dart';
 import 'package:keuangan/pages/report/report_model.dart';
 import 'package:keuangan/providers/report_bloc.dart';
-import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:keuangan/utils/currency.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 import '../../pages/report/detail/report_menu_detail_page.dart';
 
 class TabReportData extends StatefulWidget {
-  const TabReportData({Key? key}) : super(key: key);
+  const TabReportData({super.key});
 
   @override
   State<TabReportData> createState() => _TabReportDataState();
@@ -22,17 +22,10 @@ class _TabReportDataState extends State<TabReportData> {
     locale: 'id_ID',
     decimalDigits: 0,
   );
-  final CurrencyTextInputFormatter _formatter = CurrencyTextInputFormatter(
-    NumberFormat.currency(
-      decimalDigits: 0,
-      locale: 'id',
-      symbol: 'Rp',
-    ),
-  );
 
   @override
   Widget build(BuildContext context) {
-    final _reportBloc = context.watch<ReportBloc>();
+    final reportBloc = context.watch<ReportBloc>();
 
     onDeleteMenu(data) async {
       DateTime tempDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
@@ -46,7 +39,7 @@ class _TabReportDataState extends State<TabReportData> {
           data['keu_transaction_notes'] != "") {
         desc += "\n ${data['keu_transaction_notes']}";
       }
-      desc += "\n ${_formatter.formatString(jml.toString())}";
+      desc += "\n ${formatter.formatString(jml.toString())}";
 
       AwesomeDialog(
         context: context,
@@ -72,20 +65,20 @@ class _TabReportDataState extends State<TabReportData> {
       ).show();
     }
 
-    Color colorT = _reportBloc.activeMenuTab == "Semua"
+    Color colorT = reportBloc.activeMenuTab == "Semua"
         ? Colors.grey
-        : _reportBloc.activeMenuTab == "Pemasukan"
+        : reportBloc.activeMenuTab == "Pemasukan"
             ? Colors.green.shade300
-            : _reportBloc.activeMenuTab == "Pengeluaran"
+            : reportBloc.activeMenuTab == "Pengeluaran"
                 ? Colors.pink.shade300
-                : _reportBloc.activeMenuTab == "Hutang"
+                : reportBloc.activeMenuTab == "Hutang"
                     ? Colors.amber.shade300
-                    : _reportBloc.activeMenuTab == "Piutang"
+                    : reportBloc.activeMenuTab == "Piutang"
                         ? Colors.blue.shade300
                         : Colors.grey;
 
-    return (!_reportBloc.loadingSummary && !_reportBloc.loadingData)
-        ? _reportBloc.data.length > 0
+    return (!reportBloc.loadingSummary && !reportBloc.loadingData)
+        ? reportBloc.data.length > 0
             ? SizedBox(
                 height: double.infinity,
                 child: Column(
@@ -98,9 +91,9 @@ class _TabReportDataState extends State<TabReportData> {
                       child: ListView.builder(
                         shrinkWrap: true,
                         padding: const EdgeInsets.all(0),
-                        itemCount: _reportBloc.data.length,
+                        itemCount: reportBloc.data.length,
                         itemBuilder: (context, index) {
-                          var data = _reportBloc.data[index];
+                          var data = reportBloc.data[index];
                           DateTime tempDate =
                               DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(
                                   data["keu_transaction_transaction_date"]);
