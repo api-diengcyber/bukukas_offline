@@ -1,5 +1,6 @@
 import 'package:keuangan/db/db.dart';
 import 'package:keuangan/pages/dashboard/dashboard_page.dart';
+import 'package:keuangan/pages/splash/splash_page.dart';
 import 'package:keuangan/providers/create_bloc.dart';
 import 'package:keuangan/providers/global_bloc.dart';
 import 'package:keuangan/providers/report_bloc.dart';
@@ -36,7 +37,6 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         FormBuilderLocalizations.delegate,
       ],
-      home: const DashboardPage(),
+      home: const SplashPage(),
     );
   }
 }

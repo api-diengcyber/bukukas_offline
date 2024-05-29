@@ -21,14 +21,14 @@ class _PanelSplash1State extends State<PanelSplash1> {
           children: <Widget>[
             IntrinsicHeight(
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(
                     width: 32,
                   ),
                   Expanded(
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
                           width: 60,
@@ -43,24 +43,21 @@ class _PanelSplash1State extends State<PanelSplash1> {
                         ),
                         const SizedBox(height: 10),
                         const Text(
-                          "KEUANGAN",
+                          "BukuKas",
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  const VerticalDivider(
-                    color: Colors.grey,
-                  ),
-                  const Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        SizedBox(height: 5),
+                        const Text(
+                          "Sederhana",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black54,
+                          ),
+                        ),
                       ],
                     ),
                   ),
