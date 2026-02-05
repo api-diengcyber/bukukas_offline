@@ -1,4 +1,4 @@
-package com.breakreasi.bukukas
+package com.diengcyber.bukukas
 
 import io.flutter.embedding.android.FlutterActivity
 

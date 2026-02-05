@@ -29,7 +29,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.breakreasi.bukukas"
+    namespace = "com.diengcyber.bukukas"
     compileSdk = flutter.compileSdkVersion
     // ndkVersion = flutter.ndkVersion
     ndkVersion "25.1.8937393"
@@ -43,7 +43,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.breakreasi.bukukas"
+        applicationId = "com.diengcyber.bukukas"
         minSdkVersion = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
