@@ -1,20 +1,19 @@
 import 'dart:convert';
-
 import 'package:keuangan/db/db.dart';
 import 'package:keuangan/db/model/tb_menu_model.dart';
 import 'package:keuangan/db/tb_installed.dart';
 import 'package:keuangan/utils/currency.dart';
 import 'package:sqflite/sqflite.dart';
 
-class TbMenu extends DB {
+class TbMenu {
   Future<void> init() async {
-    Database database = await getDB();
+    Database database = await DB.instance.getDB();
     await database.execute(
-        "CREATE TABLE IF NOT EXISTS menu (id INTEGER PRIMARY KEY, name TEXT, type TEXT, notes TEXT, defaultValue TEXT, total TEXT, paid TEXT, deadline TEXT, statusPaidOff TEXT, createdOn TEXT)");
+        "CREATE TABLE IF NOT EXISTS menu (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type TEXT, notes TEXT, defaultValue TEXT, total TEXT, paid TEXT, deadline TEXT, statusPaidOff TEXT, createdOn TEXT)");
   }
 
   Future<void> create(List<TbMenuModel> listData) async {
-    Database database = await getDB();
+    Database database = await DB.instance.getDB();
     await database.transaction((txn) async {
       for (int i = 0; i < listData.length; i++) {
         await txn.rawInsert(
@@ -49,7 +48,7 @@ class TbMenu extends DB {
           paid: '',
           deadline: '',
           statusPaidOff: '',
-          createdOn: '',
+          createdOn: DateTime.now().toString(),
         ),
       ];
       await create(data);
@@ -57,37 +56,38 @@ class TbMenu extends DB {
   }
 
   Future<List<TbMenuModel>> getData(String? type) async {
-    Database database = await getDB();
+    Database database = await DB.instance.getDB();
     String whereStr = "";
     if (type != null && type != 'Semua') {
-      whereStr += "WHERE a.type='$type'";
+      whereStr += " WHERE a.type='$type'";
     }
-    List<Map> list = await database.rawQuery(
+    List<Map<String, dynamic>> list = await database.rawQuery(
         'SELECT a.*, COUNT(b.id) AS totalTransaction FROM menu a LEFT JOIN transaksi b ON a.id=b.menuId $whereStr GROUP BY a.id');
-    return tbMenuModelFromJson(jsonEncode(list));
+    return list.map((e) => TbMenuModel.fromJson(e)).toList();
   }
 
   Future<TbMenuModel> getDataById(int? id) async {
-    Database database = await getDB();
-    List<Map> list = await database.rawQuery(
-        'SELECT a.*, COUNT(b.id) AS totalTransaction FROM menu a LEFT JOIN transaksi b ON a.id=b.menuId WHERE a.id=$id GROUP BY a.id LIMIT 0,1');
-    return tbMenuModelFromJson(jsonEncode(list)).first;
+    Database database = await DB.instance.getDB();
+    List<Map<String, dynamic>> list = await database.rawQuery(
+        'SELECT a.*, COUNT(b.id) AS totalTransaction FROM menu a LEFT JOIN transaksi b ON a.id=b.menuId WHERE a.id=? GROUP BY a.id LIMIT 1', [id]);
+    return TbMenuModel.fromJson(list.first);
   }
 
   Future<void> update(int id, String type, Map<String, dynamic> data) async {
-    Database database = await getDB();
+    Database database = await DB.instance.getDB();
     TbMenuModel d = TbMenuModel.fromJson(data);
     await database.rawUpdate(
-        "UPDATE menu SET name='${d.name}', notes='${d.notes ?? ""}', defaultValue='${currencyToDoubleString(d.defaultValue ?? "") ?? ""}' WHERE id='$id'");
+        "UPDATE menu SET name=?, notes=?, defaultValue=? WHERE id=?", 
+        [d.name, d.notes ?? "", currencyToDoubleString(d.defaultValue ?? ""), id]);
   }
 
   Future<void> delete(int id) async {
-    Database database = await getDB();
-    await database.rawDelete("DELETE FROM menu WHERE id=$id");
+    Database database = await DB.instance.getDB();
+    await database.rawDelete("DELETE FROM menu WHERE id=?", [id]);
   }
 
   Future<void> reset() async {
-    Database database = await getDB();
+    Database database = await DB.instance.getDB();
     await database.rawDelete("DELETE FROM menu");
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:keuangan/components/models/data_summary_model.dart';
+import 'package:keuangan/db/model/tb_menu_model.dart'; // Import modelnya di sini
 import 'package:keuangan/db/tb_menu.dart';
 
 class ReportBloc extends ChangeNotifier {
@@ -31,9 +32,10 @@ class ReportBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<TbMenu> _listAvailableMenuType = [];
-  List<TbMenu> get listAvailableMenuType => _listAvailableMenuType;
-  set listAvailableMenuType(List<TbMenu> val) {
+  // PERBAIKAN: Ganti dari List<TbMenu> menjadi List<TbMenuModel>
+  List<TbMenuModel> _listAvailableMenuType = [];
+  List<TbMenuModel> get listAvailableMenuType => _listAvailableMenuType;
+  set listAvailableMenuType(List<TbMenuModel> val) {
     _listAvailableMenuType = val;
     notifyListeners();
   }

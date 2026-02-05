@@ -94,6 +94,9 @@ class _MenuPageState extends State<MenuPage> {
     final menuBloc = context.watch<MenuBloc>();
     final globalBloc = context.watch<GlobalBloc>();
 
+    // Mendapatkan padding bawah dari sistem (area navigasi HP)
+    double bottomPadding = MediaQuery.of(context).padding.bottom;
+
     openDialogMenu(int actTab) {
       globalBloc.loading = false;
       showDialog(
@@ -207,6 +210,8 @@ class _MenuPageState extends State<MenuPage> {
       body: Container(
         color: Colors.grey.shade100,
         constraints: const BoxConstraints.expand(),
+        // Menambahkan padding bawah agar tidak tertutup navigasi HP
+        padding: EdgeInsets.only(bottom: bottomPadding > 0 ? bottomPadding : 10),
         child: SizedBox(
           width: double.infinity,
           height: double.infinity,

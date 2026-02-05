@@ -1,12 +1,14 @@
 import 'package:flutter/services.dart';
 import 'package:keuangan/components/circle_custom.dart';
 import 'package:keuangan/components/panel/panel_report_swiper.dart';
+import 'package:keuangan/db/model/tb_transaksi_model.dart'; // Import Model Transaksi
 import 'package:keuangan/helpers/set_menus.dart';
 import 'package:keuangan/pages/report/report_model.dart';
 import 'package:keuangan/providers/report_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:keuangan/helpers/export_service.dart';
 
 import '../../components/panel/panel_report_tabs.dart';
 
@@ -31,6 +33,29 @@ class _ReportPageState extends State<ReportPage> {
     });
   }
 
+  // Fungsi Helper untuk memicu export
+  void _handleExport(BuildContext context, String type) async {
+    final reportBloc = Provider.of<ReportBloc>(context, listen: false);
+    
+    // Ambil data dari list yang sedang aktif
+    final List<TbTransaksiModel> data = (reportBloc.data != null && reportBloc.data['list'] != null)
+        ? List<TbTransaksiModel>.from(reportBloc.data['list'])
+        : [];
+
+    if (data.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Tidak ada data untuk diexport")),
+      );
+      return;
+    }
+
+    if (type == 'pdf') {
+      await ExportService().exportToPdf(data);
+    } else {
+      await ExportService().exportToExcel(data);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final reportBloc = context.watch<ReportBloc>();
@@ -53,6 +78,20 @@ class _ReportPageState extends State<ReportPage> {
           fontWeight: FontWeight.bold,
         ),
       ),
+      // --- TAMBAHKAN TOMBOL EXPORT DI SINI ---
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.picture_as_pdf, color: Colors.redAccent),
+          tooltip: 'Export PDF',
+          onPressed: () => _handleExport(context, 'pdf'),
+        ),
+        IconButton(
+          icon: const Icon(Icons.table_chart, color: Colors.green),
+          tooltip: 'Export Excel',
+          onPressed: () => _handleExport(context, 'excel'),
+        ),
+        const SizedBox(width: 8),
+      ],
     );
 
     double marginTopScreen =

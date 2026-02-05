@@ -1,4 +1,5 @@
 import 'package:keuangan/db/tb_menu.dart';
+import 'package:keuangan/db/model/tb_menu_model.dart'; // Tambahkan import ini
 
 class DebtMenuStatusModel {
   int? belum;
@@ -13,7 +14,8 @@ class DebtMenuStatusModel {
 class DataSummaryModel {
   int? total;
   int? totalByType;
-  List<TbMenu>? listAvailableMenuType;
+  // PERBAIKAN: Ganti dari TbMenu menjadi TbMenuModel
+  List<TbMenuModel>? listAvailableMenuType; 
   DebtMenuStatusModel? debtMenuStatus;
 
   DataSummaryModel({

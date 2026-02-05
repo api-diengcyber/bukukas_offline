@@ -140,7 +140,8 @@ class _CreateMenuModalState extends State<CreateMenuModal> {
                             ),
                             validator: FormBuilderValidators.compose([
                               FormBuilderValidators.required(),
-                              FormBuilderValidators.min(4),
+                              // PERBAIKAN: Ganti .min(4) menjadi .minLength(4)
+                              FormBuilderValidators.minLength(4),
                             ]),
                             keyboardType: TextInputType.text,
                           ),

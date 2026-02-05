@@ -1,113 +1,103 @@
 import 'package:keuangan/components/models/data_summary_model.dart';
+import 'package:keuangan/db/tb_menu.dart';
+import 'package:keuangan/db/tb_transaksi.dart';
 import 'package:keuangan/providers/report_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ReportModel {
+  // Inisialisasi data laporan
   void init(BuildContext context) async {
+    await _fetchAvailableMenuTypes(context); // Ambil kategori menu dulu
     await getSummaryReport(context);
     await getTabsData(context);
   }
 
-  Future<bool> deleteTransaction(BuildContext context, int id) async {
-    // final resp = await TransactionService().delete(context, id);
-    // return resp;
-    return true;
-  }
-
-  Future<void> _getMenu(BuildContext context) async {
+  // Fungsi baru untuk mengambil list menu agar indikator titik warna muncul
+  Future<void> _fetchAvailableMenuTypes(BuildContext context) async {
     final reportBloc = Provider.of<ReportBloc>(context, listen: false);
-    var data = {
-      'type': reportBloc.activeMenuTab,
-      'reportType': reportBloc.activeChipTab,
-      'startDate':
-          reportBloc.activeChipTab == "Semua" ? "" : reportBloc.startDate,
-      'endDate': reportBloc.activeChipTab == "Semua" ? "" : reportBloc.endDate,
-    };
-    if (reportBloc.activeChipTab == "Periode" &&
-        (reportBloc.startDate == "" || reportBloc.endDate == "")) {
-    } else {
-      reportBloc.menus = {};
-      reportBloc.loadingMenus = true;
-      // final resp = await ReportService().getMenu(context, data);
-      // reportBloc.menus = resp;
-      await Future.delayed(const Duration(milliseconds: 500), () {
-        reportBloc.loadingMenus = false;
-      });
-    }
-  }
-
-  Future<void> _getData(BuildContext context) async {
-    final reportBloc = Provider.of<ReportBloc>(context, listen: false);
-    var data = {
-      'type': reportBloc.activeMenuTab,
-      'reportType': reportBloc.activeChipTab,
-      'startDate':
-          reportBloc.activeChipTab == "Semua" ? "" : reportBloc.startDate,
-      'endDate': reportBloc.activeChipTab == "Semua" ? "" : reportBloc.endDate,
-      'limit': 50,
-      'page': 1,
-    };
-    if (reportBloc.activeChipTab == "Periode" &&
-        (reportBloc.startDate == "" || reportBloc.endDate == "")) {
-    } else {
-      reportBloc.data = {};
-      reportBloc.loadingData = true;
-      // final resp = await ReportService().getData(context, data);
-      // reportBloc.data = resp['data'] ?? {};
-      await Future.delayed(const Duration(milliseconds: 500), () {
-        reportBloc.loadingData = false;
-      });
-    }
-  }
-
-  Future<void> getTabsData(BuildContext context) async {
-    final reportBloc = Provider.of<ReportBloc>(context, listen: false);
-    if (reportBloc.reportIndexActiveTab == 0) {
-      // Data
-      await _getData(context);
-    } else if (reportBloc.reportIndexActiveTab == 1) {
-      if (reportBloc.activeMenuTab == "Semua") {
-        // Graph
-      } else {
-        // Menu
-        await _getMenu(context);
-      }
-    } else if (reportBloc.reportIndexActiveTab == 2) {
-      // Graph
-    }
+    reportBloc.loadingMenus = true;
+    
+    // Ambil semua data menu dari database
+    var menus = await TbMenu().getData(null);
+    reportBloc.listAvailableMenuType = menus;
+    
+    reportBloc.loadingMenus = false;
   }
 
   Future<void> getSummaryReport(BuildContext context) async {
-    final reportBloc = Provider.of<ReportBloc>(context, listen: false);
-    var data = {
-      'type': reportBloc.activeMenuTab,
-      'reportType': reportBloc.activeChipTab,
-      'startDate':
-          reportBloc.activeChipTab == "Semua" ? "" : reportBloc.startDate,
-      'endDate': reportBloc.activeChipTab == "Semua" ? "" : reportBloc.endDate,
-    };
-    if (reportBloc.activeChipTab == "Periode" &&
-        (reportBloc.startDate == "" || reportBloc.endDate == "")) {
-    } else {
-      reportBloc.dataSummary = DataSummaryModel();
-      reportBloc.loadingSummary = true;
-      // final resp = await ReportService().getSummary(context, data);
-      // reportBloc.dataSummary = resp;
-      // reportBloc.totalReport = resp["total"];
-      // reportBloc.listAvailableMenuType = resp['listAvailableMenuType'];
+  final reportBloc = Provider.of<ReportBloc>(context, listen: false);
+  reportBloc.loadingSummary = true;
 
-      // if (reportBloc.activeMenuTab != "Semua") {
-      //   int indexExists = resp['listAvailableMenuType'].indexWhere(
-      //       (element) => element['name'] == reportBloc.activeMenuTab);
-      //   if (resp['listAvailableMenuType'].isEmpty || indexExists == -1) {
-      //     reportBloc.activeMenuTab = "Semua";
-      //   }
-      // }
+  // 1. Ambil data transaksi dari SQLite
+  var listTransaksi = await TbTransaksi().getData(reportBloc.activeMenuTab);
 
-      await Future.delayed(const Duration(milliseconds: 500), () {
-        reportBloc.loadingSummary = false;
-      });
+  int tIn = 0;
+  int tOut = 0;
+  int countLunas = 0;
+  int countBelum = 0;
+
+  // 2. Hitung nominal
+  for (var item in listTransaksi) {
+    tIn += int.tryParse(item.valueIn ?? "0") ?? 0;
+    tOut += int.tryParse(item.valueOut ?? "0") ?? 0;
+  }
+
+  // 3. Hitung status Hutang/Piutang jika tab aktif adalah Hutang/Piutang
+  if (reportBloc.activeMenuTab == "Hutang" || reportBloc.activeMenuTab == "Piutang") {
+    // Ambil data menu untuk mengecek status lunas
+    var menus = await TbMenu().getData(reportBloc.activeMenuTab);
+    for (var m in menus) {
+      if (m.statusPaidOff == "Lunas") {
+        countLunas++;
+      } else {
+        countBelum++;
+      }
     }
+  }
+
+  // 4. Sinkronisasi dengan DataSummaryModel milikmu
+  // Gunakan total untuk menyimpan hasil bersih (Pemasukan - Pengeluaran)
+  int totalBersih = tIn - tOut;
+  
+  // Tentukan totalByType berdasarkan tab yang aktif
+  int totalByType = totalBersih;
+  if (reportBloc.activeMenuTab == "Pemasukan") totalByType = tIn;
+  if (reportBloc.activeMenuTab == "Pengeluaran") totalByType = tOut;
+
+  DataSummaryModel summary = DataSummaryModel(
+    total: totalBersih,
+    totalByType: totalByType,
+    debtMenuStatus: DebtMenuStatusModel(
+      lunas: countLunas,
+      belum: countBelum,
+    ),
+    listAvailableMenuType: reportBloc.listAvailableMenuType,
+  );
+
+  // 5. Update Bloc
+  reportBloc.dataSummary = summary;
+  reportBloc.totalReport = totalByType;
+
+  reportBloc.loadingSummary = false;
+}
+
+  Future<void> getTabsData(BuildContext context) async {
+    final reportBloc = Provider.of<ReportBloc>(context, listen: false);
+    reportBloc.loadingData = true;
+
+    // Ambil data untuk ditampilkan di list tab bawah
+    var listTransaksi = await TbTransaksi().getData(reportBloc.activeMenuTab);
+    
+    // Simpan ke bloc (asumsi data summary menggunakan map 'list')
+    reportBloc.data = {"list": listTransaksi};
+
+    reportBloc.loadingData = false;
+  }
+
+  Future<bool> deleteTransaction(BuildContext context, int id) async {
+    // Tambahkan logika hapus beneran ke database
+    // await TbTransaksi().delete(id); 
+    return true;
   }
 }
