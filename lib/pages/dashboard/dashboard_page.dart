@@ -6,6 +6,7 @@ import 'package:keuangan/components/panel/panel_chart.dart';
 import 'package:keuangan/components/panel/panel_transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:keuangan/pages/dashboard/dashboard_controller.dart';
+import 'package:keuangan/pages/paywall/paywall_page.dart';
 import '../backup/backup_page.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -32,29 +33,33 @@ class _DashboardPageState extends State<DashboardPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: const Row(
             children: [
               Icon(Icons.workspace_premium, color: Colors.amber, size: 30),
               SizedBox(width: 10),
-              Text("Fitur Premium", style: TextStyle(fontWeight: FontWeight.bold)),
+              Text("Fitur Premium",
+                  style: TextStyle(fontWeight: FontWeight.bold)),
             ],
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildPremiumItem(Icons.picture_as_pdf, "Export PDF & Excel", "Simpan laporan ke file dokumen."),
-              _buildPremiumItem(Icons.send_to_mobile, "Kirim WhatsApp", "Bagikan laporan langsung ke WA."),
-              _buildPremiumItem(
-  Icons.cloud_upload, 
-  "Backup Cloud", 
-  "Amankan data Anda di server online.",
-  onTap: () {
-    Navigator.pop(context); // Tutup modal
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const BackupPage()));
-  }
-),
-              _buildPremiumItem(Icons.support_agent, "Bantuan Teknis", "Prioritas bantuan jika ada kendala."),
+              _buildPremiumItem(Icons.picture_as_pdf, "Export PDF & Excel",
+                  "Simpan laporan ke file dokumen."),
+              _buildPremiumItem(Icons.send_to_mobile, "Kirim WhatsApp",
+                  "Bagikan laporan langsung ke WA."),
+              _buildPremiumItem(Icons.cloud_upload, "Backup Cloud",
+                  "Amankan data Anda di server online.", onTap: () {
+                Navigator.pop(context); // Tutup modal
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const BackupPage()));
+              }),
+              _buildPremiumItem(Icons.support_agent, "Bantuan Teknis",
+                  "Prioritas bantuan jika ada kendala."),
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
@@ -62,10 +67,12 @@ class _DashboardPageState extends State<DashboardPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.amber.shade700,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                   ),
                   onPressed: () => Navigator.pop(context),
-                  child: const Text("DAPATKAN AKSES SEKARANG", style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: const Text("DAPATKAN AKSES SEKARANG",
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               )
             ],
@@ -76,17 +83,17 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   // Widget Helper untuk Baris Item Premium
-  Widget _buildPremiumItem(IconData icon, String title, String desc, {VoidCallback? onTap}) {
-  return ListTile(
-    onTap: onTap, // Tambahkan ini
-    leading: Icon(icon, color: Colors.blueGrey),
-    contentPadding: EdgeInsets.zero,
-    title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-    subtitle: Text(desc, style: const TextStyle(fontSize: 12)),
-  );
-}
-
-
+  Widget _buildPremiumItem(IconData icon, String title, String desc,
+      {VoidCallback? onTap}) {
+    return ListTile(
+      onTap: onTap, // Tambahkan ini
+      leading: Icon(icon, color: Colors.blueGrey),
+      contentPadding: EdgeInsets.zero,
+      title: Text(title,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+      subtitle: Text(desc, style: const TextStyle(fontSize: 12)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,9 +112,13 @@ class _DashboardPageState extends State<DashboardPage> {
       // --- TAMBAHKAN ICON MAHKOTA DI SINI ---
       actions: [
         IconButton(
-          icon: const Icon(Icons.workspace_premium, color: Colors.amber, size: 28),
+          icon: const Icon(Icons.workspace_premium,
+              color: Colors.amber, size: 28),
           tooltip: 'Premium Fitur',
-          onPressed: () => _showPremiumModal(context),
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const PaywallPage()));
+          },
         ),
         const SizedBox(width: 8),
       ],

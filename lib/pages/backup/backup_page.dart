@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:keuangan/services/revenue_cat_service.dart';
 import 'package:restart_app/restart_app.dart';
 import '../../utils/pref_helper.dart';
 import '../../services/backup_service.dart';
@@ -25,10 +26,10 @@ class _BackupPageState extends State<BackupPage> {
 
   // Fungsi untuk mengecek status premium dan load history lokal jika ada
   Future<void> _checkStatus() async {
-    bool premium = await PrefHelper.isPremium();
+    bool premium = await RevenueCatService.isUserPremium();
     String last = await PrefHelper.getLastBackup();
     String email = await PrefHelper.getUserEmail();
-    
+
     setState(() {
       _isPremium = premium;
       _lastBackup = last;
@@ -46,7 +47,7 @@ class _BackupPageState extends State<BackupPage> {
       String pass = await PrefHelper.getUserPass();
       if (email.isEmpty || pass.isEmpty) return;
 
-      var data = await BackupService().fetchHistory(email, pass); 
+      var data = await BackupService().fetchHistory(email, pass);
       if (mounted) setState(() => _history = data);
     } catch (e) {
       debugPrint("Error History: $e");
@@ -66,23 +67,28 @@ class _BackupPageState extends State<BackupPage> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("Masukkan email dan password lama untuk menarik data backup Anda."),
+            const Text(
+                "Masukkan email dan password lama untuk menarik data backup Anda."),
             const SizedBox(height: 15),
             TextField(
-              controller: emailController, 
-              decoration: const InputDecoration(labelText: "Email", border: OutlineInputBorder()),
+              controller: emailController,
+              decoration: const InputDecoration(
+                  labelText: "Email", border: OutlineInputBorder()),
               keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 10),
             TextField(
-              controller: passController, 
-              decoration: const InputDecoration(labelText: "Password", border: OutlineInputBorder()),
+              controller: passController,
+              decoration: const InputDecoration(
+                  labelText: "Password", border: OutlineInputBorder()),
               obscureText: true,
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("BATAL")),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("BATAL")),
           ElevatedButton(
             onPressed: () async {
               String email = emailController.text.trim();
@@ -91,35 +97,39 @@ class _BackupPageState extends State<BackupPage> {
 
               Navigator.pop(context);
               setState(() => _isLoading = true);
-              
+
               try {
                 // Panggil history untuk memvalidasi apakah akun ada
                 var data = await BackupService().fetchHistory(email, pass);
-                
+
                 if (data.isNotEmpty) {
                   // Jika ada data, simpan kredensial ke pref agar sinkron
                   await PrefHelper.saveUserEmail(email);
                   await PrefHelper.saveUserPass(pass);
-                  
+
                   if (mounted) {
                     setState(() {
                       _history = data;
-                      _isPremium = true; // Otomatis aktifkan fitur jika data ditemukan
+                      _isPremium =
+                          true; // Otomatis aktifkan fitur jika data ditemukan
                     });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Berhasil masuk! Riwayat backup ditemukan."), backgroundColor: Colors.green)
-                    );
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content:
+                            Text("Berhasil masuk! Riwayat backup ditemukan."),
+                        backgroundColor: Colors.green));
                   }
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Akun ditemukan, tapi belum ada riwayat backup."), backgroundColor: Colors.orange)
-                  );
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text(
+                          "Akun ditemukan, tapi belum ada riwayat backup."),
+                      backgroundColor: Colors.orange));
                 }
                 _checkStatus();
               } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Gagal menarik data: Email/Password mungkin salah"), backgroundColor: Colors.red)
-                );
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(
+                        "Gagal menarik data: Email/Password mungkin salah"),
+                    backgroundColor: Colors.red));
               } finally {
                 if (mounted) setState(() => _isLoading = false);
               }
@@ -145,12 +155,19 @@ class _BackupPageState extends State<BackupPage> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(controller: emailController, decoration: const InputDecoration(labelText: "Email")),
-            TextField(controller: passController, decoration: const InputDecoration(labelText: "Password Backup"), obscureText: true),
+            TextField(
+                controller: emailController,
+                decoration: const InputDecoration(labelText: "Email")),
+            TextField(
+                controller: passController,
+                decoration: const InputDecoration(labelText: "Password Backup"),
+                obscureText: true),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("BATAL")),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("BATAL")),
           ElevatedButton(
             onPressed: () async {
               String email = emailController.text.trim();
@@ -163,12 +180,16 @@ class _BackupPageState extends State<BackupPage> {
                 await BackupService().uploadDatabase(email, pass);
                 await PrefHelper.saveUserEmail(email);
                 await PrefHelper.saveUserPass(pass);
-                await PrefHelper.saveLastBackup(DateFormat('dd MMM yyyy, HH:mm').format(DateTime.now()));
-                
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Backup Berhasil!"), backgroundColor: Colors.green));
+                await PrefHelper.saveLastBackup(
+                    DateFormat('dd MMM yyyy, HH:mm').format(DateTime.now()));
+
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("Backup Berhasil!"),
+                    backgroundColor: Colors.green));
                 _checkStatus();
               } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Gagal: $e"), backgroundColor: Colors.red));
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text("Gagal: $e"), backgroundColor: Colors.red));
               } finally {
                 if (mounted) setState(() => _isLoading = false);
               }
@@ -186,12 +207,16 @@ class _BackupPageState extends State<BackupPage> {
       context: context,
       builder: (c) => AlertDialog(
         title: const Text("Restore Data?"),
-        content: const Text("Data lokal akan ditimpa dengan data backup ini. Lanjutkan?"),
+        content: const Text(
+            "Data lokal akan ditimpa dengan data backup ini. Lanjutkan?"),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(c, false), child: const Text("BATAL")),
+          TextButton(
+              onPressed: () => Navigator.pop(c, false),
+              child: const Text("BATAL")),
           ElevatedButton(
             onPressed: () => Navigator.pop(c, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red, foregroundColor: Colors.white),
             child: const Text("YA, RESTORE"),
           ),
         ],
@@ -208,13 +233,20 @@ class _BackupPageState extends State<BackupPage> {
             barrierDismissible: false,
             builder: (context) => AlertDialog(
               title: const Text("Berhasil"),
-              content: const Text("Data telah direstore. Aplikasi harus dimulai ulang."),
-              actions: [ElevatedButton(onPressed: () => Restart.restartApp(), child: const Text("RESTART"))],
+              content: const Text(
+                  "Data telah direstore. Aplikasi harus dimulai ulang."),
+              actions: [
+                ElevatedButton(
+                    onPressed: () => Restart.restartApp(),
+                    child: const Text("RESTART"))
+              ],
             ),
           );
         }
       } catch (e) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Gagal: $e"), backgroundColor: Colors.red));
+        if (mounted)
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("Gagal: $e"), backgroundColor: Colors.red));
       } finally {
         if (mounted) setState(() => _isLoading = false);
       }
@@ -231,7 +263,7 @@ class _BackupPageState extends State<BackupPage> {
         actions: [
           // TOMBOL LOGIN / TARIK DATA RAHASIA (ICON DOWNLOAD)
           IconButton(
-            icon: const Icon(Icons.cloud_download), 
+            icon: const Icon(Icons.cloud_download),
             tooltip: 'Tarik data dari HP lama',
             onPressed: _handleLoginRestore,
           ),
@@ -244,9 +276,9 @@ class _BackupPageState extends State<BackupPage> {
           _buildHeader(),
           const Divider(height: 1),
           Expanded(
-            child: _isLoading 
-              ? const Center(child: CircularProgressIndicator()) 
-              : (_isPremium ? _buildHistoryList() : _buildLockedFitur()),
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : (_isPremium ? _buildHistoryList() : _buildLockedFitur()),
           ),
           _buildActionButtons(),
         ],
@@ -266,18 +298,24 @@ class _BackupPageState extends State<BackupPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("Status Terakhir:", style: TextStyle(color: Colors.grey)),
-                Text(_lastBackup, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                const Text("Status Terakhir:",
+                    style: TextStyle(color: Colors.grey)),
+                Text(_lastBackup,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16)),
               ],
             ),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: _isPremium ? Colors.amber : Colors.grey,
-              borderRadius: BorderRadius.circular(20)
-            ),
-            child: Text(_isPremium ? "PREMIUM" : "FREE", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                color: _isPremium ? Colors.amber : Colors.grey,
+                borderRadius: BorderRadius.circular(20)),
+            child: Text(_isPremium ? "PREMIUM" : "FREE",
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12)),
           ),
         ],
       ),
@@ -285,7 +323,8 @@ class _BackupPageState extends State<BackupPage> {
   }
 
   Widget _buildHistoryList() {
-    if (_history.isEmpty) return const Center(child: Text("Belum ada riwayat backup di cloud."));
+    if (_history.isEmpty)
+      return const Center(child: Text("Belum ada riwayat backup di cloud."));
     return ListView.builder(
       itemCount: _history.length,
       itemBuilder: (context, index) {
@@ -295,7 +334,8 @@ class _BackupPageState extends State<BackupPage> {
           title: Text(item['filename'] ?? "Backup File"),
           subtitle: Text("${item['created_at']} • ${item['file_size']}"),
           trailing: IconButton(
-            icon: const Icon(Icons.settings_backup_restore, color: Colors.green),
+            icon:
+                const Icon(Icons.settings_backup_restore, color: Colors.green),
             onPressed: () => _handleRestore(int.parse(item['id'].toString())),
           ),
         );
@@ -310,9 +350,11 @@ class _BackupPageState extends State<BackupPage> {
         children: [
           const Icon(Icons.lock, size: 60, color: Colors.grey),
           const SizedBox(height: 10),
-          const Text("Fitur Cloud Backup khusus Premium", style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text("Fitur Cloud Backup khusus Premium",
+              style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 20),
-          ElevatedButton(onPressed: () {}, child: const Text("Upgrade Sekarang"))
+          ElevatedButton(
+              onPressed: () {}, child: const Text("Upgrade Sekarang"))
         ],
       ),
     );
@@ -330,7 +372,8 @@ class _BackupPageState extends State<BackupPage> {
             backgroundColor: Colors.blue.shade700,
             foregroundColor: Colors.white,
             minimumSize: const Size(double.infinity, 50),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         ),
       ),

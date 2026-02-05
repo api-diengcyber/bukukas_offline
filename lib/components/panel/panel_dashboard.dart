@@ -3,6 +3,7 @@ import 'package:keuangan/pages/dashboard/dashboard_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:keuangan/pages/backup/backup_page.dart';
+import 'package:keuangan/services/revenue_cat_service.dart';
 import 'package:keuangan/utils/pref_helper.dart';
 import 'package:keuangan/helpers/export_service.dart'; // Import ExportService
 import 'package:keuangan/db/model/tb_transaksi_model.dart';
@@ -31,7 +32,7 @@ class _PanelDashboardState extends State<PanelDashboard> {
   }
 
   Future<void> _checkPremium() async {
-    bool status = await PrefHelper.isPremium(); 
+    bool status = await RevenueCatService.isUserPremium();
     if (mounted) {
       setState(() {
         _isPremium = status;
@@ -40,11 +41,14 @@ class _PanelDashboardState extends State<PanelDashboard> {
   }
 
   // --- DIALOG PILIHAN EXPORT ---
-  void _showExportOptions(BuildContext context, DashboardController controller) {
-    final List<TbTransaksiModel> data = controller.dataDashboard['dataTransaction'] ?? [];
+  void _showExportOptions(
+      BuildContext context, DashboardController controller) {
+    final List<TbTransaksiModel> data =
+        controller.dataDashboard['dataTransaction'] ?? [];
 
     if (data.isEmpty) {
-      Get.snackbar("Info", "Tidak ada data transaksi untuk diexport", snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Info", "Tidak ada data transaksi untuk diexport",
+          snackPosition: SnackPosition.BOTTOM);
       return;
     }
 
@@ -93,14 +97,16 @@ class _PanelDashboardState extends State<PanelDashboard> {
 
   // Fungsi kirim ringkasan saldo via text WA
   void _sendTextToWA(DashboardController controller) {
-    String total = formatCurrency.format(controller.dataDashboard['total'] ?? 0);
-    String today = formatCurrency.format(controller.dataDashboard['totalToday'] ?? 0);
+    String total =
+        formatCurrency.format(controller.dataDashboard['total'] ?? 0);
+    String today =
+        formatCurrency.format(controller.dataDashboard['totalToday'] ?? 0);
     String message = "*LAPORAN RINGKAS BUKUKAS*\n\n"
         "📅 Tanggal: ${DateFormat('dd MMM yyyy').format(DateTime.now())}\n"
         "💰 Total Saldo: $total\n"
         "📈 Hari Ini: $today\n\n"
         "Dikirim otomatis dari aplikasi BukuKas.";
-    
+
     Share.share(message);
   }
 
@@ -118,10 +124,13 @@ class _PanelDashboardState extends State<PanelDashboard> {
         ),
         content: const Text("Fitur ini hanya tersedia untuk pengguna Premium."),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("TUTUP")),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("TUTUP")),
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.amber.shade700),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amber.shade700),
             child: const Text("UPGRADE"),
           ),
         ],
@@ -176,12 +185,19 @@ class _PanelDashboardState extends State<PanelDashboard> {
             child: Column(
               children: [
                 Obx(() => Row(
-                  children: <Widget>[
-                    _buildSaldoItem("Total Saldo", dashboardController.dataDashboard['total'] ?? 0, dashboardController.loading),
-                    const SizedBox(width: 10),
-                    _buildSaldoItem("Hari Ini", dashboardController.dataDashboard['totalToday'] ?? 0, dashboardController.loading),
-                  ],
-                )),
+                      children: <Widget>[
+                        _buildSaldoItem(
+                            "Total Saldo",
+                            dashboardController.dataDashboard['total'] ?? 0,
+                            dashboardController.loading),
+                        const SizedBox(width: 10),
+                        _buildSaldoItem(
+                            "Hari Ini",
+                            dashboardController.dataDashboard['totalToday'] ??
+                                0,
+                            dashboardController.loading),
+                      ],
+                    )),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 12),
                   child: Divider(height: 1, thickness: 0.5),
@@ -192,8 +208,9 @@ class _PanelDashboardState extends State<PanelDashboard> {
                       label: "Export Laporan",
                       icon: Icons.picture_as_pdf,
                       color: Colors.red.shade400,
-                      onTap: _isPremium 
-                          ? () => _showExportOptions(context, dashboardController) 
+                      onTap: _isPremium
+                          ? () =>
+                              _showExportOptions(context, dashboardController)
                           : _showLockedDialog,
                     ),
                     const SizedBox(width: 12),
@@ -201,7 +218,9 @@ class _PanelDashboardState extends State<PanelDashboard> {
                       label: "Backup Cloud",
                       icon: Icons.cloud_upload,
                       color: Colors.blue.shade400,
-                      onTap: _isPremium ? () => Get.to(() => const BackupPage()) : _showLockedDialog,
+                      onTap: _isPremium
+                          ? () => Get.to(() => const BackupPage())
+                          : _showLockedDialog,
                     ),
                   ],
                 ),
@@ -218,21 +237,34 @@ class _PanelDashboardState extends State<PanelDashboard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 13, color: Colors.black54, fontWeight: FontWeight.w600)),
+          Text(title,
+              style: const TextStyle(
+                  fontSize: 13,
+                  color: Colors.black54,
+                  fontWeight: FontWeight.w600)),
           const SizedBox(height: 4),
-          isLoading 
-            ? SkeletonAnimation(child: Container(height: 20, width: 100, color: Colors.grey[200]))
-            : Text(
-                formatCurrency.format(value),
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
-                overflow: TextOverflow.ellipsis,
-              ),
+          isLoading
+              ? SkeletonAnimation(
+                  child: Container(
+                      height: 20, width: 100, color: Colors.grey[200]))
+              : Text(
+                  formatCurrency.format(value),
+                  style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87),
+                  overflow: TextOverflow.ellipsis,
+                ),
         ],
       ),
     );
   }
 
-  Widget _buildMenuItem({required String label, required IconData icon, required Color color, required VoidCallback onTap}) {
+  Widget _buildMenuItem(
+      {required String label,
+      required IconData icon,
+      required Color color,
+      required VoidCallback onTap}) {
     return Expanded(
       child: InkWell(
         onTap: onTap,
@@ -249,9 +281,12 @@ class _PanelDashboardState extends State<PanelDashboard> {
             children: [
               Icon(icon, color: color, size: 20),
               const SizedBox(width: 8),
-              Text(
-                label,
-                style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 13),
+              Expanded(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                      color: color, fontWeight: FontWeight.bold, fontSize: 13),
+                ),
               ),
               if (!_isPremium) ...[
                 const SizedBox(width: 4),

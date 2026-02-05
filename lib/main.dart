@@ -10,13 +10,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:form_builder_validators/localization/l10n.dart';
 import 'package:get/get.dart';
+import 'package:keuangan/services/revenue_cat_service.dart';
 import 'package:provider/provider.dart';
 import 'providers/menu_bloc.dart';
 
 void main() async {
   // WAJIB ditambahkan jika ada proses async sebelum runApp
   WidgetsFlutterBinding.ensureInitialized();
-  
+  await RevenueCatService.initialize();
+
   // Inisialisasi database sebelum aplikasi berjalan
   // BENAR (Menggunakan instance Singleton yang sudah kita buat)
   await DB.instance.initTables();
@@ -26,11 +28,13 @@ void main() async {
       providers: [
         ChangeNotifierProvider<GlobalBloc>.value(value: GlobalBloc()),
         ChangeNotifierProvider<CreateBloc>.value(value: CreateBloc()),
-        ChangeNotifierProvider<SplashscreenBloc>.value(value: SplashscreenBloc()),
+        ChangeNotifierProvider<SplashscreenBloc>.value(
+            value: SplashscreenBloc()),
         ChangeNotifierProvider<MenuBloc>.value(value: MenuBloc()),
         ChangeNotifierProvider<TransactionBloc>.value(value: TransactionBloc()),
         ChangeNotifierProvider<ReportBloc>.value(value: ReportBloc()),
-        ChangeNotifierProvider<ReportMenuDetailBloc>.value(value: ReportMenuDetailBloc()),
+        ChangeNotifierProvider<ReportMenuDetailBloc>.value(
+            value: ReportMenuDetailBloc()),
       ],
       child: const MyApp(),
     ),
