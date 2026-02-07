@@ -3,6 +3,7 @@ import 'package:keuangan/pages/dashboard/dashboard_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:keuangan/pages/backup/backup_page.dart';
+import 'package:keuangan/pages/paywall/paywall_page.dart';
 import 'package:keuangan/services/revenue_cat_service.dart';
 import 'package:keuangan/utils/pref_helper.dart';
 import 'package:keuangan/helpers/export_service.dart'; // Import ExportService
@@ -128,7 +129,13 @@ class _PanelDashboardState extends State<PanelDashboard> {
               onPressed: () => Navigator.pop(context),
               child: const Text("TUTUP")),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pop(context); // Tutup dialog
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const PaywallPage()),
+              );
+            },
             style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.amber.shade700),
             child: const Text("UPGRADE"),

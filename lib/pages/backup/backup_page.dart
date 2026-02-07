@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:keuangan/pages/paywall/paywall_page.dart';
 import 'package:keuangan/services/revenue_cat_service.dart';
 import 'package:restart_app/restart_app.dart';
 import '../../utils/pref_helper.dart';
@@ -311,7 +312,7 @@ class _BackupPageState extends State<BackupPage> {
             decoration: BoxDecoration(
                 color: _isPremium ? Colors.amber : Colors.grey,
                 borderRadius: BorderRadius.circular(20)),
-            child: Text(_isPremium ? "PREMIUM" : "FREE",
+            child: Text(_isPremium ? "PRO" : "FREE",
                 style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -354,7 +355,13 @@ class _BackupPageState extends State<BackupPage> {
               style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 20),
           ElevatedButton(
-              onPressed: () {}, child: const Text("Upgrade Sekarang"))
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const PaywallPage()),
+                );
+              },
+              child: const Text("Upgrade Sekarang"))
         ],
       ),
     );

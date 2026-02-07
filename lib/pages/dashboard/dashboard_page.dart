@@ -34,7 +34,8 @@ class _DashboardPageState extends State<DashboardPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           title: const Row(
             children: [
               Icon(Icons.support_agent, color: Colors.blue),
@@ -59,7 +60,8 @@ class _DashboardPageState extends State<DashboardPage> {
               onPressed: () async {
                 Navigator.pop(context);
                 final Uri url = Uri.parse('https://diengcyber.com');
-                if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                if (!await launchUrl(url,
+                    mode: LaunchMode.externalApplication)) {
                   Get.snackbar("Error", "Tidak dapat membuka website");
                 }
               },
@@ -93,8 +95,9 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.workspace_premium, color: Colors.amber, size: 28),
-          tooltip: 'Premium Fitur',
+          icon: const Icon(Icons.workspace_premium,
+              color: Colors.amber, size: 28),
+          tooltip: 'Fitur Pro',
           onPressed: () {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const PaywallPage()));
