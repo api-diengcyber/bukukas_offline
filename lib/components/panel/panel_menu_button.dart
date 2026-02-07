@@ -89,7 +89,7 @@ class _PanelMenuButtonState extends State<PanelMenuButton> {
                           "Kelola menu",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: 13,
                             color: Colors.black87,
                           ),
                         ),
@@ -131,7 +131,7 @@ class _PanelMenuButtonState extends State<PanelMenuButton> {
                       "Tambah Baru",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                        fontSize: 13,
                         color: Colors.white,
                       ),
                     ),
@@ -225,7 +225,7 @@ class _PanelMenuButtonState extends State<PanelMenuButton> {
                           "Laporan",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: 13,
                             color: reportBloc.activeMenuTab == "Semua"
                                 ? Colors.black87
                                 : Colors.white,

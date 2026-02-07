@@ -5,9 +5,10 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 class RevenueCatService {
   static const String entitlementID = 'BukuKas Pro';
 
-  static const String _apiKeyAndroid = 'test_DwLaBEmnqppWwGPFWEabiVzOscX';
+  static const String _apiKeyAndroid = 'goog_QXtjBAiXptTDVXQxDkFKCJnqrIW';
   static const String _apiKeyIOS = 'test_DwLaBEmnqppWwGPFWEabiVzOscX';
-  static const String _apiKeyDebug = 'test_DwLaBEmnqppWwGPFWEabiVzOscX';
+  // static const String _apiKeyDebug = 'test_DwLaBEmnqppWwGPFWEabiVzOscX';
+  static const String _apiKeyDebug = 'goog_QXtjBAiXptTDVXQxDkFKCJnqrIW';
 
   static Future<void> initialize() async {
     await Purchases.setLogLevel(LogLevel.debug);

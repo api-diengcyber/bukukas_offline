@@ -57,7 +57,7 @@ class _PaywallPageState extends State<PaywallPage> {
       Navigator.pop(context, true);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Selamat! Akses Premium berhasil diaktifkan."),
+          content: Text("Selamat! Akses Pro berhasil diaktifkan."),
           backgroundColor: Colors.green,
         ),
       );
@@ -122,7 +122,7 @@ class _PaywallPageState extends State<PaywallPage> {
                               ),
                               const SizedBox(height: 16),
                               const Text(
-                                "Upgrade ke BukuKas Premium",
+                                "Upgrade ke BukuKas Pro",
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
@@ -141,17 +141,15 @@ class _PaywallPageState extends State<PaywallPage> {
                               ),
                               const SizedBox(height: 30),
 
-                              _buildPremiumItem(
+                              _buildProItem(
                                   Icons.picture_as_pdf,
                                   "Export PDF & Excel",
                                   "Simpan laporan ke file dokumen."),
-                              _buildPremiumItem(
+                              _buildProItem(
                                   Icons.send_to_mobile,
                                   "Kirim WhatsApp",
                                   "Bagikan laporan langsung ke WA."),
-                              _buildPremiumItem(
-                                  Icons.cloud_upload,
-                                  "Backup Cloud",
+                              _buildProItem(Icons.cloud_upload, "Backup Cloud",
                                   "Amankan data Anda di server online.",
                                   onTap: () {
                                 Navigator.pop(context); // Tutup modal
@@ -161,7 +159,7 @@ class _PaywallPageState extends State<PaywallPage> {
                                         builder: (context) =>
                                             const BackupPage()));
                               }),
-                              _buildPremiumItem(
+                              _buildProItem(
                                   Icons.support_agent,
                                   "Bantuan Teknis",
                                   "Prioritas bantuan jika ada kendala."),
@@ -240,8 +238,8 @@ class _PaywallPageState extends State<PaywallPage> {
     );
   }
 
-  // Widget Helper untuk Baris Item Premium
-  Widget _buildPremiumItem(IconData icon, String title, String desc,
+  // Widget Helper untuk Baris Item Pro
+  Widget _buildProItem(IconData icon, String title, String desc,
       {VoidCallback? onTap}) {
     return ListTile(
       onTap: onTap, // Tambahkan ini
