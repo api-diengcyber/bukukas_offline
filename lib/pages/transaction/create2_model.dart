@@ -15,10 +15,14 @@ class CreateModel2 {
 
   Future<void> saveTransaction(BuildContext context) async {
     final globalBloc = Provider.of<GlobalBloc>(context, listen: false);
-    final transactionBloc =
-        Provider.of<TransactionBloc>(context, listen: false);
+    final transactionBloc = Provider.of<TransactionBloc>(context, listen: false);
+    
     transactionBloc.loading = true;
-    await TbTransaksi().createByCart(globalBloc.cart);
+
+    // PERBAIKAN: Kirim ID Buku Kas aktif saat menyimpan transaksi dari keranjang
+    // Pastikan di tb_transaksi.dart, fungsi createByCart sudah menerima parameter bukukasId
+    await TbTransaksi().createByCart(globalBloc.cart, globalBloc.activeBukukasId);
+
     await Future.delayed(const Duration(milliseconds: 900), () {
       transactionBloc.loading = false;
       globalBloc.cart.clear();
@@ -27,11 +31,16 @@ class CreateModel2 {
 
   Future<void> getMenu(BuildContext context) async {
     final globalBloc = Provider.of<GlobalBloc>(context, listen: false);
-    final transactionBloc =
-        Provider.of<TransactionBloc>(context, listen: false);
+    final transactionBloc = Provider.of<TransactionBloc>(context, listen: false);
+    
     globalBloc.loadingMenus = true;
-    List<TbMenuModel> listData =
-        await TbMenu().getData(globalBloc.tabMenuTransaction);
+
+    // PERBAIKAN: Kirim 2 argumen: Tipe menu dan ID Buku Kas aktif
+    List<TbMenuModel> listData = await TbMenu().getData(
+      globalBloc.tabMenuTransaction, 
+      globalBloc.activeBukukasId
+    );
+
     globalBloc.menus = listData;
     transactionBloc.totalPages = 1;
     globalBloc.loadingMenus = false;

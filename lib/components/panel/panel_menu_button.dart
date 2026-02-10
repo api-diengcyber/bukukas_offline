@@ -38,32 +38,27 @@ class _PanelMenuButtonState extends State<PanelMenuButton> {
       height: 70,
       child: Row(
         children: [
+          // TOMBOL KELOLA MENU
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(10),
-                ),
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.5),
                     spreadRadius: 0,
                     blurRadius: 0.2,
-                    offset: const Offset(0, 0.1), // changes position of shadow
+                    offset: const Offset(0, 0.1),
                   ),
                 ],
               ),
               child: Material(
                 color: Colors.transparent,
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(10),
-                ),
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
                 child: InkWell(
                   splashColor: Colors.amber,
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(10),
-                  ),
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
                   onTap: () {
                     menuBloc.page = 1;
                     menuBloc.search = '';
@@ -80,18 +75,10 @@ class _PanelMenuButtonState extends State<PanelMenuButton> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Icon(
-                          Icons.app_registration,
-                          color: Colors.black87,
-                          size: 30,
-                        ),
+                        Icon(Icons.app_registration, color: Colors.black87, size: 30),
                         Text(
                           "Kelola menu",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13,
-                            color: Colors.black87,
-                          ),
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black87),
                         ),
                       ],
                     ),
@@ -101,9 +88,25 @@ class _PanelMenuButtonState extends State<PanelMenuButton> {
             ),
           ),
           const SizedBox(width: 8),
+
+          // TOMBOL TAMBAH BARU (TRX)
           Expanded(
             child: InkWell(
               key: widget.buttonAddKey,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    type: PageTransitionType.fade,
+                    child: const CreateTransactionPage(),
+                  ),
+                ).then((value) async {
+                  if (value != null && value == 'load') {
+                    // PERBAIKAN: Kirim activeBukukasId agar dashboard buku yang benar terupdate
+                    dashboardController.getDashboard(globalBloc.activeBukukasId);
+                  }
+                });
+              },
               child: Container(
                 height: double.infinity,
                 width: double.infinity,
@@ -115,72 +118,43 @@ class _PanelMenuButtonState extends State<PanelMenuButton> {
                           : (globalBloc.tabMenuTransaction == "Hutang")
                               ? gradientActiveDMenu[2]
                               : gradientActiveDMenu[3]),
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(10),
-                  ),
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
                 ),
                 child: const Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Icon(
-                      Icons.add_circle_outline,
-                      color: Colors.white,
-                      size: 30,
-                    ),
+                    Icon(Icons.add_circle_outline, color: Colors.white, size: 30),
                     Text(
                       "Tambah Baru",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
-                        color: Colors.white,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.white),
                     ),
                   ],
                 ),
               ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  PageTransition(
-                    type: PageTransitionType.fade,
-                    child: const CreateTransactionPage(),
-                  ),
-                ).then((value) async {
-                  if (value != null) {
-                    if (value == 'load') {
-                      dashboardController.getDashboard();
-                    }
-                  }
-                });
-              },
             ),
           ),
           const SizedBox(width: 8),
+
+          // TOMBOL LAPORAN
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(10),
-                ),
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.5),
                     spreadRadius: 0,
                     blurRadius: 0.2,
-                    offset: const Offset(0, 0.1), // changes position of shadow
+                    offset: const Offset(0, 0.1),
                   ),
                 ],
               ),
               child: Material(
                 color: Colors.white,
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(10),
-                ),
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
                 child: InkWell(
                   splashColor: Colors.amber,
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(10),
-                  ),
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -192,9 +166,7 @@ class _PanelMenuButtonState extends State<PanelMenuButton> {
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(10),
-                      ),
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
                       image: DecorationImage(
                         image: AssetImage(reportBloc.activeMenuTab == "Semua"
                             ? miniGradImages[0]
@@ -216,9 +188,7 @@ class _PanelMenuButtonState extends State<PanelMenuButton> {
                       children: [
                         Icon(
                           Icons.graphic_eq_outlined,
-                          color: reportBloc.activeMenuTab == "Semua"
-                              ? Colors.black87
-                              : Colors.white,
+                          color: reportBloc.activeMenuTab == "Semua" ? Colors.black87 : Colors.white,
                           size: 30,
                         ),
                         Text(
@@ -226,9 +196,7 @@ class _PanelMenuButtonState extends State<PanelMenuButton> {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 13,
-                            color: reportBloc.activeMenuTab == "Semua"
-                                ? Colors.black87
-                                : Colors.white,
+                            color: reportBloc.activeMenuTab == "Semua" ? Colors.black87 : Colors.white,
                           ),
                         ),
                       ],

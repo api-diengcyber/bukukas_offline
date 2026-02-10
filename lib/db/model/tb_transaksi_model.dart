@@ -1,30 +1,18 @@
-// To parse this JSON data, do
-//
-//     final tbTransaksiModel = tbTransaksiModelFromJson(jsonString);
-
-import 'dart:convert';
-
-List<TbTransaksiModel> tbTransaksiModelFromJson(String str) =>
-    List<TbTransaksiModel>.from(
-        json.decode(str).map((x) => TbTransaksiModel.fromJson(x)));
-
-String tbTransaksiModelToJson(List<TbTransaksiModel> data) =>
-    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
-
 class TbTransaksiModel {
   int? id;
   String? transactionDate;
-  String? notes;
+  String? notes; // Ini catatan transaksi
   String? valueIn;
   String? valueOut;
   String? debtType;
   String? createdOn;
   String? allowDelete;
   int? menuId;
-  String? menuType;
   String? menuName;
-  String? menuNotes;
+  String? menuType;
   String? menuDeadline;
+  String? menuNotes; // <--- TAMBAHKAN INI (Catatan dari tabel Menu)
+  int? bukukasId;
 
   TbTransaksiModel({
     this.id,
@@ -36,14 +24,14 @@ class TbTransaksiModel {
     this.createdOn,
     this.allowDelete,
     this.menuId,
-    this.menuType,
     this.menuName,
-    this.menuNotes,
+    this.menuType,
     this.menuDeadline,
+    this.menuNotes, // <--- Masukkan ke constructor
+    this.bukukasId,
   });
 
-  factory TbTransaksiModel.fromJson(Map<String, dynamic> json) =>
-      TbTransaksiModel(
+  factory TbTransaksiModel.fromJson(Map<String, dynamic> json) => TbTransaksiModel(
         id: json["id"],
         transactionDate: json["transactionDate"],
         notes: json["notes"],
@@ -53,10 +41,11 @@ class TbTransaksiModel {
         createdOn: json["createdOn"],
         allowDelete: json["allowDelete"],
         menuId: json["menuId"],
-        menuType: json["menuType"],
         menuName: json["menuName"],
-        menuNotes: json["menuNotes"],
+        menuType: json["menuType"],
         menuDeadline: json["menuDeadline"],
+        menuNotes: json["menuNotes"], // <--- Ambil dari hasil Join SQL
+        bukukasId: json["bukukasId"] != null ? int.tryParse(json["bukukasId"].toString()) : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -69,9 +58,10 @@ class TbTransaksiModel {
         "createdOn": createdOn,
         "allowDelete": allowDelete,
         "menuId": menuId,
-        "menuType": menuType,
         "menuName": menuName,
-        "menuNotes": menuNotes,
+        "menuType": menuType,
         "menuDeadline": menuDeadline,
+        "menuNotes": menuNotes,
+        "bukukasId": bukukasId,
       };
 }

@@ -29,13 +29,16 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
   }
 
   Widget getListData(BuildContext context, List<CartModel> dataCart) {
-    final globalBloc = context.read<GlobalBloc>();
+    // final globalBloc = context.read<GlobalBloc>(); // Tidak digunakan, bisa dihapus
     datas = groupBy(dataCart, (CartModel obj) => obj.type);
+    
     return ListView.builder(
       shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(), // Agar scroll smooth di dalam modal
       itemCount: datas.length,
       itemBuilder: (context, index) {
         String key = datas.keys.elementAt(index).toString();
+        
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(
@@ -96,14 +99,16 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: datas[key]!.map((CartModel e) {
                         var menuDetail = e.menuDetail;
-                        int nominal =
-                            int.parse(e.gin ?? "0") - int.parse(e.gout ?? "0");
-                        DateTime tempDate =
-                            DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
-                                .parse(e.tgl ?? "");
+                        
+                        // --- PERBAIKAN 1: Gunakan int.tryParse agar aman ---
+                        int nominal = (int.tryParse(e.gin ?? "0") ?? 0) - 
+                                      (int.tryParse(e.gout ?? "0") ?? 0);
+                        
+                        // --- PERBAIKAN 2: Gunakan DateTime.tryParse (Bebas Error 'T') ---
+                        DateTime tempDate = DateTime.tryParse(e.tgl ?? "") ?? DateTime.now();
 
                         return Container(
-                          margin: const EdgeInsets.only(bottom: 6),
+                          margin: const EdgeInsets.only(bottom: 12),
                           child: Row(
                             children: <Widget>[
                               Expanded(
@@ -111,51 +116,46 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
                                     Text(
-                                      menuDetail!.name ?? "",
+                                      menuDetail?.name ?? "Menu Tidak Diketahui",
                                       style: const TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    menuDetail.notes != null &&
-                                            menuDetail.notes != ""
-                                        ? Text(
-                                            menuDetail.notes ?? "",
-                                            style: const TextStyle(
-                                              fontSize: 13,
-                                            ),
-                                          )
-                                        : const SizedBox(),
+                                    if (menuDetail?.notes != null && menuDetail?.notes != "")
+                                      Text(
+                                        menuDetail!.notes!,
+                                        style: const TextStyle(fontSize: 13, color: Colors.black54),
+                                      ),
                                     Text(
-                                      DateFormat("yyyy-MM-dd hh:mm:ss")
-                                          .format(tempDate),
+                                      DateFormat("dd MMM yyyy, HH:mm").format(tempDate),
                                       style: const TextStyle(
-                                        fontSize: 13,
+                                        fontSize: 12,
+                                        color: Colors.black45,
                                       ),
                                     ),
-                                    e.notes != null
-                                        ? Text(
-                                            e.notes ?? "",
-                                            style: const TextStyle(
-                                              fontSize: 13,
-                                            ),
-                                          )
-                                        : const SizedBox(),
+                                    if (e.notes != null && e.notes != "")
+                                      Text(
+                                        "Catatan: ${e.notes}",
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          fontStyle: FontStyle.italic,
+                                        ),
+                                      )
                                   ],
                                 ),
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: <Widget>[
-                                  e.debtType != ""
-                                      ? Text(
-                                          "${e.debtType} ${key.toString().toLowerCase()}",
-                                          style: const TextStyle(
-                                            fontSize: 11,
-                                            color: Colors.black54,
-                                          ),
-                                        )
-                                      : const SizedBox(),
+                                  if (e.debtType != "")
+                                    Text(
+                                      "${e.debtType} ${key.toLowerCase()}",
+                                      style: const TextStyle(
+                                        fontSize: 11,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
                                   Text(
                                     simpleFormatCurrency.format(nominal),
                                     style: const TextStyle(
@@ -165,26 +165,26 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                                   ),
                                 ],
                               ),
-                              SizedBox(
-                                width: 25,
-                                child: IconButton(
-                                  onPressed: () async {
-                                    setState(() async {
-                                      globalBloc.cart.remove(e);
-                                      datas.remove(e);
-                                      if (globalBloc.cart.isEmpty) {
-                                        globalBloc.loading = false;
-                                        Navigator.pop(context);
-                                      } else {
-                                        await CreateModel2().getMenu(context);
-                                      }
-                                    });
-                                  },
-                                  icon: const Icon(
-                                    Icons.remove_circle,
-                                    color: Colors.red,
-                                  ),
-                                  iconSize: 18,
+                              const SizedBox(width: 4),
+                              IconButton(
+                                constraints: const BoxConstraints(),
+                                padding: EdgeInsets.zero,
+                                onPressed: () async {
+                                  // Hapus dari keranjang
+                                  final gBloc = context.read<GlobalBloc>();
+                                  gBloc.cart.remove(e);
+                                  
+                                  if (gBloc.cart.isEmpty) {
+                                    Navigator.pop(context);
+                                  } else {
+                                    setState(() {}); // Refresh list di modal
+                                    await CreateModel2().getMenu(context);
+                                  }
+                                },
+                                icon: const Icon(
+                                  Icons.remove_circle,
+                                  color: Colors.red,
+                                  size: 20,
                                 ),
                               ),
                             ],
@@ -200,7 +200,6 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
         );
       },
     );
-    // return Column(children: list);
   }
 
   @override
@@ -218,30 +217,28 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
           child: StreamBuilder(
             stream: CreateModel2().getCartStream(context),
             builder: (context, AsyncSnapshot snapshot) {
+              // --- PERBAIKAN 3: Hitung total dengan tryParse ---
               int totalNominal = 0;
               List<CartModel> sdata = snapshot.data ?? [];
-              if (snapshot.connectionState == ConnectionState.done) {
-                for (var i = 0; i < sdata.length; i++) {
-                  totalNominal += (int.parse(sdata[i].gin ?? "0") -
-                      int.parse(sdata[i].gout ?? "0"));
+              
+              if (snapshot.hasData) {
+                for (var item in sdata) {
+                  totalNominal += (int.tryParse(item.gin ?? "0") ?? 0) - 
+                                  (int.tryParse(item.gout ?? "0") ?? 0);
                 }
               }
+
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.only(
-                      left: 16,
-                      right: 16,
-                      top: 16,
-                      bottom: 6,
-                    ),
+                    padding: const EdgeInsets.all(16),
                     child: Column(
                       children: <Widget>[
                         const Text(
-                          "TOTAL",
+                          "RINGKASAN TRANSAKSI",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             letterSpacing: 0.6,
@@ -254,7 +251,7 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
-                            fontSize: 20,
+                            fontSize: 22,
                           ),
                         ),
                       ],
@@ -265,15 +262,14 @@ class DetailTransactionModalState extends State<DetailTransactionModal> {
                       child: getListData(context, sdata),
                     ),
                   ),
+                  const Divider(),
                   SizedBox(
                     width: double.infinity,
                     child: TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
+                      onPressed: () => Navigator.of(context).pop(),
                       child: const Text(
                         "TUTUP",
-                        style: TextStyle(color: Colors.black87),
+                        style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),

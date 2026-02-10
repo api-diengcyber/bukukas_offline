@@ -30,6 +30,7 @@ class _CreateMenuModalState extends State<CreateMenuModal> {
 
   @override
   Widget build(BuildContext context) {
+    // Kita gunakan context.read agar tidak rebuild berlebihan saat mengetik
     final globalBloc = context.watch<GlobalBloc>();
 
     return AlertDialog(
@@ -91,45 +92,38 @@ class _CreateMenuModalState extends State<CreateMenuModal> {
                       key: formKey,
                       child: Column(
                         children: <Widget>[
-                          widget.type != "Hutang" && widget.type != "Piutang"
-                              ? Container()
-                              : Container(
-                                  margin: const EdgeInsets.only(bottom: 12),
-                                  child: FormBuilderDateTimePicker(
-                                    name: 'debtDate',
-                                    inputType: InputType.date,
-                                    initialDate: DateTime.now(),
-                                    initialValue: DateTime.now(),
-                                    format: DateFormat('dd-MM-yyyy'),
-                                    decoration: InputDecoration(
-                                      labelText: 'Tanggal ${widget.type}',
-                                      labelStyle: const TextStyle(
-                                        fontSize: 16,
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                        vertical: 4,
-                                        horizontal: 12,
-                                      ),
-                                    ),
-                                    validator: FormBuilderValidators.compose([
-                                      FormBuilderValidators.required(),
-                                    ]),
+                          if (widget.type == "Hutang" || widget.type == "Piutang")
+                            Container(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              child: FormBuilderDateTimePicker(
+                                name: 'debtDate',
+                                inputType: InputType.date,
+                                initialDate: DateTime.now(),
+                                initialValue: DateTime.now(),
+                                format: DateFormat('dd-MM-yyyy'),
+                                decoration: InputDecoration(
+                                  labelText: 'Tanggal ${widget.type}',
+                                  labelStyle: const TextStyle(fontSize: 16),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 4,
+                                    horizontal: 12,
                                   ),
                                 ),
+                                validator: FormBuilderValidators.compose([
+                                  FormBuilderValidators.required(),
+                                ]),
+                              ),
+                            ),
                           FormBuilderTextField(
                             name: 'name',
                             decoration: InputDecoration(
-                              labelText: widget.type == "Hutang" ||
-                                      widget.type == "Piutang"
+                              labelText: widget.type == "Hutang" || widget.type == "Piutang"
                                   ? "Nama ${widget.type}"
                                   : "Nama menu",
-                              labelStyle: const TextStyle(
-                                fontSize: 16,
-                              ),
+                              labelStyle: const TextStyle(fontSize: 16),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
@@ -140,21 +134,16 @@ class _CreateMenuModalState extends State<CreateMenuModal> {
                             ),
                             validator: FormBuilderValidators.compose([
                               FormBuilderValidators.required(),
-                              // PERBAIKAN: Ganti .min(4) menjadi .minLength(4)
                               FormBuilderValidators.minLength(4),
                             ]),
                             keyboardType: TextInputType.text,
                           ),
-                          const SizedBox(
-                            height: 12,
-                          ),
+                          const SizedBox(height: 12),
                           FormBuilderTextField(
                             name: 'notes',
                             decoration: InputDecoration(
                               labelText: 'Keterangan',
-                              labelStyle: const TextStyle(
-                                fontSize: 16,
-                              ),
+                              labelStyle: const TextStyle(fontSize: 16),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
@@ -171,121 +160,90 @@ class _CreateMenuModalState extends State<CreateMenuModal> {
                             minLines: 3,
                             maxLines: 5,
                           ),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                          widget.type == "Hutang" || widget.type == "Piutang"
-                              ? Container()
-                              : Container(
-                                  margin: const EdgeInsets.only(bottom: 12),
-                                  child: FormBuilderTextField(
-                                    name: 'defaultValue',
-                                    decoration: InputDecoration(
-                                      labelText: 'Nilai default (opsional)',
-                                      labelStyle: const TextStyle(
-                                        fontSize: 16,
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                        vertical: 4,
-                                        horizontal: 12,
-                                      ),
-                                    ),
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: [
-                                      formatter,
-                                    ],
+                          const SizedBox(height: 12),
+                          if (widget.type != "Hutang" && widget.type != "Piutang")
+                            Container(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              child: FormBuilderTextField(
+                                name: 'defaultValue',
+                                decoration: InputDecoration(
+                                  labelText: 'Nilai default (opsional)',
+                                  labelStyle: const TextStyle(fontSize: 16),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 4,
+                                    horizontal: 12,
                                   ),
                                 ),
-                          widget.type == "Hutang" || widget.type == "Piutang"
-                              ? Column(
-                                  children: <Widget>[
-                                    FormBuilderTextField(
-                                      name: 'total',
-                                      decoration: InputDecoration(
-                                        labelText: 'Nominal ${widget.type}',
-                                        labelStyle: const TextStyle(
-                                          fontSize: 16,
-                                        ),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                        ),
-                                        contentPadding:
-                                            const EdgeInsets.symmetric(
-                                          vertical: 4,
-                                          horizontal: 12,
-                                        ),
-                                      ),
-                                      validator: FormBuilderValidators.compose([
-                                        FormBuilderValidators.required(),
-                                      ]),
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: [
-                                        formatter,
-                                      ],
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [formatter],
+                              ),
+                            ),
+                          if (widget.type == "Hutang" || widget.type == "Piutang")
+                            Column(
+                              children: <Widget>[
+                                FormBuilderTextField(
+                                  name: 'total',
+                                  decoration: InputDecoration(
+                                    labelText: 'Nominal ${widget.type}',
+                                    labelStyle: const TextStyle(fontSize: 16),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
-                                    const SizedBox(
-                                      height: 12,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 4,
+                                      horizontal: 12,
                                     ),
-                                    FormBuilderDateTimePicker(
-                                      name: 'deadline',
-                                      inputType: InputType.date,
-                                      initialDate: DateTime.now(),
-                                      format: DateFormat('dd-MM-yyyy'),
-                                      decoration: InputDecoration(
-                                        labelText: 'Jatuh Tempo',
-                                        labelStyle: const TextStyle(
-                                          fontSize: 16,
-                                        ),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                        ),
-                                        contentPadding:
-                                            const EdgeInsets.symmetric(
-                                          vertical: 4,
-                                          horizontal: 12,
-                                        ),
-                                      ),
-                                      validator: FormBuilderValidators.compose([
-                                        FormBuilderValidators.required(),
-                                      ]),
+                                  ),
+                                  validator: FormBuilderValidators.compose([
+                                    FormBuilderValidators.required(),
+                                  ]),
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [formatter],
+                                ),
+                                const SizedBox(height: 12),
+                                FormBuilderDateTimePicker(
+                                  name: 'deadline',
+                                  inputType: InputType.date,
+                                  initialDate: DateTime.now(),
+                                  format: DateFormat('dd-MM-yyyy'),
+                                  decoration: InputDecoration(
+                                    labelText: 'Jatuh Tempo',
+                                    labelStyle: const TextStyle(fontSize: 16),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
-                                    const SizedBox(
-                                      height: 12,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 4,
+                                      horizontal: 12,
                                     ),
-                                    FormBuilderTextField(
-                                      name: 'paid',
-                                      decoration: InputDecoration(
-                                        labelText: 'Bayar (opsional)',
-                                        labelStyle: const TextStyle(
-                                          fontSize: 16,
-                                        ),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                        ),
-                                        contentPadding:
-                                            const EdgeInsets.symmetric(
-                                          vertical: 4,
-                                          horizontal: 12,
-                                        ),
-                                      ),
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: [
-                                        formatter,
-                                      ],
+                                  ),
+                                  validator: FormBuilderValidators.compose([
+                                    FormBuilderValidators.required(),
+                                  ]),
+                                ),
+                                const SizedBox(height: 12),
+                                FormBuilderTextField(
+                                  name: 'paid',
+                                  decoration: InputDecoration(
+                                    labelText: 'Bayar (opsional)',
+                                    labelStyle: const TextStyle(fontSize: 16),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
-                                    const SizedBox(
-                                      height: 12,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 4,
+                                      horizontal: 12,
                                     ),
-                                  ],
-                                )
-                              : Container(),
+                                  ),
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [formatter],
+                                ),
+                                const SizedBox(height: 12),
+                              ],
+                            ),
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
@@ -294,17 +252,39 @@ class _CreateMenuModalState extends State<CreateMenuModal> {
                                       if (formKey.currentState!.validate()) {
                                         formKey.currentState!.save();
                                         globalBloc.loading = true;
-                                        await TbMenu().create([
-                                          TbMenuModel.fromJson({
-                                            ...formKey.currentState!.value,
-                                            "type": widget.type,
-                                          })
-                                        ]);
-                                        await widget.onSuccess();
-                                        globalBloc.loading = false;
-                                        Navigator.pop(context);
-                                      } else {
-                                        globalBloc.loading = false;
+
+                                        Map<String, dynamic> formData = Map<String, dynamic>.from(formKey.currentState!.value);
+
+                                        // Sanitasi Tanggal
+                                        if (formData['debtDate'] is DateTime) {
+                                          formData['createdOn'] = DateFormat('yyyy-MM-dd').format(formData['debtDate']);
+                                        } else {
+                                          formData['createdOn'] = DateFormat('yyyy-MM-dd').format(DateTime.now());
+                                        }
+
+                                        if (formData['deadline'] is DateTime) {
+                                          formData['deadline'] = DateFormat('yyyy-MM-dd').format(formData['deadline']);
+                                        }
+
+                                        try {
+                                          // PERBAIKAN: Kirim argumen kedua yaitu globalBloc.activeBukukasId
+                                          await TbMenu().create([
+                                            TbMenuModel.fromJson({
+                                              ...formData,
+                                              "type": widget.type,
+                                              "bukukasId": globalBloc.activeBukukasId, // Sertakan ID Buku Kas
+                                            })
+                                          ], globalBloc.activeBukukasId); // <-- Argumen Posisi ke-2
+                                          
+                                          if (widget.onSuccess != null) {
+                                            await widget.onSuccess();
+                                          }
+                                          globalBloc.loading = false;
+                                          if (mounted) Navigator.pop(context);
+                                        } catch (e) {
+                                          debugPrint("Error Simpan Menu: $e");
+                                          globalBloc.loading = false;
+                                        }
                                       }
                                     }
                                   : null,

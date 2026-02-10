@@ -1,5 +1,4 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:keuangan/components/bubble_triangle.dart';
 import 'package:keuangan/components/circle_custom.dart';
@@ -35,17 +34,6 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
     decimalDigits: 0,
   );
 
-  int totalIn = 0;
-  int totalOut = 0;
-  int totalNominal = 0;
-
-  int trendIndexPemasukan = -1;
-  int trendIndexPengeluaran = -1;
-  int trendIndexHutang = -1;
-  int trendIndexPiutang = -1;
-
-  bool showSelesai = false;
-
   @override
   void initState() {
     super.initState();
@@ -61,10 +49,12 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
     final transactionBloc = context.watch<TransactionBloc>();
 
     onDeleteMenu(TbTransaksiModel data) async {
-      DateTime tempDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
-          .parse(data.transactionDate ?? "");
-      int jml =
-          int.parse(data.valueIn ?? "0") - int.parse(data.valueOut ?? "0");
+      // PERBAIKAN 1: Gunakan DateTime.tryParse (Bebas error 'T')
+      DateTime tempDate = DateTime.tryParse(data.transactionDate ?? "") ?? DateTime.now();
+      
+      // PERBAIKAN 2: Gunakan int.tryParse (Bebas error isNegative)
+      int jml = (int.tryParse(data.valueIn ?? "0") ?? 0) - 
+                (int.tryParse(data.valueOut ?? "0") ?? 0);
 
       String desc = "${data.menuName} (${data.menuType})";
       desc += "\n ${DateFormat("yyyy-MM-dd HH:mm:ss").format(tempDate)}";
@@ -87,8 +77,7 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
         btnOkText: "Hapus transaksi",
         btnCancelOnPress: () {},
         btnOkOnPress: () async {
-          var resp =
-              await ReportModel().deleteTransaction(context, data.id ?? 0);
+          var resp = await ReportModel().deleteTransaction(context, data.id ?? 0);
           if (resp) {
             await CreateModel().getData(context);
           }
@@ -97,28 +86,26 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
     }
 
     AppBar appBar = AppBar(
-      // systemOverlayStyle: const SystemUiOverlayStyle(
-      //   statusBarIconBrightness: Brightness.dark,
-      //   statusBarBrightness: Brightness.light,
-      // ),
-      iconTheme: const IconThemeData(
-        color: Colors.black, //change your color here
-      ),
+      iconTheme: const IconThemeData(color: Colors.black),
       systemOverlayStyle: SystemUiOverlayStyle.dark,
       backgroundColor: const Color(0x00000000),
       elevation: 0,
       centerTitle: true,
-      title: const Text(
-        'Tambah baru',
-        style: TextStyle(
+      title: Text(
+        'Buku: ${globalBloc.activeBukukasName}', // Menampilkan nama Buku Kas aktif
+        style: const TextStyle(
           color: Colors.black,
-          fontSize: 17,
+          fontSize: 16,
           fontWeight: FontWeight.bold,
         ),
       ),
     );
 
     return WillPopScope(
+      onWillPop: () {
+        Navigator.pop(context, 'load');
+        return Future.value(false);
+      },
       child: Scaffold(
         extendBodyBehindAppBar: true,
         appBar: appBar,
@@ -126,613 +113,213 @@ class _CreateTransactionPageState extends State<CreateTransactionPage> {
           constraints: const BoxConstraints.expand(),
           color: Colors.grey.shade200,
           child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 0,
-                horizontal: 0,
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 2,
-                      horizontal: 12,
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: CircleMenu(
-                                  icon: iconMenus[0],
-                                  iconSize: 35,
-                                  name: 'Masuk',
-                                  nameSize: 15,
-                                  gradient: gradientMenu[0],
-                                  active: globalBloc.tabMenuTransaction ==
-                                      "Pemasukan",
-                                  onTap: globalBloc.tabMenuTransaction !=
-                                          "Pemasukan"
-                                      ? () async {
-                                          transactionBloc.page = 1;
-                                          createBloc.page = 1;
-                                          globalBloc.tabMenuTransaction =
-                                              'Pemasukan';
-                                          await CreateModel().getData(context);
-                                        }
-                                      : () {},
-                                ),
-                              ),
-                              Expanded(
-                                child: CircleMenu(
-                                  icon: iconMenus[1],
-                                  iconSize: 35,
-                                  name: 'Keluar',
-                                  nameSize: 15,
-                                  gradient: gradientMenu[1],
-                                  active: globalBloc.tabMenuTransaction ==
-                                      "Pengeluaran",
-                                  onTap: globalBloc.tabMenuTransaction !=
-                                          "Pengeluaran"
-                                      ? () async {
-                                          transactionBloc.page = 1;
-                                          createBloc.page = 1;
-                                          globalBloc.tabMenuTransaction =
-                                              'Pengeluaran';
-                                          await CreateModel().getData(context);
-                                        }
-                                      : () {},
-                                ),
-                              ),
-                              Expanded(
-                                child: CircleMenu(
-                                  icon: iconMenus[2],
-                                  iconSize: 30,
-                                  name: 'Hutang',
-                                  nameSize: 15,
-                                  gradient: gradientMenu[2],
-                                  active:
-                                      globalBloc.tabMenuTransaction == "Hutang",
-                                  onTap: globalBloc.tabMenuTransaction !=
-                                          "Hutang"
-                                      ? () async {
-                                          transactionBloc.page = 1;
-                                          createBloc.page = 1;
-                                          globalBloc.tabMenuTransaction =
-                                              'Hutang';
-                                          await CreateModel().getData(context);
-                                        }
-                                      : () {},
-                                ),
-                              ),
-                              Expanded(
-                                child: CircleMenu(
-                                  icon: iconMenus[3],
-                                  iconSize: 30,
-                                  name: 'Piutang',
-                                  nameSize: 15,
-                                  gradient: gradientMenu[3],
-                                  active: globalBloc.tabMenuTransaction ==
-                                      "Piutang",
-                                  onTap: globalBloc.tabMenuTransaction !=
-                                          "Piutang"
-                                      ? () async {
-                                          transactionBloc.page = 1;
-                                          createBloc.page = 1;
-                                          globalBloc.tabMenuTransaction =
-                                              'Piutang';
-                                          await CreateModel().getData(context);
-                                        }
-                                      : () {},
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 12,
-                        ),
-                      ],
-                    ),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 12),
+                  child: Row(
+                    children: [
+                      _buildMenuTab(context, globalBloc, transactionBloc, createBloc, 0, 'Pemasukan'),
+                      _buildMenuTab(context, globalBloc, transactionBloc, createBloc, 1, 'Pengeluaran'),
+                      _buildMenuTab(context, globalBloc, transactionBloc, createBloc, 2, 'Hutang'),
+                      _buildMenuTab(context, globalBloc, transactionBloc, createBloc, 3, 'Piutang'),
+                    ],
                   ),
-                  const SizedBox(
-                    height: 2,
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 2,
-                        horizontal: 12,
+                ),
+                const SizedBox(height: 2),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 12),
+                    child: CustomPaint(
+                      painter: BubbleTriangle(
+                        comparePathWidth: globalBloc.tabMenuTransaction == "Pemasukan"
+                            ? 8.2 : (globalBloc.tabMenuTransaction == "Pengeluaran"
+                                ? 2.65 : (globalBloc.tabMenuTransaction == "Hutang" ? 1.6 : 1.14)),
                       ),
-                      child: CustomPaint(
-                        painter: BubbleTriangle(
-                          comparePathWidth: globalBloc.tabMenuTransaction ==
-                                  "Pemasukan"
-                              ? 8.2
-                              : (globalBloc.tabMenuTransaction == "Pengeluaran"
-                                  ? 2.65
-                                  : (globalBloc.tabMenuTransaction == "Hutang")
-                                      ? 1.6
-                                      : 1.14),
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            // color: Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Column(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.only(
-                                  left: 5,
-                                  right: 5,
-                                  bottom: 2,
-                                  top: 12,
-                                ),
-                                child: InkWell(
-                                  splashColor: globalBloc.tabMenuTransaction ==
-                                          "Pemasukan"
-                                      ? Colors.greenAccent.shade400
-                                      : (globalBloc.tabMenuTransaction ==
-                                              "Pengeluaran"
-                                          ? Colors.pink
-                                          : (globalBloc.tabMenuTransaction ==
-                                                  "Hutang")
-                                              ? Colors.amber
-                                              : Colors.blue),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      PageTransition(
-                                        type: PageTransitionType.fade,
-                                        child: const CreateTransaction2Page(),
-                                      ),
-                                    ).then((value) async {
-                                      if (value != null) {
-                                        if (value == 'load') {
-                                          createBloc.page = 1;
-                                          transactionBloc.page = 1;
-                                          await CreateModel().getData(context);
-                                        }
-                                      }
-                                    });
-                                  },
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 10,
-                                      horizontal: 20,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: const Color.fromARGB(
-                                          146, 255, 255, 255),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: Row(
+                      child: Container(
+                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
+                        child: Column(
+                          children: [
+                            _buildAddNewButton(context, globalBloc, createBloc, transactionBloc),
+                            Expanded(
+                              child: !createBloc.loading
+                                  ? Column(
                                       children: [
-                                        CircleCustom(
-                                          height: 40,
-                                          icon: Icons.add,
-                                          iconSize: 23,
-                                          gradient: globalBloc
-                                                      .tabMenuTransaction ==
-                                                  "Pemasukan"
-                                              ? gradientMenu[0]
-                                              : (globalBloc
-                                                          .tabMenuTransaction ==
-                                                      "Pengeluaran"
-                                                  ? gradientMenu[1]
-                                                  : (globalBloc
-                                                              .tabMenuTransaction ==
-                                                          "Hutang")
-                                                      ? gradientMenu[2]
-                                                      : gradientMenu[3]),
-                                          active: true,
-                                        ),
-                                        const SizedBox(
-                                          width: 12,
-                                        ),
-                                        Text(
-                                          "${globalBloc.tabMenuTransaction} baru",
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.black54,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: !createBloc.loading
-                                    ? Column(
-                                        children: [
-                                          createBloc.data.isNotEmpty
-                                              ? const SizedBox(
-                                                  height: 6,
-                                                )
-                                              : const SizedBox(),
-                                          createBloc.data.isNotEmpty
-                                              ? const Divider(
-                                                  height: 0,
-                                                )
-                                              : const SizedBox(),
-                                          createBloc.data.isNotEmpty
-                                              ? Container(
-                                                  width: double.infinity,
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                    top: 9,
-                                                    bottom: 7,
-                                                  ),
-                                                  color: Colors.white,
-                                                  child: Center(
-                                                    child: Text(
-                                                      "${globalBloc.tabMenuTransaction.toUpperCase()} TERAKHIR",
-                                                      style: const TextStyle(
-                                                        fontSize: 12,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        color: Colors.black54,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                )
-                                              : const SizedBox(),
-                                          const SizedBox(
-                                            height: 6,
-                                          ),
-                                          Expanded(
-                                            child: ListView.builder(
-                                              shrinkWrap: true,
-                                              padding: const EdgeInsets.all(0),
-                                              itemCount: createBloc.data.length,
-                                              itemBuilder: (context, index) {
-                                                var data =
-                                                    createBloc.data[index];
-                                                DateTime tempDate = DateFormat(
-                                                        "yyyy-MM-dd'T'HH:mm:ss.SSS")
-                                                    .parse(
-                                                        data.transactionDate ??
-                                                            "");
-                                                return Container(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                    vertical: 12,
-                                                    horizontal: 18,
-                                                  ),
-                                                  margin: const EdgeInsets.only(
-                                                      bottom: 8,
-                                                      left: 12,
-                                                      right: 12),
-                                                  decoration: BoxDecoration(
-                                                    color: activeTabColor(
-                                                        data.menuType ?? "",
-                                                        labelsColor),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                        color: activeTabColor(
-                                                            data.menuType ?? "",
-                                                            chipsColor),
-                                                        spreadRadius: 0,
-                                                        blurRadius: 0.2,
-                                                        offset: const Offset(0,
-                                                            0.1), // changes position of shadow
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        data.menuName ?? "",
-                                                        style: TextStyle(
-                                                          color: activeTabColor(
-                                                              data.menuType ??
-                                                                  "",
-                                                              reportActiveTabColor),
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 15,
-                                                        ),
-                                                      ),
-                                                      data.menuNotes != null &&
-                                                              data.menuNotes !=
-                                                                  ""
-                                                          ? Text(
-                                                              data.menuNotes ??
-                                                                  "",
-                                                              style:
-                                                                  const TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize: 14,
-                                                              ),
-                                                            )
-                                                          : const SizedBox(),
-                                                      Text(
-                                                        DateFormat(
-                                                                "yyyy-MM-dd HH:mm:ss")
-                                                            .format(tempDate),
-                                                        style: const TextStyle(
-                                                          color: Colors.black87,
-                                                          fontSize: 14,
-                                                        ),
-                                                      ),
-                                                      data.notes != null &&
-                                                              data.notes != ""
-                                                          ? Text(
-                                                              data.notes ?? "",
-                                                              style:
-                                                                  const TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize: 14,
-                                                              ),
-                                                            )
-                                                          : const SizedBox(),
-                                                      Row(
-                                                        children: [
-                                                          Container(
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color:
-                                                                  Colors.white,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          10),
-                                                              boxShadow: [
-                                                                BoxShadow(
-                                                                  color: Colors
-                                                                      .grey
-                                                                      .withOpacity(
-                                                                          0.5),
-                                                                  spreadRadius:
-                                                                      0,
-                                                                  blurRadius:
-                                                                      0.2,
-                                                                  offset: const Offset(
-                                                                      0,
-                                                                      0.2), // changes position of shadow
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .symmetric(
-                                                              horizontal: 6,
-                                                              vertical: 4,
-                                                            ),
-                                                            child: Text(
-                                                              formatCurrency.format(int
-                                                                      .parse(data
-                                                                              .valueIn ??
-                                                                          "0") -
-                                                                  int.parse(
-                                                                      data.valueOut ??
-                                                                          "0")),
-                                                              style:
-                                                                  const TextStyle(
-                                                                color: Colors
-                                                                    .black87,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize: 14,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          const Expanded(
-                                                            child: SizedBox(),
-                                                          ),
-                                                          data.debtType != "NON"
-                                                              ? Container(
-                                                                  margin:
-                                                                      const EdgeInsets
-                                                                          .only(
-                                                                          left:
-                                                                              6),
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    color: Colors
-                                                                        .white54,
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            10),
-                                                                  ),
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                          .symmetric(
-                                                                    horizontal:
-                                                                        12,
-                                                                    vertical: 4,
-                                                                  ),
-                                                                  child: Text(
-                                                                    "${data.debtType} ${data.menuType.toString().toLowerCase()}",
-                                                                    style:
-                                                                        const TextStyle(
-                                                                      color: Colors
-                                                                          .black54,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                      fontSize:
-                                                                          13,
-                                                                    ),
-                                                                  ),
-                                                                )
-                                                              : const SizedBox(),
-                                                        ],
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child: SizedBox(
-                                                              width: double
-                                                                  .infinity,
-                                                              child: InkWell(
-                                                                child:
-                                                                    const Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .center,
-                                                                  children: [
-                                                                    Icon(
-                                                                      Icons
-                                                                          .content_paste_search,
-                                                                      color: Colors
-                                                                          .black87,
-                                                                      size: 20,
-                                                                    ),
-                                                                    SizedBox(
-                                                                      width: 4,
-                                                                    ),
-                                                                    Text(
-                                                                      "Detail",
-                                                                      style:
-                                                                          TextStyle(
-                                                                        fontSize:
-                                                                            13,
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                                onTap: () {
-                                                                  Navigator
-                                                                      .push(
-                                                                    context,
-                                                                    PageTransition(
-                                                                      type: PageTransitionType
-                                                                          .bottomToTop,
-                                                                      child:
-                                                                          ReportMenuDetailPage(
-                                                                        menuId:
-                                                                            data.menuId ??
-                                                                                0,
-                                                                        type: data.menuType ??
-                                                                            "",
-                                                                      ),
-                                                                    ),
-                                                                  ).then(
-                                                                      (value) async {
-                                                                    if (value !=
-                                                                        null) {
-                                                                      if (value ==
-                                                                          'load') {
-                                                                        createBloc
-                                                                            .page = 1;
-                                                                        await CreateModel()
-                                                                            .getData(context);
-                                                                      }
-                                                                    }
-                                                                  });
-                                                                },
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          data.allowDelete ==
-                                                                  "1"
-                                                              ? Expanded(
-                                                                  child:
-                                                                      SizedBox(
-                                                                    width: double
-                                                                        .infinity,
-                                                                    child:
-                                                                        InkWell(
-                                                                      child:
-                                                                          const Row(
-                                                                        mainAxisAlignment:
-                                                                            MainAxisAlignment.center,
-                                                                        children: [
-                                                                          Icon(
-                                                                            Icons.delete,
-                                                                            color:
-                                                                                Colors.red,
-                                                                            size:
-                                                                                20,
-                                                                          ),
-                                                                          SizedBox(
-                                                                            width:
-                                                                                4,
-                                                                          ),
-                                                                          Text(
-                                                                            "Hapus",
-                                                                            style:
-                                                                                TextStyle(
-                                                                              fontSize: 13,
-                                                                              color: Colors.red,
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                      onTap:
-                                                                          () async {
-                                                                        await onDeleteMenu(
-                                                                            data);
-                                                                      },
-                                                                    ),
-                                                                  ),
-                                                                )
-                                                              : const SizedBox(),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
-                                              },
+                                        if (createBloc.data.isNotEmpty) ...[
+                                          const SizedBox(height: 6),
+                                          const Divider(height: 0),
+                                          Container(
+                                            width: double.infinity,
+                                            padding: const EdgeInsets.symmetric(vertical: 8),
+                                            color: Colors.white,
+                                            child: Center(
+                                              child: Text(
+                                                "${globalBloc.tabMenuTransaction.toUpperCase()} TERAKHIR",
+                                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black54),
+                                              ),
                                             ),
                                           ),
-                                          createBloc.totalPage > 1
-                                              ? Pagination(
-                                                  totalPage:
-                                                      createBloc.totalPage,
-                                                  page: createBloc.page,
-                                                  height: 10,
-                                                  onTap: (page) async {
-                                                    createBloc.page = page;
-                                                    await CreateModel()
-                                                        .getData(context);
-                                                  },
-                                                )
-                                              : const SizedBox(),
                                         ],
-                                      )
-                                    : Center(
-                                        child: SpinKitDoubleBounce(
-                                          color: Colors.grey.shade200,
+                                        const SizedBox(height: 6),
+                                        Expanded(
+                                          child: ListView.builder(
+                                            shrinkWrap: true,
+                                            padding: EdgeInsets.zero,
+                                            itemCount: createBloc.data.length,
+                                            itemBuilder: (context, index) {
+                                              var data = createBloc.data[index];
+                                              DateTime itemDate = DateTime.tryParse(data.transactionDate ?? "") ?? DateTime.now();
+                                              return _buildTransactionItem(data, itemDate, onDeleteMenu);
+                                            },
+                                          ),
                                         ),
-                                      ),
-                              ),
-                            ],
-                          ),
+                                        if (createBloc.totalPage > 1)
+                                          Pagination(
+                                            totalPage: createBloc.totalPage,
+                                            page: createBloc.page,
+                                            height: 10,
+                                            onTap: (page) async {
+                                              createBloc.page = page;
+                                              await CreateModel().getData(context);
+                                            },
+                                          )
+                                      ],
+                                    )
+                                  : const Center(child: SpinKitDoubleBounce(color: Colors.white)),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 12),
+              ],
             ),
           ),
         ),
       ),
-      onWillPop: () {
-        Navigator.pop(context, 'load');
-        return Future.value(false);
-      },
+    );
+  }
+
+  Widget _buildMenuTab(BuildContext context, GlobalBloc globalBloc, TransactionBloc tBloc, CreateBloc cBloc, int index, String type) {
+    return Expanded(
+      child: CircleMenu(
+        icon: iconMenus[index],
+        iconSize: 30,
+        name: type,
+        nameSize: 13,
+        gradient: gradientMenu[index],
+        active: globalBloc.tabMenuTransaction == type,
+        onTap: globalBloc.tabMenuTransaction != type
+            ? () async {
+                tBloc.page = 1;
+                cBloc.page = 1;
+                globalBloc.tabMenuTransaction = type;
+                await CreateModel().getData(context);
+              }
+            : () {},
+      ),
+    );
+  }
+
+  Widget _buildAddNewButton(BuildContext context, GlobalBloc globalBloc, CreateBloc cBloc, TransactionBloc tBloc) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 5, right: 5, bottom: 2, top: 12),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            PageTransition(type: PageTransitionType.fade, child: const CreateTransaction2Page()),
+          ).then((value) async {
+            if (value == 'load') {
+              cBloc.page = 1;
+              tBloc.page = 1;
+              await CreateModel().getData(context);
+            }
+          });
+        },
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(146, 255, 255, 255),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            children: [
+              CircleCustom(
+                height: 40,
+                icon: Icons.add,
+                iconSize: 23,
+                gradient: globalBloc.tabMenuTransaction == "Pemasukan" ? gradientMenu[0] 
+                        : (globalBloc.tabMenuTransaction == "Pengeluaran" ? gradientMenu[1] 
+                        : (globalBloc.tabMenuTransaction == "Hutang" ? gradientMenu[2] : gradientMenu[3])),
+                active: true,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                "${globalBloc.tabMenuTransaction} baru",
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black54),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTransactionItem(TbTransaksiModel data, DateTime tempDate, Function onDelete) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+      margin: const EdgeInsets.only(bottom: 8, left: 12, right: 12),
+      decoration: BoxDecoration(
+        color: activeTabColor(data.menuType ?? "", labelsColor),
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(color: activeTabColor(data.menuType ?? "", chipsColor), blurRadius: 0.2),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(data.menuName ?? "", style: TextStyle(color: activeTabColor(data.menuType ?? "", reportActiveTabColor), fontWeight: FontWeight.bold, fontSize: 15)),
+                Text(DateFormat("yyyy-MM-dd HH:mm").format(tempDate), style: const TextStyle(color: Colors.black87, fontSize: 13)),
+                if (data.notes != null && data.notes != "")
+                  Text(data.notes!, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                      child: Text(
+                        formatCurrency.format((int.tryParse(data.valueIn ?? "0") ?? 0) - (int.tryParse(data.valueOut ?? "0") ?? 0)),
+                        style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 14),
+                      ),
+                    ),
+                    if (data.debtType != "NON") ...[
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(color: Colors.white54, borderRadius: BorderRadius.circular(10)),
+                        child: Text("${data.debtType} ${data.menuType?.toLowerCase()}", style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.bold, fontSize: 12)),
+                      ),
+                    ]
+                  ],
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete, color: Colors.red, size: 22),
+            onPressed: () => onDelete(data),
+          ),
+        ],
+      ),
     );
   }
 }

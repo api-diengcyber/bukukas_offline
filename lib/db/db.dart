@@ -3,6 +3,7 @@ import 'package:keuangan/db/tb_menu.dart';
 import 'package:keuangan/db/tb_transaksi.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:keuangan/db/tb_bukukas.dart';
 
 class DB {
   // 1. Definisikan static instance
@@ -27,17 +28,23 @@ class DB {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2, // NAIKKAN KE VERSI 2
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          // Tambahkan kolom bukukasId ke tabel yang sudah ada
+          await db.execute("ALTER TABLE menu ADD COLUMN bukukasId INTEGER DEFAULT 1");
+          await db.execute("ALTER TABLE transaksi ADD COLUMN bukukasId INTEGER DEFAULT 1");
+        }
+      },
     );
   }
 
-  // Method untuk inisialisasi semua tabel
   Future<void> initTables() async {
     await TbInstalled().init();
+    await TbBukukas().init(); // Init table buku kas dulu
     await TbMenu().init();
     await TbTransaksi().init();
     
-    // Logika data awal
     await TbMenu().initData();
     await TbInstalled().create();
   }

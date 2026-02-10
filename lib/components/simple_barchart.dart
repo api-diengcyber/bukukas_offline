@@ -46,9 +46,15 @@ class SimpleBarChart extends StatelessWidget {
 },
             ),
           ),
-          leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          leftTitles: const AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: false)),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: false)),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: false)),
         ),
         gridData: const FlGridData(show: false),
         borderData: FlBorderData(show: false),
@@ -56,7 +62,8 @@ class SimpleBarChart extends StatelessWidget {
         barGroups: data.asMap().entries.map((entry) {
           int index = entry.key;
           var item = entry.value;
-          double total = double.tryParse(item['total'].toString()) ?? 0;
+          double total = double.tryParse(
+            item['total'].toString()) ?? 0;
 
           return BarChartGroupData(
             x: index,
@@ -90,7 +97,8 @@ class SimpleBarChart extends StatelessWidget {
   }
 
   Color _getColor(int index) {
-    List<Color> colors = [Colors.blue, Colors.green, Colors.amber, Colors.pink, Colors.purple];
+    List<Color> colors = [
+      Colors.blue, Colors.green, Colors.amber, Colors.pink, Colors.purple];
     return colors[index % colors.length];
   }
 }

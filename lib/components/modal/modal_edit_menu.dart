@@ -113,7 +113,7 @@ class _EditMenuModalState extends State<EditMenuModal> {
                             ),
                             validator: FormBuilderValidators.compose([
                               FormBuilderValidators.required(),
-                              FormBuilderValidators.min(4),
+                              FormBuilderValidators.minLength(4),
                             ]),
                             keyboardType: TextInputType.text,
                           ),
@@ -153,16 +153,9 @@ class _EditMenuModalState extends State<EditMenuModal> {
                                   margin: const EdgeInsets.only(bottom: 12),
                                   child: FormBuilderTextField(
                                     name: 'defaultValue',
-                                    initialValue: int.parse(
-                                                (widget.data!.defaultValue == ''
-                                                        ? '0'
-                                                        : widget.data!
-                                                            .defaultValue) ??
-                                                    "0") >
-                                            0
-                                        ? formatter.formatString(widget
-                                            .data!.defaultValue
-                                            .toString())
+                                    // PERBAIKAN 1: Proteksi int.tryParse untuk nominal
+                                    initialValue: (int.tryParse(widget.data?.defaultValue ?? "0") ?? 0) > 0
+                                        ? formatter.formatString(widget.data!.defaultValue.toString())
                                         : null,
                                     decoration: InputDecoration(
                                       labelText: 'Nilai default (opsional)',
@@ -194,12 +187,9 @@ class _EditMenuModalState extends State<EditMenuModal> {
                                   child: FormBuilderDateTimePicker(
                                     name: 'deadline',
                                     inputType: InputType.date,
-                                    initialDate:
-                                        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
-                                            .parse(widget.data!.deadline ?? ""),
-                                    initialValue:
-                                        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
-                                            .parse(widget.data!.deadline ?? ""),
+                                    // PERBAIKAN 2: Gunakan DateTime.tryParse agar tidak error 'T' (Baris 199)
+                                    initialDate: DateTime.tryParse(widget.data?.deadline ?? "") ?? DateTime.now(),
+                                    initialValue: DateTime.tryParse(widget.data?.deadline ?? "") ?? DateTime.now(),
                                     format: DateFormat('dd-MM-yyyy'),
                                     decoration: InputDecoration(
                                       labelText: 'Jatuh tempo',
@@ -235,6 +225,7 @@ class _EditMenuModalState extends State<EditMenuModal> {
                                   ),
                                 )
                               : const SizedBox(),
+                          const SizedBox(height: 12),
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
@@ -243,18 +234,25 @@ class _EditMenuModalState extends State<EditMenuModal> {
                                       if (formKey.currentState!.validate()) {
                                         formKey.currentState!.save();
                                         globalBloc.loading = true;
+
+                                        // Sanitasi data sebelum update
+                                        Map<String, dynamic> formData = Map<String, dynamic>.from(formKey.currentState!.value);
+                                        
+                                        // Pastikan deadline dikonversi ke String jika ada
+                                        if (formData['deadline'] is DateTime) {
+                                          formData['deadline'] = DateFormat('yyyy-MM-dd').format(formData['deadline']);
+                                        }
+
                                         await TbMenu().update(
                                           widget.data!.id ?? 0,
                                           widget.data!.type ?? "",
-                                          formKey.currentState!.value,
+                                          formData,
                                         );
                                         if (widget.onSuccess != null) {
                                           await widget.onSuccess();
                                         }
                                         globalBloc.loading = false;
-                                        Navigator.pop(context);
-                                      } else {
-                                        globalBloc.loading = false;
+                                        if (mounted) Navigator.pop(context);
                                       }
                                     }
                                   : null,

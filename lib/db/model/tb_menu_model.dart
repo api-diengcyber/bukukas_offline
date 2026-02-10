@@ -31,6 +31,8 @@ class TbMenuModel {
   int? totalTransaction;
   String? totalIn;
   String? totalOut;
+  // --- TAMBAHKAN INI ---
+  int? bukukasId; 
 
   TbMenuModel({
     this.id,
@@ -46,6 +48,7 @@ class TbMenuModel {
     this.totalTransaction,
     this.totalIn,
     this.totalOut,
+    this.bukukasId, // <--- Masukkan ke constructor
   });
 
   factory TbMenuModel.fromJson(Map<String, dynamic> json) => TbMenuModel(
@@ -54,14 +57,16 @@ class TbMenuModel {
         type: json["type"],
         notes: json["notes"],
         defaultValue: json["defaultValue"],
-        total: json["total"],
-        paid: json["paid"],
-        deadline: json["deadline"],
+        total: json["total"]?.toString(),
+        paid: json["paid"]?.toString(),
+        deadline: json["deadline"]?.toString(),
         statusPaidOff: json["statusPaidOff"],
-        createdOn: json["createdOn"],
+        createdOn: json["createdOn"]?.toString(),
         totalTransaction: json["totalTransaction"],
-        totalIn: json["totalIn"],
-        totalOut: json["totalOut"],
+        totalIn: json["totalIn"]?.toString(),
+        totalOut: json["totalOut"]?.toString(),
+        // --- AMBIL DARI JSON ---
+        bukukasId: json["bukukasId"] != null ? int.tryParse(json["bukukasId"].toString()) : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -78,5 +83,6 @@ class TbMenuModel {
         "totalTransaction": totalTransaction,
         "totalIn": totalIn,
         "totalOut": totalOut,
+        "bukukasId": bukukasId, // <--- Sertakan di sini
       };
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:keuangan/db/model/tb_menu_model.dart';
 import 'package:keuangan/db/tb_menu.dart';
+import 'package:keuangan/providers/global_bloc.dart'; // Tambahkan import GlobalBloc
 import 'package:keuangan/providers/menu_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/snackbar/snackbar.dart';
@@ -45,9 +46,17 @@ class MenuModel {
 
   Future<void> getMenu(BuildContext context) async {
     final menuBloc = Provider.of<MenuBloc>(context, listen: false);
+    // 1. Ambil activeBukukasId dari GlobalBloc
+    final globalBloc = Provider.of<GlobalBloc>(context, listen: false); 
+    
     menuBloc.loading = true;
-    List<TbMenuModel> data =
-        await TbMenu().getData(_activeTab2Str(menuBloc.activeTab));
+
+    // 2. Kirim 2 argumen: string tipe dan ID Buku Kas aktif
+    List<TbMenuModel> data = await TbMenu().getData(
+      _activeTab2Str(menuBloc.activeTab), 
+      globalBloc.activeBukukasId // Argumen kedua
+    );
+
     Future.delayed(const Duration(milliseconds: 200), () async {
       menuBloc.data = data;
       menuBloc.totalPages = 1;

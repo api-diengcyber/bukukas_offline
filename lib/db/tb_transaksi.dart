@@ -7,36 +7,41 @@ import 'package:sqflite/sqflite.dart';
 
 class TbTransaksi {
   Future<void> init() async {
-    // Gunakan DB.instance.getDB()
-    Database database = await DB.instance.getDB(); 
+    Database database = await DB.instance.getDB();
+    // PERBAIKAN: Tambahkan kolom bukukasId pada saat pembuatan tabel
     await database.execute(
-        "CREATE TABLE IF NOT EXISTS transaksi (id INTEGER PRIMARY KEY AUTOINCREMENT, transactionDate TEXT, notes TEXT, valueIn TEXT, valueOut TEXT, debtType TEXT, createdOn TEXT, allowDelete TEXT, menuId INTEGER)");
+        "CREATE TABLE IF NOT EXISTS transaksi (id INTEGER PRIMARY KEY AUTOINCREMENT, transactionDate TEXT, notes TEXT, valueIn TEXT, valueOut TEXT, debtType TEXT, createdOn TEXT, allowDelete TEXT, menuId INTEGER, bukukasId INTEGER)");
   }
 
- // tb_transaksi.dart
-Future<List<TbTransaksiModel>> getData(String? type) async {
-    Database database = await DB.instance.getDB(); // Perbarui di sini juga
-    String whereStr = "";
-    if (type != null && type != 'Semua') {
-      whereStr = " WHERE b.type='$type'";
-    }
-    
-    List<Map<String, dynamic>> list = await database.rawQuery(
-        'SELECT a.*, b.name AS menuName, b.type AS menuType FROM transaksi a JOIN menu b ON a.menuId=b.id $whereStr');
-    return list.map((e) => TbTransaksiModel.fromJson(e)).toList();
+ // Cari fungsi getData di file tb_transaksi.dart dan ubah SELECT-nya
+Future<List<TbTransaksiModel>> getData(String? type, int bukukasId) async {
+  Database database = await DB.instance.getDB();
+  String whereStr = " WHERE b.bukukasId = $bukukasId"; 
+  if (type != null && type != 'Semua') {
+    whereStr += " AND b.type='$type'";
   }
+  
+  // PERBAIKAN: Tambahkan b.notes AS menuNotes ke dalam query
+  List<Map<String, dynamic>> list = await database.rawQuery(
+      'SELECT a.*, b.name AS menuName, b.type AS menuType, b.notes AS menuNotes FROM transaksi a JOIN menu b ON a.menuId=b.id $whereStr');
+  
+  return list.map((e) => TbTransaksiModel.fromJson(e)).toList();
+}
+
   Future<List<TbTransaksiModel>> getDataByMenuId(int? menuId) async {
     Database database = await DB.instance.getDB();
     List<Map<String, dynamic>> list = await database.rawQuery(
-        'SELECT a.*, b.name AS menuName, b.type AS menuType FROM transaksi a JOIN menu b ON a.menuId=b.id WHERE a.menuId=?', [menuId]);
+        'SELECT a.*, b.name AS menuName, b.type AS menuType FROM transaksi a JOIN menu b ON a.menuId=b.id WHERE a.menuId=?',
+        [menuId]);
     return list.map((e) => TbTransaksiModel.fromJson(e)).toList();
   }
 
-  Future<void> createByCart(List<CartModel> listData) async {
+  Future<void> createByCart(List<CartModel> listData, int bukukasId) async {
     List<TbTransaksiModel> l = [];
     for (int i = 0; i < listData.length; i++) {
       l.add(TbTransaksiModel(
         transactionDate: listData[i].tgl,
+        bukukasId: bukukasId, // Masukkan ID Buku Kas ke model
         valueIn: listData[i].gin,
         valueOut: listData[i].gout,
         notes: listData[i].notes,
@@ -46,15 +51,18 @@ Future<List<TbTransaksiModel>> getData(String? type) async {
         menuDeadline: listData[i].deadline,
       ));
     }
-    await create(l);
+    // PERBAIKAN: Kirim 2 argumen ke fungsi create
+    await create(l, bukukasId);
   }
 
-  Future<void> create(List<TbTransaksiModel> listData) async {
+  // PERBAIKAN: Tambahkan parameter bukukasId di fungsi create
+  Future<void> create(List<TbTransaksiModel> listData, int bukukasId) async {
     Database database = await DB.instance.getDB();
     await database.transaction((txn) async {
       for (int i = 0; i < listData.length; i++) {
+        // PERBAIKAN: Tambahkan bukukasId ke dalam query INSERT
         await txn.rawInsert(
-          'INSERT INTO transaksi(transactionDate,notes,valueIn,valueOut,debtType,createdOn,allowDelete,menuId) VALUES(?, ?, ?, ?, ?, ?, ?, ?)',
+          'INSERT INTO transaksi(transactionDate,notes,valueIn,valueOut,debtType,createdOn,allowDelete,menuId,bukukasId) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)',
           [
             listData[i].transactionDate,
             listData[i].notes,
@@ -64,6 +72,7 @@ Future<List<TbTransaksiModel>> getData(String? type) async {
             listData[i].createdOn,
             listData[i].allowDelete,
             listData[i].menuId,
+            bukukasId, // Simpan ID Buku Kas aktif
           ],
         );
       }

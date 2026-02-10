@@ -13,8 +13,15 @@ class CreateModel {
   Future<void> getData(BuildContext context) async {
     final globalBloc = Provider.of<GlobalBloc>(context, listen: false);
     final createBloc = Provider.of<CreateBloc>(context, listen: false);
-    List<TbTransaksiModel> listData =
-        await TbTransaksi().getData(globalBloc.tabMenuTransaction);
+    
+    createBloc.loading = true; // Tambahkan loading indicator jika diperlukan
+
+    // PERBAIKAN: Kirim 2 argumen (Tipe Transaksi dan ID Buku Kas aktif)
+    List<TbTransaksiModel> listData = await TbTransaksi().getData(
+      globalBloc.tabMenuTransaction, 
+      globalBloc.activeBukukasId // Diambil dari GlobalBloc
+    );
+
     createBloc.data = listData;
     createBloc.loading = false;
     createBloc.totalPage = 1;

@@ -9,29 +9,30 @@ class DashboardController extends GetxController {
   bool get loading => _loading.value;
   set loading(bool value) => _loading.value = value;
 
-  // Menggunakan RxMap agar reaktif
   final RxMap _dataDashboard = {}.obs;
   dynamic get dataDashboard => _dataDashboard;
   
+  // Kita hapus getDashboard dari onInit karena onInit tidak bisa menerima context 
+  // untuk mengambil data dari GlobalBloc. Kita akan panggil manual dari UI.
   @override
   void onInit() {
     super.onInit();
-    getDashboard();
   }
 
-  Future<void> getDashboard() async {
+  // PERBAIKAN: Tambahkan parameter bukukasId
+  Future<void> getDashboard(int bukukasId) async {
     try {
       loading = true;
-      List<TbTransaksiModel> listTransaksi = await TbTransaksi().getData("Semua");
       
-      // DEBUG: Cek apakah data dari database ada
-      print("DEBUG: Jumlah Transaksi ditemukan = ${listTransaksi.length}");
+      // PERBAIKAN: Kirim 2 argumen ke getData (Type dan ID Buku Kas aktif)
+      List<TbTransaksiModel> listTransaksi = await TbTransaksi().getData("Semua", bukukasId);
+      
+      print("DEBUG: BukuKas ID = $bukukasId | Jumlah Transaksi = ${listTransaksi.length}");
 
       int totalBalance = 0;
-      int totalToday = 0; // Inisialisasi variabel untuk hari ini
+      int totalToday = 0; 
       Map<String, int> chartMap = {};
 
-      // Ambil string tanggal hari ini (Format: YYYY-MM-DD)
       String todayStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
       for (var item in listTransaksi) {
@@ -39,16 +40,12 @@ class DashboardController extends GetxController {
         int vOut = int.tryParse(item.valueOut ?? "0") ?? 0;
         int net = vIn - vOut;
 
-        // Hitung total saldo keseluruhan
         totalBalance += net;
 
-        // LOGIKA BARU: Cek apakah transaksi terjadi hari ini
-        // Kita gunakan startsWith karena format DB biasanya "YYYY-MM-DD HH:mm:ss"
         if (item.transactionDate != null && item.transactionDate!.startsWith(todayStr)) {
           totalToday += net;
         }
 
-        // Ambil nama menu untuk grafik
         String menuName = item.menuName ?? "Tanpa Kategori";
         chartMap[menuName] = (chartMap[menuName] ?? 0) + (vIn != 0 ? vIn : vOut);
       }
@@ -58,19 +55,14 @@ class DashboardController extends GetxController {
         "total": e.value
       }).toList();
 
-      // DEBUG: Cek perhitungan hari ini
-      print("DEBUG: Total Hari Ini ($todayStr) = $totalToday");
-      print("DEBUG: Data Chart = $listChart");
-
-      // Pastikan "totalToday" dimasukkan ke dalam assignAll
       _dataDashboard.assignAll({
         "total": totalBalance,
-        "totalToday": totalToday, // Data ini yang akan dibaca UI
+        "totalToday": totalToday,
         "totalByMenus": listChart,
         "dataTransaction": listTransaksi,
       });
     } catch (e) {
-      print("DEBUG ERROR: $e");
+      print("DEBUG ERROR DASHBOARD: $e");
     } finally {
       loading = false;
     }

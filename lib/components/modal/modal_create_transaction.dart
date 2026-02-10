@@ -75,14 +75,15 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
 
       int sisa = 0;
       if (widget.data.type == "Hutang" || widget.data.type == "Piutang") {
+        int currentTotal = int.tryParse(widget.data.total ?? "0") ?? 0;
         if (((globalBloc.debtType == "Bayar"
-                    ? int.parse(widget.data.total ?? "0") - _nominal
-                    : int.parse(widget.data.total ?? "0") + _nominal) *
+                    ? currentTotal - _nominal
+                    : currentTotal + _nominal) *
                 -1) >
             0) {
           sisa = ((globalBloc.debtType == "Bayar"
-                  ? int.parse(widget.data.total ?? "0") - _nominal
-                  : int.parse(widget.data.total ?? "0") + _nominal) *
+                  ? currentTotal - _nominal
+                  : currentTotal + _nominal) *
               -1);
         }
       }
@@ -175,19 +176,22 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
     for (var item in cartByMenu) {
       if (widget.data.type == "Hutang") {
         totalSameCart +=
-            int.parse(item.gin ?? "0") - int.parse(item.gout ?? "0");
+            (int.tryParse(item.gin ?? "0") ?? 0) - (int.tryParse(item.gout ?? "0") ?? 0);
       } else {
         totalSameCart +=
-            int.parse(item.gout ?? "0") - int.parse(item.gin ?? "0");
+            (int.tryParse(item.gout ?? "0") ?? 0) - (int.tryParse(item.gin ?? "0") ?? 0);
       }
     }
 
+    // --- PERBAIKAN PARSING TANGGAL DI SINI ---
     DateTime? tempDateDeadline;
-    String deadline = "";
+    String deadlineDisplay = "-";
     if (widget.data.type == "Hutang" || widget.data.type == "Piutang") {
-      tempDateDeadline = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
-          .parse(widget.data.deadline ?? "");
-      deadline = DateFormat("yyyy-MM-dd").format(tempDateDeadline);
+      // Gunakan tryParse agar lebih aman dari format mismatch
+      tempDateDeadline = DateTime.tryParse(widget.data.deadline ?? "");
+      if (tempDateDeadline != null) {
+        deadlineDisplay = DateFormat("dd-MM-yyyy").format(tempDateDeadline);
+      }
     }
 
     return Dialog(
@@ -215,14 +219,8 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(20),
                   bottomRight: const Radius.circular(20),
-                  topRight: Radius.circular((widget.data.type == "Hutang" ||
-                          widget.data.type == "Piutang")
-                      ? 200
-                      : 200),
-                  bottomLeft: Radius.circular((widget.data.type == "Hutang" ||
-                          widget.data.type == "Piutang")
-                      ? 200
-                      : 200),
+                  topRight: const Radius.circular(200),
+                  bottomLeft: const Radius.circular(200),
                 ),
                 gradient: widget.data.type == "Pemasukan"
                     ? gradientActiveDMenu[0]
@@ -237,9 +235,9 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
             Container(
               width: double.infinity,
               height: ((widget.data.type == "Hutang" ||
-                          widget.data.type == "Piutang")
-                      ? .45
-                      : .39) *
+                              widget.data.type == "Piutang")
+                          ? .45
+                          : .39) *
                   MediaQuery.of(context).size.height,
               margin: const EdgeInsets.only(
                 left: 8,
@@ -330,27 +328,12 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                         enabled: _allowSave &&
                                             !transactionBloc.loading,
                                         decoration: InputDecoration(
-                                          labelText: 'Tanggal',
-                                          labelStyle: const TextStyle(
-                                            fontSize: 16,
-                                          ),
+                                          labelText: 'Tanggal Transaksi',
                                           filled: true,
                                           fillColor: Colors.white,
                                           border: OutlineInputBorder(
                                             borderRadius:
                                                 BorderRadius.circular(20),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(25.0),
-                                            borderSide: const BorderSide(
-                                                color: Colors.grey),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(25.0),
-                                            borderSide: const BorderSide(
-                                                color: Colors.grey),
                                           ),
                                           contentPadding:
                                               const EdgeInsets.symmetric(
@@ -370,53 +353,24 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                         name: 'nominal',
                                         enabled: _allowSave &&
                                             !transactionBloc.loading,
-                                        initialValue: widget
-                                                    .data.defaultValue !=
-                                                ""
-                                            ? int.parse(widget.data
-                                                            .defaultValue ??
-                                                        "0") >
-                                                    0
-                                                ? formatter.formatString(widget
-                                                    .data.defaultValue
-                                                    .toString())
-                                                : null
+                                        initialValue: widget.data.defaultValue != "" && widget.data.defaultValue != null
+                                            ? formatter.formatString(widget.data.defaultValue.toString())
                                             : null,
                                         decoration: InputDecoration(
-                                          labelText: (widget.data.type ==
-                                                      "Hutang" ||
-                                                  widget.data.type == "Piutang")
+                                          labelText: (widget.data.type == "Hutang" || widget.data.type == "Piutang")
                                               ? "Nominal ${globalBloc.debtType.toLowerCase()} ${(widget.data.type ?? "").toLowerCase()}"
                                               : "Nominal",
-                                          labelStyle: const TextStyle(
-                                            fontSize: 16,
-                                          ),
                                           filled: true,
                                           fillColor: Colors.white,
                                           border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
+                                            borderRadius: BorderRadius.circular(20),
                                           ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(25.0),
-                                            borderSide: const BorderSide(
-                                                color: Colors.grey),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(25.0),
-                                            borderSide: const BorderSide(
-                                                color: Colors.grey),
-                                          ),
-                                          contentPadding:
-                                              const EdgeInsets.symmetric(
+                                          contentPadding: const EdgeInsets.symmetric(
                                             vertical: 4,
                                             horizontal: 12,
                                           ),
                                         ),
-                                        validator:
-                                            FormBuilderValidators.compose([
+                                        validator: FormBuilderValidators.compose([
                                           FormBuilderValidators.required(),
                                         ]),
                                         keyboardType: TextInputType.number,
@@ -424,20 +378,10 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                         onChanged: (val) {
                                           int total = 0;
                                           if (val != null && val != "") {
-                                            total = int.parse(val
-                                                .replaceAll(
-                                                    RegExp(r'[^\d.]'), '')
-                                                .replaceAll(RegExp(r'[.]'), '')
-                                                .replaceAll(
-                                                    RegExp(r'[,]'), '.'));
+                                            total = int.tryParse(val.replaceAll(RegExp(r'[^\d]'), '')) ?? 0;
                                           }
                                           setState(() {
                                             _nominal = total;
-                                          });
-                                        },
-                                        onReset: () {
-                                          setState(() {
-                                            _nominal = 0;
                                           });
                                         },
                                       ),
@@ -453,259 +397,26 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                               child: FormBuilderDateTimePicker(
                                                 name: 'deadline',
                                                 inputType: InputType.date,
-                                                initialDate: tempDateDeadline,
-                                                initialValue: tempDateDeadline,
-                                                format:
-                                                    DateFormat('dd-MM-yyyy'),
-                                                enabled: _allowSave &&
-                                                    !transactionBloc.loading,
+                                                // Gunakan tempDateDeadline hasil tryParse
+                                                initialDate: tempDateDeadline ?? DateTime.now(),
+                                                initialValue: tempDateDeadline ?? DateTime.now(),
+                                                format: DateFormat('dd-MM-yyyy'),
+                                                enabled: _allowSave && !transactionBloc.loading,
                                                 decoration: InputDecoration(
-                                                  labelText: 'Jatuh tempo',
-                                                  labelStyle: const TextStyle(
-                                                    fontSize: 14,
-                                                  ),
+                                                  labelText: 'Jatuh tempo baru',
                                                   filled: true,
                                                   fillColor: Colors.white,
                                                   border: OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
+                                                    borderRadius: BorderRadius.circular(20),
                                                   ),
-                                                  enabledBorder:
-                                                      OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            25.0),
-                                                    borderSide:
-                                                        const BorderSide(
-                                                            color: Colors.grey),
-                                                  ),
-                                                  focusedBorder:
-                                                      OutlineInputBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            25.0),
-                                                    borderSide:
-                                                        const BorderSide(
-                                                            color: Colors.grey),
-                                                  ),
-                                                  contentPadding:
-                                                      const EdgeInsets
-                                                          .symmetric(
+                                                  contentPadding: const EdgeInsets.symmetric(
                                                     vertical: 4,
                                                     horizontal: 12,
                                                   ),
                                                 ),
-                                                validator: FormBuilderValidators
-                                                    .compose([
-                                                  FormBuilderValidators
-                                                      .required(),
+                                                validator: FormBuilderValidators.compose([
+                                                  FormBuilderValidators.required(),
                                                 ]),
-                                              ),
-                                            )
-                                          : const SizedBox(),
-                                      (widget.data.type == "Hutang" ||
-                                              widget.data.type == "Piutang")
-                                          ? Container(
-                                              width: double.infinity,
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.grey
-                                                        .withOpacity(0.5),
-                                                    spreadRadius: 0,
-                                                    blurRadius: 2,
-                                                    offset: const Offset(0,
-                                                        2), // changes position of shadow
-                                                  ),
-                                                ],
-                                              ),
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                horizontal: 5,
-                                                vertical: 4,
-                                              ),
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                horizontal: 12,
-                                                vertical: 6,
-                                              ),
-                                              child: Row(
-                                                children: <Widget>[
-                                                  globalBloc.debtType == "Bayar"
-                                                      ? Expanded(
-                                                          child: Column(
-                                                            children: <Widget>[
-                                                              const Text(
-                                                                "Jatuh tempo",
-                                                                style:
-                                                                    TextStyle(
-                                                                  letterSpacing:
-                                                                      0.5,
-                                                                  fontSize: 14,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: Colors
-                                                                      .black54,
-                                                                ),
-                                                              ),
-                                                              const SizedBox(
-                                                                height: 4,
-                                                              ),
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .center,
-                                                                children: <Widget>[
-                                                                  Text(
-                                                                    deadline,
-                                                                    style:
-                                                                        const TextStyle(
-                                                                      letterSpacing:
-                                                                          0.5,
-                                                                      fontSize:
-                                                                          13,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                      color: Colors
-                                                                          .black87,
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        )
-                                                      : const SizedBox(),
-                                                  (globalBloc.debtType ==
-                                                                  "Bayar"
-                                                              ? int.parse(widget
-                                                                          .data
-                                                                          .total ??
-                                                                      "") -
-                                                                  _nominal
-                                                              : int.parse(widget
-                                                                          .data
-                                                                          .total ??
-                                                                      "") +
-                                                                  _nominal) >
-                                                          0
-                                                      ? Expanded(
-                                                          child: Column(
-                                                            children: <Widget>[
-                                                              Text(
-                                                                "${widget.data.type.toString()} sekarang",
-                                                                style:
-                                                                    const TextStyle(
-                                                                  letterSpacing:
-                                                                      0.5,
-                                                                  fontSize: 14,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: Colors
-                                                                      .black54,
-                                                                ),
-                                                              ),
-                                                              const SizedBox(
-                                                                height: 4,
-                                                              ),
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .center,
-                                                                children: <Widget>[
-                                                                  // for (var item
-                                                                  //     in cartByMenu)
-                                                                  //   Container(
-                                                                  //     margin: const EdgeInsets
-                                                                  //             .only(
-                                                                  //         right:
-                                                                  //             4),
-                                                                  //     child: Text(
-                                                                  //         formatCurrency.format(int.parse(item["in"]) - int.parse(item["out"])) +
-                                                                  //             ","),
-                                                                  //   ),
-                                                                  Text(
-                                                                    formatCurrency.format(globalBloc.debtType ==
-                                                                            "Bayar"
-                                                                        ? int.parse(widget.data.total ??
-                                                                                "0") -
-                                                                            _nominal +
-                                                                            totalSameCart
-                                                                        : int.parse(widget.data.total ??
-                                                                                "0") +
-                                                                            _nominal +
-                                                                            totalSameCart),
-                                                                    style:
-                                                                        const TextStyle(
-                                                                      letterSpacing:
-                                                                          0.5,
-                                                                      fontSize:
-                                                                          13,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                      color: Colors
-                                                                          .black87,
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        )
-                                                      : Expanded(
-                                                          child: Column(
-                                                            children: <Widget>[
-                                                              const Text(
-                                                                "Lunas",
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Colors
-                                                                      .green,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  fontSize: 15,
-                                                                ),
-                                                              ),
-                                                              ((globalBloc.debtType == "Bayar"
-                                                                              ? int.parse(widget.data.total ?? "0") - _nominal
-                                                                              : int.parse(widget.data.total ?? "0") + _nominal) *
-                                                                          -1) >
-                                                                      0
-                                                                  ? Container(
-                                                                      margin: const EdgeInsets
-                                                                          .only(
-                                                                          top:
-                                                                              4),
-                                                                      child:
-                                                                          Text(
-                                                                        "Sisa: ${formatCurrency.format((globalBloc.debtType == "Bayar" ? int.parse(widget.data.total ?? "0") - _nominal : int.parse(widget.data.total ?? "0") + _nominal) * -1)}",
-                                                                        style:
-                                                                            const TextStyle(
-                                                                          letterSpacing:
-                                                                              0.5,
-                                                                          fontSize:
-                                                                              13,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                          color:
-                                                                              Colors.grey,
-                                                                        ),
-                                                                      ),
-                                                                    )
-                                                                  : const SizedBox(),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                ],
                                               ),
                                             )
                                           : const SizedBox(),
@@ -718,9 +429,6 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                             !transactionBloc.loading,
                                         decoration: InputDecoration(
                                           labelText: 'Keterangan (opsional)',
-                                          labelStyle: const TextStyle(
-                                            fontSize: 16,
-                                          ),
                                           border: OutlineInputBorder(
                                             borderRadius:
                                                 BorderRadius.circular(20),
@@ -731,18 +439,6 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                               const EdgeInsets.symmetric(
                                             vertical: 4,
                                             horizontal: 12,
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(25.0),
-                                            borderSide: const BorderSide(
-                                                color: Colors.grey),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(25.0),
-                                            borderSide: const BorderSide(
-                                                color: Colors.grey),
                                           ),
                                         ),
                                         keyboardType: TextInputType.multiline,
@@ -958,9 +654,9 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                   ),
                                   decoration: BoxDecoration(
                                     color: globalBloc.debtType == "Bayar"
-                                        ? widget.data.type == "Hutang"
+                                        ? (widget.data.type == "Hutang"
                                             ? Colors.amber
-                                            : Colors.blue
+                                            : Colors.blue)
                                         : Colors.white,
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -988,9 +684,9 @@ class _CreateTransactionModalState extends State<CreateTransactionModal> {
                                   ),
                                   decoration: BoxDecoration(
                                     color: globalBloc.debtType == "Tambah"
-                                        ? widget.data.type == "Hutang"
+                                        ? (widget.data.type == "Hutang"
                                             ? Colors.amber
-                                            : Colors.blue
+                                            : Colors.blue)
                                         : Colors.white,
                                     borderRadius: BorderRadius.circular(10),
                                   ),

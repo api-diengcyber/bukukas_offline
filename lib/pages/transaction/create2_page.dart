@@ -374,11 +374,6 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                               0.1), // changes position of shadow
                                         ),
                                       ],
-                                      // image: DecorationImage(
-                                      //   image:
-                                      //       AssetImage("assets/images/lead.png"),
-                                      //   fit: BoxFit.cover,
-                                      // ),
                                     ),
                                     child: const Center(
                                       child: Text(
@@ -410,7 +405,6 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                               child: globalBloc.menus.isNotEmpty
                                   ? Container(
                                       decoration: BoxDecoration(
-                                        // color: Colors.grey.shade200,
                                         borderRadius: BorderRadius.circular(20),
                                       ),
                                       child: Column(
@@ -497,7 +491,8 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                                                               20),
                                                                 ),
                                                                 child: Row(
-                                                                  children: <Widget>[
+                                                                  children: <
+                                                                      Widget>[
                                                                     CircleCustom(
                                                                       height:
                                                                           40,
@@ -531,7 +526,8 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                                                       crossAxisAlignment:
                                                                           CrossAxisAlignment
                                                                               .start,
-                                                                      children: <Widget>[
+                                                                      children: <
+                                                                          Widget>[
                                                                         Text(
                                                                           globalBloc.menus[index].name ??
                                                                               "",
@@ -601,7 +597,8 @@ class _CreateTransaction2PageState extends State<CreateTransaction2Page> {
                                                                                       vertical: 4,
                                                                                     ),
                                                                                     child: Text(
-                                                                                      simpleFormatCurrency.format(globalBloc.menus[index].total),
+                                                                                      // PERBAIKAN: Gunakan int.tryParse karena item.total adalah String
+                                                                                      simpleFormatCurrency.format(int.tryParse(globalBloc.menus[index].total ?? "0") ?? 0),
                                                                                       style: TextStyle(
                                                                                         letterSpacing: 0.5,
                                                                                         fontSize: 13,

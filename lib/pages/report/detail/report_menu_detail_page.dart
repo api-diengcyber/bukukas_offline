@@ -37,8 +37,6 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
     decimalDigits: 0,
   );
 
-  // List<TimelineEventDisplay> events = [];
-
   @override
   void initState() {
     super.initState();
@@ -52,10 +50,11 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
     final reportMenuDetailBloc = context.watch<ReportMenuDetailBloc>();
 
     onDeleteMenu(data) async {
-      DateTime tempDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
-          .parse(data["keu_transaction_transaction_date"]);
-      int jml = (data['keu_transaction_value_in']) -
-          (data['keu_transaction_value_out']);
+      // PERBAIKAN: Gunakan tryParse agar tidak error 'T'
+      DateTime tempDate = DateTime.tryParse(data["keu_transaction_transaction_date"] ?? "") ?? DateTime.now();
+      
+      int jml = (int.tryParse(data['keu_transaction_value_in']?.toString() ?? "0") ?? 0) -
+                (int.tryParse(data['keu_transaction_value_out']?.toString() ?? "0") ?? 0);
 
       String desc = "${data['menus_name']} (${data['menus_type']})";
       desc += "\n ${DateFormat("yyyy-MM-dd HH:mm:ss").format(tempDate)}";
@@ -91,8 +90,11 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
       ).show();
     }
 
-    if (reportMenuDetailBloc.data.isEmpty) {
-      Navigator.pop(context);
+    if (reportMenuDetailBloc.data.isEmpty && !reportMenuDetailBloc.loading) {
+      // Tambahkan delay sedikit agar tidak error build
+      Future.delayed(Duration.zero, () {
+        if (mounted) Navigator.pop(context);
+      });
     }
 
     Color colorT = widget.type == "Pemasukan"
@@ -129,8 +131,8 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
         appBar.preferredSize.height + MediaQuery.of(context).viewPadding.top;
 
     TimelineEventDisplay timelineWidget(TbTransaksiModel data) {
-      DateTime tempDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
-          .parse(data.transactionDate ?? "");
+      // PERBAIKAN: Gunakan tryParse agar fleksibel format lama/baru
+      DateTime tempDate = DateTime.tryParse(data.transactionDate ?? "") ?? DateTime.now();
 
       return TimelineEventDisplay(
         anchor: IndicatorPosition.top,
@@ -138,15 +140,7 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
           width: 5,
           height: 5,
           decoration: BoxDecoration(
-            color: widget.type == "Pemasukan"
-                ? Colors.green
-                : widget.type == "Pengeluaran"
-                    ? Colors.pink
-                    : widget.type == "Hutang"
-                        ? Colors.amber
-                        : widget.type == "Piutang"
-                            ? Colors.blue
-                            : Colors.grey,
+            color: colorT,
             borderRadius: const BorderRadius.all(
               Radius.circular(64),
             ),
@@ -179,7 +173,7 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      DateFormat("yyyy-MM-dd HH:mm:ss").format(tempDate),
+                      DateFormat("dd MMM yyyy, HH:mm").format(tempDate),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -203,8 +197,7 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                                 color: Colors.grey.withOpacity(0.5),
                                 spreadRadius: 0,
                                 blurRadius: 0.2,
-                                offset: const Offset(
-                                    0, 0.2), // changes position of shadow
+                                offset: const Offset(0, 0.2), 
                               ),
                             ],
                           ),
@@ -213,9 +206,10 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                             vertical: 4,
                           ),
                           child: Text(
+                            // PERBAIKAN: Konversi ke int sebelum diformat
                             formatCurrency.format(
-                                int.parse(data.valueIn ?? "0") -
-                                    int.parse(data.valueOut ?? "0")),
+                                (int.tryParse(data.valueIn ?? "0") ?? 0) -
+                                (int.tryParse(data.valueOut ?? "0") ?? 0)),
                             style: const TextStyle(
                               color: Colors.black87,
                               fontWeight: FontWeight.bold,
@@ -223,9 +217,7 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                             ),
                           ),
                         ),
-                        const Expanded(
-                          child: SizedBox(),
-                        ),
+                        const Expanded(child: SizedBox()),
                         data.debtType != "NON"
                             ? Container(
                                 margin: const EdgeInsets.only(left: 6),
@@ -263,7 +255,7 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                         size: 20,
                       ),
                       onTap: () async {
-                        await onDeleteMenu(data);
+                        await onDeleteMenu(data.toJson());
                       },
                     ),
                   )
@@ -283,6 +275,7 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
         appBar: appBar,
         body: Container(
           constraints: const BoxConstraints.expand(),
+          color: Colors.grey.shade100,
           child: SizedBox(
             width: double.infinity,
             height: double.infinity,
@@ -312,8 +305,7 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                         color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 0,
                         blurRadius: 0.2,
-                        offset:
-                            const Offset(0, 0.1), // changes position of shadow
+                        offset: const Offset(0, 0.1),
                       ),
                     ],
                   ),
@@ -343,152 +335,75 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            reportMenuDetailBloc.detail.notes != "" &&
-                                    reportMenuDetailBloc.detail.notes != null
-                                ? Text(
-                                    reportMenuDetailBloc.detail.notes ?? "",
+                            if (reportMenuDetailBloc.detail.notes != null && 
+                                reportMenuDetailBloc.detail.notes != "")
+                              Text(
+                                reportMenuDetailBloc.detail.notes ?? "",
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                            
+                            // PERBAIKAN DI SINI: Baris 404 (Sesuai Log Error)
+                            Row(
+                              children: <Widget>[
+                                if (reportMenuDetailBloc.detail.total != null)
+                                  Text(
+                                    formatCurrency.format(
+                                        int.tryParse(reportMenuDetailBloc.detail.total!.toString()) ?? 0),
                                     style: const TextStyle(
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.bold,
                                       fontSize: 14,
                                     ),
                                   )
-                                : const SizedBox(),
-                            reportMenuDetailBloc.detail.defaultValue != "" &&
-                                    reportMenuDetailBloc.detail.defaultValue !=
-                                        null &&
-                                    int.parse(reportMenuDetailBloc
-                                                .detail.defaultValue ??
-                                            "0") >
-                                        0
-                                ? Container(
-                                    padding: const EdgeInsets.only(
-                                      top: 2,
-                                      bottom: 2,
-                                      left: 6,
-                                      right: 6,
-                                    ),
-                                    margin: const EdgeInsets.only(top: 3),
+                                else if ((reportMenuDetailBloc.detail.type == "Hutang" || 
+                                          reportMenuDetailBloc.detail.type == "Piutang") &&
+                                         reportMenuDetailBloc.detail.statusPaidOff == "1")
+                                  Row(
+                                    children: <Widget>[
+                                      const Text(
+                                        "Lunas ",
+                                        style: TextStyle(
+                                          color: Colors.green,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        "(${reportMenuDetailBloc.detail.type == "Hutang" ? formatCurrency.format(int.tryParse(reportMenuDetailBloc.detail.totalIn?.toString() ?? "0") ?? 0) : formatCurrency.format(int.tryParse(reportMenuDetailBloc.detail.totalOut?.toString() ?? "0") ?? 0)})",
+                                        style: const TextStyle(
+                                          color: Colors.grey,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                const Spacer(),
+                                if (reportMenuDetailBloc.detail.deadline != null && 
+                                    reportMenuDetailBloc.detail.deadline != "")
+                                  Container(
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      color: reportMenuDetailBloc.detail.type ==
-                                              "Pemasukan"
-                                          ? Colors.green.shade100
-                                          : (reportMenuDetailBloc.detail.type ==
-                                                  "Pengeluaran"
-                                              ? Colors.pink.shade100
-                                              : (reportMenuDetailBloc
-                                                          .detail.type ==
-                                                      "Hutang")
-                                                  ? Colors.amber.shade100
-                                                  : Colors.blue.shade100),
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.5),
+                                          spreadRadius: 0,
+                                          blurRadius: 0.2,
+                                          offset: const Offset(0, 0.2),
+                                        ),
+                                      ],
                                     ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                     child: Text(
-                                      formatter.formatString(
-                                          reportMenuDetailBloc
-                                              .detail.defaultValue
-                                              .toString()),
-                                      style: const TextStyle(
-                                        color: Colors.black87,
-                                        fontSize: 13,
+                                      // PERBAIKAN: tryParse untuk deadline agar tidak error 'T'
+                                      DateFormat("yyyy-MM-dd").format(
+                                          DateTime.tryParse(reportMenuDetailBloc.detail.deadline!) ?? DateTime.now()),
+                                      style: TextStyle(
+                                        color: reportMenuDetailBloc.detail.statusPaidOff == "1" ? Colors.grey : Colors.red,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
                                       ),
                                     ),
                                   )
-                                : const SizedBox(),
-                            Row(
-                              children: <Widget>[
-                                reportMenuDetailBloc.detail.total != "0" &&
-                                        reportMenuDetailBloc.detail.total !=
-                                            "" &&
-                                        reportMenuDetailBloc.detail.total !=
-                                            null
-                                    ? Text(
-                                        formatCurrency.format(
-                                            reportMenuDetailBloc.detail.total ??
-                                                "0"),
-                                        style: const TextStyle(
-                                          color: Colors.black87,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                        ),
-                                      )
-                                    : (reportMenuDetailBloc.detail.type ==
-                                                    "Hutang" ||
-                                                reportMenuDetailBloc
-                                                        .detail.type ==
-                                                    "Piutang") &&
-                                            reportMenuDetailBloc
-                                                    .detail.statusPaidOff ==
-                                                "1"
-                                        ? Row(
-                                            children: <Widget>[
-                                              const Text(
-                                                "Lunas",
-                                                style: TextStyle(
-                                                  color: Colors.green,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                width: 4,
-                                              ),
-                                              Text(
-                                                "(${reportMenuDetailBloc.detail.type == "Hutang" ? formatCurrency.format(reportMenuDetailBloc.detail.totalIn) : reportMenuDetailBloc.detail.type == "Piutang" ? formatCurrency.format(reportMenuDetailBloc.detail.totalOut) : ""})",
-                                                style: const TextStyle(
-                                                  color: Colors.grey,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ],
-                                          )
-                                        : const SizedBox(),
-                                const Expanded(
-                                  child: SizedBox(),
-                                ),
-                                (reportMenuDetailBloc.detail.deadline != null &&
-                                        reportMenuDetailBloc.detail.deadline !=
-                                            "" &&
-                                        (reportMenuDetailBloc.detail.type ==
-                                                "Hutang" ||
-                                            reportMenuDetailBloc.detail.type ==
-                                                "Piutang"))
-                                    ? Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.grey.withOpacity(0.5),
-                                              spreadRadius: 0,
-                                              blurRadius: 0.2,
-                                              offset: const Offset(0,
-                                                  0.2), // changes position of shadow
-                                            ),
-                                          ],
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 6,
-                                          vertical: 2,
-                                        ),
-                                        child: Text(
-                                          DateFormat("yyyy-MM-dd").format(
-                                              DateFormat(
-                                                      "yyyy-MM-dd'T'HH:mm:ss.SSS")
-                                                  .parse(reportMenuDetailBloc
-                                                          .detail.deadline ??
-                                                      "")),
-                                          style: TextStyle(
-                                            color: reportMenuDetailBloc
-                                                        .detail.statusPaidOff ==
-                                                    "1"
-                                                ? Colors.grey
-                                                : Colors.red,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      )
-                                    : const SizedBox(),
                               ],
                             ),
                           ],
@@ -496,15 +411,8 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                 ),
                 Expanded(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 12,
-                    ),
-                    margin: const EdgeInsets.only(
-                      left: 16,
-                      right: 16,
-                      bottom: 16,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+                    margin: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(30),
@@ -513,8 +421,7 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                           color: Colors.grey.withOpacity(0.5),
                           spreadRadius: 0,
                           blurRadius: 0.2,
-                          offset: const Offset(
-                              0, 0.1), // changes position of shadow
+                          offset: const Offset(0, 0.1),
                         ),
                       ],
                     ),
@@ -534,75 +441,42 @@ class _ReportMenuDetailPageState extends State<ReportMenuDetailPage> {
                                   events: <TimelineEventDisplay>[
                                     for (var item in reportMenuDetailBloc.data)
                                       timelineWidget(item),
-                                    if (reportMenuDetailBloc
-                                            .detail.statusPaidOff ==
-                                        "1")
+                                    if (reportMenuDetailBloc.detail.statusPaidOff == "1")
                                       TimelineEventDisplay(
                                         anchor: IndicatorPosition.top,
                                         indicatorOffset: const Offset(0, -3),
                                         indicator: Container(
-                                          width: 5,
-                                          height: 5,
+                                          width: 5, height: 5,
                                           decoration: BoxDecoration(
-                                            color: widget.type == "Pemasukan"
-                                                ? Colors.green
-                                                : widget.type == "Pengeluaran"
-                                                    ? Colors.pink
-                                                    : widget.type == "Hutang"
-                                                        ? Colors.amber
-                                                        : widget.type ==
-                                                                "Piutang"
-                                                            ? Colors.blue
-                                                            : Colors.grey,
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                              Radius.circular(64),
-                                            ),
+                                            color: colorT,
+                                            borderRadius: const BorderRadius.all(Radius.circular(64)),
                                           ),
                                         ),
                                         child: Container(
-                                          margin:
-                                              const EdgeInsets.only(left: 8),
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 12,
-                                            horizontal: 16,
-                                          ),
+                                          margin: const EdgeInsets.only(left: 8),
+                                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                                           decoration: BoxDecoration(
                                             color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(20),
+                                            borderRadius: BorderRadius.circular(20),
                                             boxShadow: [
                                               BoxShadow(
-                                                color: activeTabColor(
-                                                    reportMenuDetailBloc
-                                                            .detail.type ??
-                                                        "",
-                                                    chipsColor),
-                                                spreadRadius: 0,
-                                                blurRadius: 2,
-                                                offset: const Offset(0,
-                                                    2), // changes position of shadow
+                                                color: activeTabColor(reportMenuDetailBloc.detail.type ?? "", chipsColor),
+                                                spreadRadius: 0, blurRadius: 2,
+                                                offset: const Offset(0, 2),
                                               ),
                                             ],
                                           ),
                                           child: const Text(
                                             "Lunas",
-                                            style: TextStyle(
-                                              color: Colors.green,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                            style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                                           ),
                                         ),
                                       ),
                                   ],
                                 ),
                               )
-                            : const SizedBox()
-                        : Center(
-                            child: SpinKitDoubleBounce(
-                              color: colorT,
-                            ),
-                          ),
+                            : const Center(child: Text("Tidak ada riwayat transaksi"))
+                        : Center(child: SpinKitDoubleBounce(color: colorT)),
                   ),
                 ),
               ],

@@ -1,3 +1,4 @@
+import 'package:keuangan/db/model/tb_menu_model.dart';
 import 'package:keuangan/helpers/set_menus.dart';
 import 'package:keuangan/providers/report_bloc.dart';
 import 'package:flutter/material.dart';
@@ -22,293 +23,187 @@ class _TabReportMenuState extends State<TabReportMenu> {
 
   @override
   Widget build(BuildContext context) {
-    final _reportBloc = context.watch<ReportBloc>();
+    final reportBloc = context.watch<ReportBloc>();
 
-    Color colorT = _reportBloc.activeMenuTab == "Semua"
-        ? Colors.grey
-        : _reportBloc.activeMenuTab == "Pemasukan"
-            ? Colors.green.shade300
-            : _reportBloc.activeMenuTab == "Pengeluaran"
-                ? Colors.pink.shade300
-                : _reportBloc.activeMenuTab == "Hutang"
-                    ? Colors.amber.shade300
-                    : _reportBloc.activeMenuTab == "Piutang"
-                        ? Colors.blue.shade300
-                        : Colors.grey;
+    // 1. Ambil data mentah dari Bloc
+    final List<TbMenuModel> rawMenus = reportBloc.listAvailableMenuType ?? [];
 
-    return (!_reportBloc.loadingSummary && !_reportBloc.loadingMenus)
-        ? (_reportBloc.menus != null && _reportBloc.menus.length > 0)
-            ? Container(
-                height: double.infinity,
-                child: Column(
-                  children: <Widget>[
-                    Container(),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Expanded(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        padding: const EdgeInsets.all(0),
-                        itemCount: _reportBloc.menus.length,
-                        itemBuilder: (context, index) {
-                          var data = _reportBloc.menus[index];
-                          DateTime? tempDate;
-                          if (data["keu_menu_deadline"] != null &&
-                              data["keu_menu_deadline"] != "") {
-                            tempDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
-                                .parse(data["keu_menu_deadline"]);
-                          }
+    // 2. LOGIKA FILTERING: Filter list berdasarkan tab yang aktif
+    List<TbMenuModel> listMenu = [];
+    if (reportBloc.activeMenuTab == "Semua") {
+      listMenu = rawMenus;
+    } else {
+      // Hanya masukkan menu yang tipenya SAMA dengan tab yang dipilih user
+      listMenu = rawMenus.where((m) => m.type == reportBloc.activeMenuTab).toList();
+    }
 
-                          return Container(
-                            padding: const EdgeInsets.only(
-                              top: 12,
-                              bottom: 12,
-                              left: 18,
-                              right: 8,
+    Color colorT = _getTabColor(reportBloc.activeMenuTab);
+
+    if (reportBloc.loadingSummary || reportBloc.loadingMenus) {
+      return _buildLoadingState(colorT);
+    }
+
+    // 3. Cek apakah setelah di-filter datanya ada atau tidak
+    if (listMenu.isEmpty) {
+      return _buildEmptyState();
+    }
+
+    return SizedBox(
+      height: double.infinity,
+      child: Column(
+        children: <Widget>[
+          const SizedBox(height: 8),
+          Expanded(
+            child: ListView.builder(
+              shrinkWrap: true,
+              padding: EdgeInsets.zero,
+              itemCount: listMenu.length,
+              itemBuilder: (context, index) {
+                TbMenuModel data = listMenu[index];
+                DateTime? deadlineDate = DateTime.tryParse(data.deadline ?? "");
+
+                return Container(
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
+                  margin: const EdgeInsets.only(bottom: 8, left: 12, right: 12),
+                  decoration: BoxDecoration(
+                    color: activeTabColor(data.type ?? "", labelsColor),
+                    borderRadius: BorderRadius.circular(20), // Lebih membulat agar modern
+                    boxShadow: [
+                      BoxShadow(
+                        color: activeTabColor(data.type ?? "", chipsColor),
+                        blurRadius: 0.2,
+                        offset: const Offset(0, 0.1),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              data.name ?? "Tanpa Nama",
+                              style: TextStyle(
+                                color: activeTabColor(data.type ?? "", reportActiveTabColor),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
                             ),
-                            margin: const EdgeInsets.only(
-                                bottom: 8, left: 12, right: 12),
-                            decoration: BoxDecoration(
-                              color: activeTabColor(
-                                  data["keu_menu_type"], labelsColor),
-                              borderRadius: BorderRadius.circular(30),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: activeTabColor(
-                                      data["keu_menu_type"], chipsColor),
-                                  spreadRadius: 0,
-                                  blurRadius: 0.2,
-                                  offset: const Offset(
-                                      0, 0.1), // changes position of shadow
-                                ),
-                              ],
-                            ),
-                            child: Row(
+                            if (data.notes != null && data.notes != "")
+                              Text(
+                                data.notes!,
+                                style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13, color: Colors.black54),
+                              ),
+                            const SizedBox(height: 6),
+                            Row(
                               children: <Widget>[
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text(
-                                        data["keu_menu_name"],
-                                        style: TextStyle(
-                                          color: activeTabColor(
-                                              data["keu_menu_type"],
-                                              reportActiveTabColor),
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 15,
-                                        ),
-                                      ),
-                                      data["keu_menu_notes"] != null &&
-                                              data["keu_menu_notes"] != ""
-                                          ? Text(
-                                              data["keu_menu_notes"],
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 14,
-                                              ),
-                                            )
-                                          : const SizedBox(),
-                                      Row(
-                                        children: <Widget>[
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.5),
-                                                  spreadRadius: 0,
-                                                  blurRadius: 0.2,
-                                                  offset: const Offset(0,
-                                                      0.2), // changes position of shadow
-                                                ),
-                                              ],
-                                            ),
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 6,
-                                              vertical: 4,
-                                            ),
-                                            child: data["total"] != 0
-                                                ? Text(
-                                                    formatCurrency
-                                                        .format(data["total"]),
-                                                    style: const TextStyle(
-                                                      color: Colors.black87,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 14,
-                                                    ),
-                                                  )
-                                                : (data["keu_menu_type"] ==
-                                                                "Hutang" ||
-                                                            data["keu_menu_type"] ==
-                                                                "Piutang") &&
-                                                        data["keu_menu_status_paid_off"] ==
-                                                            1
-                                                    ? Row(
-                                                        children: <Widget>[
-                                                          const Text(
-                                                            "Lunas",
-                                                            style: TextStyle(
-                                                              color:
-                                                                  Colors.green,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                            ),
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 4,
-                                                          ),
-                                                          Text(
-                                                            "(" +
-                                                                (data["keu_menu_type"] ==
-                                                                        "Hutang"
-                                                                    ? formatCurrency
-                                                                        .format(data[
-                                                                            "totalIn"])
-                                                                    : data["keu_menu_type"] ==
-                                                                            "Piutang"
-                                                                        ? formatCurrency
-                                                                            .format(data["totalOut"])
-                                                                        : "") +
-                                                                ")",
-                                                            style:
-                                                                const TextStyle(
-                                                              color:
-                                                                  Colors.grey,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      )
-                                                    : const SizedBox(),
-                                          ),
-                                          const Expanded(
-                                            child: SizedBox(),
-                                          ),
-                                          (data["keu_menu_deadline"] != null &&
-                                                  data["keu_menu_deadline"] !=
-                                                      "" &&
-                                                  (data["keu_menu_type"] ==
-                                                          "Hutang" ||
-                                                      data["keu_menu_type"] ==
-                                                          "Piutang"))
-                                              ? Container(
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                        color: Colors.grey
-                                                            .withOpacity(0.5),
-                                                        spreadRadius: 0,
-                                                        blurRadius: 0.2,
-                                                        offset: const Offset(0,
-                                                            0.2), // changes position of shadow
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                    horizontal: 6,
-                                                    vertical: 2,
-                                                  ),
-                                                  child: Text(
-                                                    DateFormat("yyyy-MM-dd")
-                                                        .format(tempDate!),
-                                                    style: TextStyle(
-                                                      color:
-                                                          data["keu_menu_status_paid_off"] ==
-                                                                  1
-                                                              ? Colors.grey
-                                                              : Colors.red,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 12,
-                                                    ),
-                                                  ),
-                                                )
-                                              : const SizedBox(),
-                                        ],
-                                      ),
-                                    ],
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  child: _buildValueText(data),
                                 ),
-                                IconButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      PageTransition(
-                                        type: PageTransitionType.bottomToTop,
-                                        child: ReportMenuDetailPage(
-                                          menuId: data["keu_menu_id"],
-                                          type: data["keu_menu_type"],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  icon: Icon(
-                                    Icons.content_paste_search,
-                                    color: activeTabColor(data["keu_menu_type"],
-                                        reportActiveTabColor),
-                                  ),
-                                ),
+                                const Spacer(),
+                                // Badge Jatuh Tempo hanya untuk Hutang/Piutang
+                                if (deadlineDate != null && (data.type == "Hutang" || data.type == "Piutang"))
+                                  _buildDeadlineBadge(data, deadlineDate),
                               ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.bottomToTop,
+                              child: ReportMenuDetailPage(
+                                menuId: data.id ?? 0,
+                                type: data.type ?? "",
+                              ),
                             ),
                           );
                         },
+                        icon: Icon(
+                          Icons.arrow_forward_ios, // Ganti icon agar lebih bersih
+                          size: 18,
+                          color: activeTabColor(data.type ?? "", reportActiveTabColor),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              )
-            : Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const <Widget>[
-                    Icon(
-                      Icons.emoji_symbols,
-                      color: Colors.grey,
-                      size: 50,
-                    ),
-                    Text(
-                      "Data kosong",
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              )
-        : Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(
-                  Icons.apps,
-                  color: colorT,
-                  size: 50,
-                ),
-                Text(
-                  "Memuat menu...",
-                  style: TextStyle(
-                    color: colorT,
-                    fontWeight: FontWeight.bold,
+                    ],
                   ),
-                ),
-              ],
+                );
+              },
             ),
-          );
+          ),
+        ],
+      ),
+    );
+  }
+
+  // --- HELPER WIDGETS ---
+
+  Widget _buildDeadlineBadge(TbMenuModel data, DateTime deadline) {
+    bool isLunas = data.statusPaidOff == "Lunas";
+    return Container(
+      decoration: BoxDecoration(
+        color: isLunas ? Colors.green.shade50 : Colors.red.shade50,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: Text(
+        DateFormat("dd-MM-yyyy").format(deadline),
+        style: TextStyle(
+          color: isLunas ? Colors.green : Colors.red,
+          fontWeight: FontWeight.bold,
+          fontSize: 11,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildValueText(TbMenuModel data) {
+    double total = double.tryParse(data.total ?? "0") ?? 0;
+    if (total == 0 && (data.type == "Hutang" || data.type == "Piutang") && data.statusPaidOff == "Lunas") {
+      return const Text("LUNAS", style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 12));
+    }
+    return Text(
+      formatCurrency.format(total),
+      style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 13),
+    );
+  }
+
+  Color _getTabColor(String tab) {
+    switch (tab) {
+      case "Pemasukan": return Colors.green.shade400;
+      case "Pengeluaran": return Colors.pink.shade400;
+      case "Hutang": return Colors.amber.shade600;
+      case "Piutang": return Colors.blue.shade600;
+      default: return Colors.grey;
+    }
+  }
+
+  Widget _buildEmptyState() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.folder_open, color: Colors.grey, size: 50),
+          SizedBox(height: 10),
+          Text("Tidak ada kategori di tab ini", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingState(Color color) {
+    return Center(
+      child: CircularProgressIndicator(color: color),
+    );
   }
 }

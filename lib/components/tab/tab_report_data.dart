@@ -1,5 +1,5 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:keuangan/db/model/tb_transaksi_model.dart'; // Wajib import model
+import 'package:keuangan/db/model/tb_transaksi_model.dart'; 
 import 'package:keuangan/helpers/set_menus.dart';
 import 'package:keuangan/pages/report/report_model.dart';
 import 'package:keuangan/providers/report_bloc.dart';
@@ -28,19 +28,17 @@ class _TabReportDataState extends State<TabReportData> {
   Widget build(BuildContext context) {
     final reportBloc = context.watch<ReportBloc>();
 
-    // 1. Ambil list dari bloc data (pastikan sinkron dengan ReportModel)
-    // Kita asumsikan reportBloc.data['list'] berisi List<TbTransaksiModel>
     final List<TbTransaksiModel> listData = (reportBloc.data != null && reportBloc.data['list'] != null)
         ? reportBloc.data['list']
         : [];
 
     onDeleteMenu(TbTransaksiModel data) async {
-      // Parsing tanggal dari string model
-      DateTime tempDate = DateFormat("yyyy-MM-dd").parse(data.transactionDate ?? DateTime.now().toString());
+      // PERBAIKAN 1: Gunakan DateTime.tryParse agar fleksibel (Bebas error 'T')
+      DateTime tempDate = DateTime.tryParse(data.transactionDate ?? "") ?? DateTime.now();
       
-      // Hitung nominal bersih
-      int valIn = int.tryParse(data.valueIn ?? "0") ?? 0;
-      int valOut = int.tryParse(data.valueOut ?? "0") ?? 0;
+      // PERBAIKAN 2: Gunakan int.tryParse (Bebas error isNegative)
+      int valIn = int.tryParse(data.valueIn?.toString() ?? "0") ?? 0;
+      int valOut = int.tryParse(data.valueOut?.toString() ?? "0") ?? 0;
       int jml = valIn - valOut;
 
       String desc = "${data.menuName} (${data.menuType})";
@@ -66,6 +64,7 @@ class _TabReportDataState extends State<TabReportData> {
         btnOkOnPress: () async {
           var resp = await ReportModel().deleteTransaction(context, data.id ?? 0);
           if (resp) {
+            // Refresh data setelah hapus
             await ReportModel().getTabsData(context);
             await ReportModel().getSummaryReport(context);
           }
@@ -75,12 +74,10 @@ class _TabReportDataState extends State<TabReportData> {
 
     Color colorT = _getThemeColor(reportBloc.activeMenuTab);
 
-    // Tampilan loading
     if (reportBloc.loadingSummary || reportBloc.loadingData) {
       return _buildLoading(colorT);
     }
 
-    // Tampilan jika data kosong
     if (listData.isEmpty) {
       return _buildEmptyState();
     }
@@ -96,12 +93,12 @@ class _TabReportDataState extends State<TabReportData> {
               padding: const EdgeInsets.all(0),
               itemCount: listData.length,
               itemBuilder: (context, index) {
-                // MAPPING DATA DARI MODEL (Bukan Map lagi)
                 TbTransaksiModel item = listData[index];
                 
-                DateTime tempDate = DateTime.tryParse(item.transactionDate ?? "") ?? DateTime.now();
-                int vIn = int.tryParse(item.valueIn ?? "0") ?? 0;
-                int vOut = int.tryParse(item.valueOut ?? "0") ?? 0;
+                // PERBAIKAN 3: Proteksi tryParse di dalam list
+                DateTime itemDate = DateTime.tryParse(item.transactionDate ?? "") ?? DateTime.now();
+                int vIn = int.tryParse(item.valueIn?.toString() ?? "0") ?? 0;
+                int vOut = int.tryParse(item.valueOut?.toString() ?? "0") ?? 0;
 
                 return Container(
                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
@@ -121,28 +118,47 @@ class _TabReportDataState extends State<TabReportData> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(
-                        item.menuName ?? "Tanpa Nama",
-                        style: TextStyle(
-                          color: activeTabColor(item.menuType ?? "", reportActiveTabColor),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              item.menuName ?? "Tanpa Nama",
+                              style: TextStyle(
+                                color: activeTabColor(item.menuType ?? "", reportActiveTabColor),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                          // Indikator Jenis Transaksi
+                          Text(
+                            item.menuType ?? "",
+                            style: const TextStyle(fontSize: 10, color: Colors.black38, fontWeight: FontWeight.bold),
+                          )
+                        ],
                       ),
                       if (item.menuNotes != null && item.menuNotes != "")
                         Text(
                           item.menuNotes!,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          style: const TextStyle(fontWeight: 
+                          FontWeight.bold, 
+                          fontSize: 13, 
+                          color: Colors.black54),
                         ),
                       Text(
-                        DateFormat("yyyy-MM-dd HH:mm:ss").format(tempDate),
-                        style: const TextStyle(color: Colors.black87, fontSize: 14),
+                        DateFormat("dd MMM yyyy, HH:mm").format(itemDate),
+                        style: const TextStyle(color: Colors.black45, fontSize: 12),
                       ),
                       if (item.notes != null && item.notes != "")
-                        Text(
-                          item.notes!,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            "Catatan: ${item.notes}",
+                            style: const TextStyle(fontStyle: FontStyle.italic, fontSize: 13),
+                          ),
                         ),
+                      const SizedBox(height: 8),
                       Row(
                         children: <Widget>[
                           Container(
@@ -151,13 +167,13 @@ class _TabReportDataState extends State<TabReportData> {
                               borderRadius: BorderRadius.circular(10),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  blurRadius: 0.2,
-                                  offset: const Offset(0, 0.2),
+                                  color: Colors.grey.withOpacity(0.3),
+                                  blurRadius: 1,
+                                  offset: const Offset(0, 1),
                                 ),
                               ],
                             ),
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             child: Text(
                               formatCurrency.format(vIn - vOut),
                               style: const TextStyle(
@@ -167,7 +183,7 @@ class _TabReportDataState extends State<TabReportData> {
                               ),
                             ),
                           ),
-                          const Expanded(child: SizedBox()),
+                          const Spacer(),
                           if (item.debtType != "NON" && item.debtType != null)
                             Container(
                               margin: const EdgeInsets.only(left: 6),
@@ -175,19 +191,19 @@ class _TabReportDataState extends State<TabReportData> {
                                 color: Colors.white54,
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                               child: Text(
                                 "${item.debtType} ${item.menuType?.toLowerCase()}",
                                 style: const TextStyle(
                                   color: Colors.black54,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 13,
+                                  fontSize: 11,
                                 ),
                               ),
                             ),
                         ],
                       ),
-                      const Divider(),
+                      const Divider(height: 20),
                       Row(
                         children: <Widget>[
                           _buildActionButton(
@@ -206,7 +222,6 @@ class _TabReportDataState extends State<TabReportData> {
                               );
                             },
                           ),
-                          // Logika Hapus (Ganti String "1" atau int 1 sesuai model)
                           if (item.allowDelete == "1" || item.allowDelete == "true")
                             _buildActionButton(
                               icon: Icons.delete,
@@ -227,8 +242,6 @@ class _TabReportDataState extends State<TabReportData> {
     );
   }
 
-  // --- HELPER WIDGETS ---
-
   Widget _buildActionButton({required IconData icon, required String label, Color color = Colors.black87, required VoidCallback onTap}) {
     return Expanded(
       child: InkWell(
@@ -236,9 +249,9 @@ class _TabReportDataState extends State<TabReportData> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: color, size: 20),
+            Icon(icon, color: color, size: 18),
             const SizedBox(width: 4),
-            Text(label, style: TextStyle(fontSize: 13, color: color)),
+            Text(label, style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
@@ -250,8 +263,9 @@ class _TabReportDataState extends State<TabReportData> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.emoji_symbols, color: Colors.grey, size: 50),
-          Text("Data kosong", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+          Icon(Icons.insert_chart_outlined, color: Colors.grey, size: 60),
+          SizedBox(height: 10),
+          Text("Belum ada transaksi", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -262,8 +276,9 @@ class _TabReportDataState extends State<TabReportData> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.list, color: color, size: 50),
-          Text("Memuat data...", style: TextStyle(color: color, fontWeight: FontWeight.bold)),
+          CircularProgressIndicator(color: color),
+          const SizedBox(height: 10),
+          Text("Menyusun laporan...", style: TextStyle(color: color, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -271,11 +286,11 @@ class _TabReportDataState extends State<TabReportData> {
 
   Color _getThemeColor(String tab) {
     switch (tab) {
-      case "Pemasukan": return Colors.green.shade300;
-      case "Pengeluaran": return Colors.pink.shade300;
-      case "Hutang": return Colors.amber.shade300;
-      case "Piutang": return Colors.blue.shade300;
-      default: return Colors.grey;
+      case "Pemasukan": return Colors.green;
+      case "Pengeluaran": return Colors.pink;
+      case "Hutang": return Colors.amber;
+      case "Piutang": return Colors.blue;
+      default: return Colors.blueGrey;
     }
   }
 }

@@ -1,4 +1,6 @@
 import 'package:get/get.dart';
+import 'package:keuangan/db/tb_bukukas.dart'; // Import TbBukukas
+import 'package:keuangan/db/tb_transaksi.dart'; // Import TbTransaksi
 import 'package:keuangan/pages/dashboard/dashboard_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -6,7 +8,7 @@ import 'package:keuangan/pages/backup/backup_page.dart';
 import 'package:keuangan/pages/paywall/paywall_page.dart';
 import 'package:keuangan/services/revenue_cat_service.dart';
 import 'package:keuangan/utils/pref_helper.dart';
-import 'package:keuangan/helpers/export_service.dart'; // Import ExportService
+import 'package:keuangan/helpers/export_service.dart'; 
 import 'package:keuangan/db/model/tb_transaksi_model.dart';
 import 'package:skeleton_text/skeleton_text.dart';
 import 'package:share_plus/share_plus.dart';
@@ -41,53 +43,92 @@ class _PanelDashboardState extends State<PanelDashboard> {
     }
   }
 
-  // --- DIALOG PILIHAN EXPORT ---
-  void _showExportOptions(
-      BuildContext context, DashboardController controller) {
-    final List<TbTransaksiModel> data =
-        controller.dataDashboard['dataTransaction'] ?? [];
+  // --- 1. MODAL PILIH BUKUKAS UNTUK EXPORT ---
+  void _showExportOptions(BuildContext context) async {
+    // Ambil daftar semua buku kas yang tersedia
+    List<Map<String, dynamic>> allBukukas = await TbBukukas().getAll();
 
-    if (data.isEmpty) {
-      Get.snackbar("Info", "Tidak ada data transaksi untuk diexport",
-          snackPosition: SnackPosition.BOTTOM);
-      return;
-    }
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "Pilih Buku Kas untuk di Export",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 15),
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: allBukukas.length,
+                itemBuilder: (context, index) {
+                  var buku = allBukukas[index];
+                  return ListTile(
+                    leading: const CircleAvatar(
+                      backgroundColor: Colors.amber,
+                      child: Icon(Icons.book, color: Colors.white, size: 20),
+                    ),
+                    title: Text(buku['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: const Text("Klik untuk pilih format laporan"),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () {
+                      Navigator.pop(context);
+                      // Lanjut ke pemilihan format file
+                      _showFormatSelection(context, buku['id'], buku['name']);
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: 10),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
+  // --- 2. MODAL PILIH FORMAT (PDF / EXCEL) ---
+  void _showFormatSelection(BuildContext context, int bukukasId, String bukukasName) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        // Membungkus dengan SafeArea agar tidak tertutup navigasi sistem HP
         return SafeArea(
           child: Container(
             padding: const EdgeInsets.all(20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  "Pilih Format Laporan",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  "Export Laporan: $bukukasName",
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 20),
                 ListTile(
                   leading: const Icon(Icons.picture_as_pdf, color: Colors.red),
-                  title: const Text("Export PDF"),
-                  onTap: () {
+                  title: const Text("Export ke PDF"),
+                  onTap: () async {
                     Navigator.pop(context);
-                    ExportService().exportToPdf(data);
+                    _processExport(bukukasId, "PDF");
                   },
                 ),
                 ListTile(
                   leading: const Icon(Icons.table_chart, color: Colors.green),
-                  title: const Text("Export Excel"),
-                  onTap: () {
+                  title: const Text("Export ke Excel"),
+                  onTap: () async {
                     Navigator.pop(context);
-                    ExportService().exportToExcel(data);
+                    _processExport(bukukasId, "EXCEL");
                   },
                 ),
-                const SizedBox(height: 10),
               ],
             ),
           ),
@@ -96,12 +137,31 @@ class _PanelDashboardState extends State<PanelDashboard> {
     );
   }
 
-  // Fungsi kirim ringkasan saldo via text WA
+  // --- 3. PROSES AMBIL DATA & EXPORT ---
+  void _processExport(int bukukasId, String format) async {
+    Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
+
+    // Ambil data transaksi khusus untuk Buku Kas yang dipilih
+    List<TbTransaksiModel> dataToExport = await TbTransaksi().getData("Semua", bukukasId);
+
+    Get.back(); // Tutup loading
+
+    if (dataToExport.isEmpty) {
+      Get.snackbar("Gagal", "Tidak ada data transaksi di buku kas ini.",
+          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
+      return;
+    }
+
+    if (format == "PDF") {
+      ExportService().exportToPdf(dataToExport);
+    } else {
+      ExportService().exportToExcel(dataToExport);
+    }
+  }
+
   void _sendTextToWA(DashboardController controller) {
-    String total =
-        formatCurrency.format(controller.dataDashboard['total'] ?? 0);
-    String today =
-        formatCurrency.format(controller.dataDashboard['totalToday'] ?? 0);
+    String total = formatCurrency.format(controller.dataDashboard['total'] ?? 0);
+    String today = formatCurrency.format(controller.dataDashboard['totalToday'] ?? 0);
     String message = "*LAPORAN RINGKAS BUKUKAS*\n\n"
         "📅 Tanggal: ${DateFormat('dd MMM yyyy').format(DateTime.now())}\n"
         "💰 Total Saldo: $total\n"
@@ -125,19 +185,13 @@ class _PanelDashboardState extends State<PanelDashboard> {
         ),
         content: const Text("Fitur ini hanya tersedia untuk pengguna Premium."),
         actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("TUTUP")),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text("TUTUP")),
           ElevatedButton(
             onPressed: () {
-              Navigator.pop(context); // Tutup dialog
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const PaywallPage()),
-              );
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const PaywallPage()));
             },
-            style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amber.shade700),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.amber.shade700),
             child: const Text("UPGRADE"),
           ),
         ],
@@ -200,8 +254,7 @@ class _PanelDashboardState extends State<PanelDashboard> {
                         const SizedBox(width: 10),
                         _buildSaldoItem(
                             "Hari Ini",
-                            dashboardController.dataDashboard['totalToday'] ??
-                                0,
+                            dashboardController.dataDashboard['totalToday'] ?? 0,
                             dashboardController.loading),
                       ],
                     )),
@@ -216,8 +269,7 @@ class _PanelDashboardState extends State<PanelDashboard> {
                       icon: Icons.picture_as_pdf,
                       color: Colors.red.shade400,
                       onTap: _isPremium
-                          ? () =>
-                              _showExportOptions(context, dashboardController)
+                          ? () => _showExportOptions(context) // Alur baru
                           : _showLockedDialog,
                     ),
                     const SizedBox(width: 12),

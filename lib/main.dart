@@ -19,14 +19,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await RevenueCatService.initialize();
 
-  // Inisialisasi database sebelum aplikasi berjalan
-  // BENAR (Menggunakan instance Singleton yang sudah kita buat)
+  // 1. Inisialisasi database (Termasuk pembuatan tabel 'bukukas' dan kolom baru)
   await DB.instance.initTables();
+
+  // 2. Inisialisasi GlobalBloc secara manual untuk memuat data BukuKas yang tersimpan
+  final globalBloc = GlobalBloc();
+  await globalBloc.loadSavedBukukas(); // Memuat activeBukukasId dari SharedPreferences
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider<GlobalBloc>.value(value: GlobalBloc()),
+        // 3. Gunakan instance globalBloc yang sudah di-load tadi
+        ChangeNotifierProvider<GlobalBloc>.value(value: globalBloc),
         ChangeNotifierProvider<CreateBloc>.value(value: CreateBloc()),
         ChangeNotifierProvider<SplashscreenBloc>.value(
             value: SplashscreenBloc()),
